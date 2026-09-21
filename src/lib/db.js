@@ -1,18 +1,49 @@
 import { Pool } from 'pg';
 import bcrypt from 'bcryptjs';
 
-const connectionString = process.env.DATABASE_URL || process.env.POSTGRES_URL || process.env.POSTGRES_PRISMA_URL || 'postgresql://postgres:postgres@localhost:5432/ailms_db';
+function getDbConfig() {
+  const connectionString =
+    process.env.DATABASE_URL ||
+    process.env.POSTGRES_URL ||
+    process.env.POSTGRES_PRISMA_URL ||
+    process.env.POSTGRES_URL_NON_POOLING;
 
-const isLocalhost = connectionString.includes('localhost') || connectionString.includes('127.0.0.1');
+  if (connectionString) {
+    const isLocal = connectionString.includes('localhost') || connectionString.includes('127.0.0.1');
+    return {
+      connectionString,
+      max: process.env.DB_POOL_MAX ? parseInt(process.env.DB_POOL_MAX, 10) : 10,
+      idleTimeoutMillis: 30000,
+      connectionTimeoutMillis: 10000,
+      ssl: isLocal ? false : { rejectUnauthorized: false },
+    };
+  }
+
+  // Fallback ke discrete variables yang disediakan oleh Vercel Postgres / Storage
+  if (process.env.POSTGRES_HOST) {
+    return {
+      host: process.env.POSTGRES_HOST,
+      port: process.env.POSTGRES_PORT ? parseInt(process.env.POSTGRES_PORT, 10) : 5432,
+      database: process.env.POSTGRES_DATABASE,
+      user: process.env.POSTGRES_USER,
+      password: process.env.POSTGRES_PASSWORD,
+      ssl: { rejectUnauthorized: false },
+      max: 10,
+      idleTimeoutMillis: 30000,
+      connectionTimeoutMillis: 10000,
+    };
+  }
+
+  return {
+    connectionString: 'postgresql://postgres:postgres@localhost:5432/ailms_db',
+    max: 10,
+    idleTimeoutMillis: 10000,
+    ssl: false,
+  };
+}
 
 if (!global._postgresPool) {
-  global._postgresPool = new Pool({
-    connectionString,
-    max: process.env.DB_POOL_MAX ? parseInt(process.env.DB_POOL_MAX, 10) : (process.env.VERCEL ? 10 : 20),
-    idleTimeoutMillis: 10000,
-    connectionTimeoutMillis: 10000,
-    ssl: isLocalhost ? false : { rejectUnauthorized: false },
-  });
+  global._postgresPool = new Pool(getDbConfig());
 }
 const pool = global._postgresPool;
 

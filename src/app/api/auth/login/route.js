@@ -51,9 +51,19 @@ export async function POST(request) {
     user = result.rows[0];
   } catch (dbErr) {
     console.error("Login DB connection/query error:", dbErr?.message || dbErr);
-    // DB tidak tersedia — tolak login dengan pesan aman
+    const hasDbEnv = !!(
+      process.env.DATABASE_URL ||
+      process.env.POSTGRES_URL ||
+      process.env.POSTGRES_PRISMA_URL ||
+      process.env.POSTGRES_HOST
+    );
     return NextResponse.json(
-      { success: false, error: "Layanan sedang tidak tersedia. Coba lagi nanti." },
+      {
+        success: false,
+        error: hasDbEnv
+          ? `Gagal terhubung ke database: ${dbErr?.message || "Koneksi database bermasalah"}`
+          : "Database belum terkonfigurasi di Vercel (DATABASE_URL / POSTGRES_URL tidak ditemukan).",
+      },
       { status: 503 }
     );
   }
