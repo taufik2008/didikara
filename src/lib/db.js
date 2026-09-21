@@ -1,7 +1,7 @@
 import { Pool } from 'pg';
 import bcrypt from 'bcryptjs';
 
-const connectionString = process.env.DATABASE_URL || 'postgresql://postgres:postgres@localhost:5432/ailms_db';
+const connectionString = process.env.DATABASE_URL || process.env.POSTGRES_URL || process.env.POSTGRES_PRISMA_URL || 'postgresql://postgres:postgres@localhost:5432/ailms_db';
 
 const isLocalhost = connectionString.includes('localhost') || connectionString.includes('127.0.0.1');
 

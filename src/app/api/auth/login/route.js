@@ -49,7 +49,8 @@ export async function POST(request) {
       );
     }
     user = result.rows[0];
-  } catch {
+  } catch (dbErr) {
+    console.error("Login DB connection/query error:", dbErr?.message || dbErr);
     // DB tidak tersedia — tolak login dengan pesan aman
     return NextResponse.json(
       { success: false, error: "Layanan sedang tidak tersedia. Coba lagi nanti." },
