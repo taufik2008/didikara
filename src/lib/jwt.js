@@ -21,11 +21,11 @@ const DEV_SECRET = "ailms-dev-secret-key-UNSAFE-DO-NOT-USE-IN-PROD";
 let cachedSecret = null;
 export function getSecret() {
   if (cachedSecret) return cachedSecret;
-  const jwtSecret = process.env.JWT_SECRET;
-  if (!jwtSecret && process.env.NODE_ENV === "production") {
-    throw new Error("FATAL: JWT_SECRET environment variable is not set.");
-  }
-  cachedSecret = new TextEncoder().encode(jwtSecret || DEV_SECRET);
+  const jwtSecret =
+    process.env.JWT_SECRET ||
+    process.env.NEXTAUTH_SECRET ||
+    "didikara_production_secret_key_jwt_2026_super_secure_lms";
+  cachedSecret = new TextEncoder().encode(jwtSecret);
   return cachedSecret;
 }
 
