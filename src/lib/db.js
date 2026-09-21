@@ -6,7 +6,10 @@ function getDbConfig() {
     process.env.DATABASE_URL ||
     process.env.POSTGRES_URL ||
     process.env.POSTGRES_PRISMA_URL ||
-    process.env.POSTGRES_URL_NON_POOLING;
+    process.env.POSTGRES_URL_NON_POOLING ||
+    process.env.didikara_db_DATABASE_URL ||
+    process.env.didikara_db_POSTGRES_URL ||
+    process.env.didikara_db_POSTGRES_PRISMA_URL;
 
   if (connectionString) {
     const isLocal = connectionString.includes('localhost') || connectionString.includes('127.0.0.1');
