@@ -1055,15 +1055,13 @@ export async function initDB() {
 // ─── Seed Functions ───────────────────────────────────────────────────────────
 
 async function seedUsers(client) {
-  const { rows } = await client.query('SELECT COUNT(*) FROM users');
-  if (parseInt(rows[0].count) > 0) return;
-
   for (const u of SEED_USERS) {
     const hashed = await bcrypt.hash(u.password, 10);
     await client.query(
       `INSERT INTO users
          (email, password, fullname, role, role_label, avatar, stats, job_title, organization, status, permissions, competencies)
-       VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12)`,
+       VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12)
+       ON CONFLICT (email) DO NOTHING`,
       [u.email, hashed, u.fullname, u.role, u.roleLabel, u.avatar,
        JSON.stringify(u.stats), u.jobTitle, u.organization, u.status,
        JSON.stringify(u.permissions), JSON.stringify(u.competencies)]
@@ -1072,14 +1070,12 @@ async function seedUsers(client) {
 }
 
 async function seedCourses(client) {
-  const { rows } = await client.query('SELECT COUNT(*) FROM courses');
-  if (parseInt(rows[0].count) > 0) return;
-
   for (const c of SEED_COURSES) {
     await client.query(
       `INSERT INTO courses
          (id, title, category, duration, level, price, price_label, rating, badge, image, description, modules, quiz)
-       VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13)`,
+       VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13)
+       ON CONFLICT (id) DO NOTHING`,
       [c.id, c.title, c.category, c.duration, c.level, c.price, c.priceLabel,
        c.rating, c.badge, c.image || '', c.desc, JSON.stringify(c.modules), JSON.stringify(c.quiz)]
     );
@@ -1087,40 +1083,34 @@ async function seedCourses(client) {
 }
 
 async function seedTransactions(client) {
-  const { rows } = await client.query('SELECT COUNT(*) FROM transactions');
-  if (parseInt(rows[0].count) > 0) return;
   await client.query(
     `INSERT INTO transactions (invoice, username, program, amount, type, status)
-     VALUES ('INV-2026-001', 'Ahmad Hidayat', 'PBJ Level 1', 2500000, 'QRIS', 'Berhasil')`
+     VALUES ('INV-2026-001', 'Ahmad Hidayat', 'PBJ Level 1', 2500000, 'QRIS', 'Berhasil')
+     ON CONFLICT (invoice) DO NOTHING`
   );
 }
 
 async function seedCertificates(client) {
-  const { rows } = await client.query('SELECT COUNT(*) FROM certificates');
-  if (parseInt(rows[0].count) > 0) return;
   await client.query(
     `INSERT INTO certificates (id, course_id, title, date, id_code)
-     VALUES ('AILMS-TX-1002A', 'c1', 'PBJ Level 1 (Pengadaan Barang & Jasa Pemerintah)', '05 Juni 2026', 'AILMS-TX-1002A')`
+     VALUES ('AILMS-TX-1002A', 'c1', 'PBJ Level 1 (Pengadaan Barang & Jasa Pemerintah)', '05 Juni 2026', 'AILMS-TX-1002A')
+     ON CONFLICT (id) DO NOTHING`
   );
 }
 
 async function seedCategories(client) {
-  const { rows } = await client.query('SELECT COUNT(*) FROM categories');
-  if (parseInt(rows[0].count) > 0) return;
   for (const cat of SEED_CATEGORIES) {
     await client.query(
-      'INSERT INTO categories (key, name) VALUES ($1, $2)',
+      'INSERT INTO categories (key, name) VALUES ($1, $2) ON CONFLICT (key) DO NOTHING',
       [cat.key, cat.name]
     );
   }
 }
 
 async function seedLevels(client) {
-  const { rows } = await client.query('SELECT COUNT(*) FROM levels');
-  if (parseInt(rows[0].count) > 0) return;
   for (const lvl of SEED_LEVELS) {
     await client.query(
-      'INSERT INTO levels (key, name) VALUES ($1, $2)',
+      'INSERT INTO levels (key, name) VALUES ($1, $2) ON CONFLICT (key) DO NOTHING',
       [lvl.key, lvl.name]
     );
   }
@@ -1130,9 +1120,6 @@ async function seedLevels(client) {
 
 
 async function seedBadges(client) {
-  const { rows } = await client.query('SELECT COUNT(*) FROM badges');
-  if (parseInt(rows[0].count) > 0) return;
-
   const BADGES = [
     { id: 'first_login',    name: 'Langkah Pertama',   description: 'Pertama kali login',              icon: '👣', color: '#94a3b8', criteria_type: 'login_count',    criteria_value: 1  },
     { id: 'first_course',   name: 'Penjelajah',         description: 'Mendaftar kursus pertama',        icon: '🗺️', color: '#60a5fa', criteria_type: 'enrollment_count', criteria_value: 1 },
@@ -1164,13 +1151,6 @@ export async function initDatabase() {
   initPromise = (async () => {
     const client = await pool.connect();
     try {
-      const { rows } = await client.query("SELECT to_regclass('public.users') AS exists");
-      if (rows[0]?.exists) {
-        global._dbInitialized = true;
-        console.log('✅ Database connected and ready (schema verified)');
-        return;
-      }
-
       await client.query('BEGIN');
       await createTables(client);
       await seedUsers(client);
@@ -1182,9 +1162,9 @@ export async function initDatabase() {
       await seedBadges(client);
       await client.query('COMMIT');
       global._dbInitialized = true;
-      console.log('✅ Database schema initialized successfully');
+      console.log('✅ Database schema and seeds initialized successfully');
     } catch (err) {
-      await client.query('ROLLBACK');
+      await client.query('ROLLBACK').catch(() => {});
       console.error('Database init/seed error:', err);
       throw err;
     } finally {
