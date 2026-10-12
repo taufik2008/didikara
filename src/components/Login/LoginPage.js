@@ -200,10 +200,6 @@ export default function LoginPage() {
               <div className="partner-badge"><Award size={14} /> {brandName}</div>
             </div>
           </div>
-
-          <div style={{ fontSize: "0.75rem", color: "var(--text-muted)" }}>
-            v4.0 Enterprise &amp; Government Ready (React + Next.js App)
-          </div>
         </div>
 
         <div className="login-form-side">
