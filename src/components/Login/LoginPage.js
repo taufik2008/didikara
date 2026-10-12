@@ -178,7 +178,7 @@ export default function LoginPage() {
           </div>
 
           <div>
-            <h1>
+            <h1 style={{ color: "#ffffff" }}>
               Pusat Keunggulan <span className="hero-accent">Sertifikasi</span> &amp; Pelatihan Nasional
             </h1>
             <p>
