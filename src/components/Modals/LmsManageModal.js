@@ -3,6 +3,31 @@ import { useState, useEffect, useCallback } from "react";
 import { X, Book, FileText, Settings, PlusCircle, Trash, Check, UploadCloud, Loader, Database, Users, Star } from "lucide-react";
 import { useApp } from "@/context/AppContext";
 
+// ── Helper untuk membaca response JSON dengan aman tanpa crash JSON.parse HTML ──
+async function parseResponseJson(res) {
+  const text = await res.text();
+  let data;
+  try {
+    data = JSON.parse(text);
+  } catch {
+    if (res.status === 413 || text.includes("413") || text.includes("PAYLOAD_TOO_LARGE") || text.includes("too large")) {
+      throw new Error(
+        "Ukuran file melebihi batas upload langsung server (maksimal 4.5 MB di Vercel). " +
+        "Untuk video materi MP4, masukkan link video langsung (Google Drive, YouTube, Vimeo, atau direct URL MP4) pada kolom URL materi, atau hubungkan Cloud Storage (S3 / R2) di Pengaturan Platform."
+      );
+    }
+    if (res.status === 401 || res.status === 403) {
+      throw new Error("Sesi login Anda telah kedaluwarsa atau tidak berwenang. Silakan refresh dan login ulang.");
+    }
+    if (res.status === 504 || text.includes("Gateway Timeout")) {
+      throw new Error("Waktu unggah habis (Timeout). File terlalu besar untuk koneksi saat ini.");
+    }
+    const cleanText = text.replace(/<[^>]+>/g, " ").trim().slice(0, 140);
+    throw new Error(`Server merespons error (HTTP ${res.status}): ${cleanText || "Terjadi kesalahan internal"}`);
+  }
+  return data;
+}
+
 // ── Upload file materi ke S3 (atau mock) ──────────────────────────────────────
 async function uploadMaterialFile(file, courseId, onProgress) {
   // 1. Minta presigned URL dari server
@@ -11,7 +36,7 @@ async function uploadMaterialFile(file, courseId, onProgress) {
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ filename: file.name, contentType: file.type, courseId }),
   });
-  const data = await res.json();
+  const data = await parseResponseJson(res);
   if (!data.success) throw new Error(data.error || "Gagal mendapat URL upload");
 
   if (data.mockMode) {
@@ -639,7 +664,9 @@ export default function LmsManageModal() {
     setUploadMsg("");
     try {
       const ext  = file.name.split(".").pop().toLowerCase();
-      const type = ["mp4","webm","mov"].includes(ext) ? "video" : "pptx";
+      const type = ["mp4","webm","mov","mkv"].includes(ext) ? "video" : "pptx";
+      const isVideo = type === "video";
+      const fileSizeMB = file.size / (1024 * 1024);
       const courseId = selectedLmsCourse.id;
 
       // 1. Deteksi strategi upload
@@ -647,20 +674,36 @@ export default function LmsManageModal() {
       try {
         const stratRes = await fetch("/api/upload/presigned");
         if (stratRes.ok) {
-          stratData = await stratRes.json();
+          stratData = await parseResponseJson(stratRes);
         }
       } catch {
         stratData = { strategy: "local" };
       }
 
+      // 2. Proteksi ukuran berkas untuk Vercel / serverless (batas payload Vercel 4.5 MB)
+      if (stratData?.strategy === "none" || (stratData?.strategy === "local" && (stratData?.isVercel || fileSizeMB > 4.5))) {
+        if (isVideo) {
+          throw new Error(
+            `File video "${file.name}" (${fileSizeMB.toFixed(1)} MB) melebihi batas upload langsung serverless (${fileSizeMB > 4.5 ? "maksimal 4.5 MB di Vercel" : "penyimpanan lokal tidak tersedia di cloud"}).\n\n` +
+            `💡 Solusi Praktis: Unggah video Anda ke Google Drive / YouTube / Vimeo, lalu tempelkan link URL tersebut ke kolom URL materi di samping.`
+          );
+        }
+      }
+
       if (stratData?.strategy === "drive") {
         // ── Google Drive ──────────────────────────────────────
+        if (fileSizeMB > 4.5 && stratData?.isVercel) {
+          throw new Error(
+            `File video "${file.name}" (${fileSizeMB.toFixed(1)} MB) melebihi batas upload serverless Vercel (4.5 MB).\n\n` +
+            `💡 Silakan unggah video langsung ke Google Drive Anda, lalu tempelkan link share Google Drive tersebut ke kolom URL materi.`
+          );
+        }
         setUploadMsg("⏳ Mengupload ke Google Drive...");
         const formData = new FormData();
         formData.append("file", file);
         formData.append("courseId", courseId);
         const uploadRes  = await fetch("/api/upload/drive", { method: "POST", body: formData });
-        const uploadData = await uploadRes.json();
+        const uploadData = await parseResponseJson(uploadRes);
         if (!uploadData.success) throw new Error(uploadData.error || "Upload Google Drive gagal");
         handleLmsLessonChange(modIdx, lessonIdx, "url",  uploadData.url);
         handleLmsLessonChange(modIdx, lessonIdx, "type", type);
@@ -672,17 +715,24 @@ export default function LmsManageModal() {
         const s3Res  = await fetch("/api/upload/presigned", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ filename: file.name, contentType: file.type, courseId }),
+          body: JSON.stringify({ filename: file.name, contentType: file.type || (isVideo ? "video/mp4" : "application/pdf"), courseId }),
         });
-        const s3Data = await s3Res.json();
+        const s3Data = await parseResponseJson(s3Res);
         if (!s3Data.success || !s3Data.url) throw new Error(s3Data.error || "Gagal membuat URL upload S3");
-        await fetch(s3Data.url, { method: "PUT", body: file, headers: { "Content-Type": file.type } });
+        const putRes = await fetch(s3Data.url, { method: "PUT", body: file, headers: { "Content-Type": file.type || "application/octet-stream" } });
+        if (!putRes.ok) throw new Error(`Gagal mengunggah file ke S3 (HTTP ${putRes.status})`);
         handleLmsLessonChange(modIdx, lessonIdx, "url",  s3Data.finalUrl);
         handleLmsLessonChange(modIdx, lessonIdx, "type", type);
         setUploadMsg(`✓ ${file.name} berhasil diupload ke S3`);
 
       } else {
         // ── Local / Server Upload ────────────────────────
+        if (fileSizeMB > 4.5) {
+          throw new Error(
+            `File video "${file.name}" (${fileSizeMB.toFixed(1)} MB) melebihi batas upload langsung server (maksimal 4.5 MB).\n\n` +
+            `💡 Solusi Praktis: Masukkan link video langsung (Google Drive, YouTube, Vimeo, atau direct URL MP4) pada kolom URL materi di samping.`
+          );
+        }
         setUploadMsg("⏳ Mengunggah file ke server lokal...");
         const uploadRes = await fetch("/api/upload/local", {
           method: "POST",
@@ -693,7 +743,7 @@ export default function LmsManageModal() {
           },
           body: file,
         });
-        const uploadData = await uploadRes.json();
+        const uploadData = await parseResponseJson(uploadRes);
         if (uploadData.success && uploadData.url) {
           handleLmsLessonChange(modIdx, lessonIdx, "url",  uploadData.url);
           handleLmsLessonChange(modIdx, lessonIdx, "type", type);
@@ -750,7 +800,8 @@ export default function LmsManageModal() {
             </div>
 
             {uploadMsg && (
-              <div style={{ fontSize: "0.78rem", padding: "8px 14px", borderRadius: 8, marginBottom: 14,
+              <div style={{ fontSize: "0.82rem", padding: "10px 14px", borderRadius: 8, marginBottom: 14,
+                whiteSpace: "pre-line", lineHeight: 1.55,
                 background: uploadMsg.startsWith("✓") ? "rgba(16,185,129,0.12)" : uploadMsg.startsWith("⚠") ? "rgba(245,158,11,0.12)" : "rgba(239,68,68,0.12)",
                 border: `1px solid ${uploadMsg.startsWith("✓") ? "var(--success)" : uploadMsg.startsWith("⚠") ? "var(--warning)" : "var(--danger)"}`,
                 color: uploadMsg.startsWith("✓") ? "var(--success)" : uploadMsg.startsWith("⚠") ? "var(--warning)" : "var(--danger)", fontWeight: 600 }}>

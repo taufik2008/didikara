@@ -18,6 +18,16 @@ export async function POST(request) {
       );
     }
 
+    if (process.env.VERCEL) {
+      return NextResponse.json(
+        {
+          success: false,
+          error: "Penyimpanan berkas lokal tidak didukung di lingkungan Vercel Serverless (filesystem read-only). Silakan gunakan tautan URL video langsung (Google Drive, YouTube, Vimeo, atau direct MP4 URL) pada kolom URL materi, atau hubungkan Cloud Storage (S3 / Cloudflare R2) di Pengaturan Platform.",
+        },
+        { status: 400 }
+      );
+    }
+
     const uploadsDir = path.join(process.cwd(), "public", "uploads");
     await mkdir(uploadsDir, { recursive: true });
 

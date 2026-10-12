@@ -754,7 +754,13 @@ export function AppProvider({ children }) {
             courseId: activeCourse.id, scope: "assignment",
           }),
         });
-        const pres = await presRes.json();
+        const presText = await presRes.text();
+        let pres;
+        try {
+          pres = JSON.parse(presText);
+        } catch {
+          throw new Error("Layanan penyimpanan belum terkonfigurasi atau merespons tidak valid. Silakan kumpulkan lewat tautan tugas.");
+        }
         if (!pres.success) throw new Error(pres.error || "Gagal menyiapkan unggahan");
 
         if (pres.mockMode) {
@@ -774,7 +780,13 @@ export function AppProvider({ children }) {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ courseId: activeCourse.id, lessonIndex, fileUrl, fileName, note }),
       });
-      const data = await res.json();
+      const resText = await res.text();
+      let data;
+      try {
+        data = JSON.parse(resText);
+      } catch {
+        throw new Error("Gagal memproses respon penyimpanan pengumpulan.");
+      }
       if (!res.ok || data.error) throw new Error(data.error || "Gagal menyimpan pengumpulan");
 
       setUploadStatus("Success");

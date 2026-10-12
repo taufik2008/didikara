@@ -46,7 +46,13 @@ export async function GET(request) {
   if (process.env.S3_BUCKET_NAME && process.env.AWS_ACCESS_KEY_ID)
     return NextResponse.json({ success: true, strategy: "s3" });
 
-  return NextResponse.json({ success: true, strategy: "local", uploadUrl: "/api/upload/local" });
+  const isVercel = Boolean(process.env.VERCEL);
+  return NextResponse.json({
+    success: true,
+    strategy: isVercel ? "none" : "local",
+    isVercel,
+    uploadUrl: isVercel ? null : "/api/upload/local"
+  });
 }
 
 const bodySchema = z.object({
