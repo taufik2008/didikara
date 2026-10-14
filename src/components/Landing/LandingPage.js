@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useApp } from "@/context/AppContext";
@@ -41,9 +41,80 @@ import {
   Tv
 } from "lucide-react";
 
-export default function LandingPage() {
+export default function LandingPage({ initialCourses, initialCategories, initialLevels }) {
   const router = useRouter();
-  const { courses, categories, currentUser, theme, toggleTheme, platformSettings } = useApp();
+  const { courses: appCourses, categories: appCategories, levels: appLevels, currentUser, theme, toggleTheme, platformSettings } = useApp();
+
+  const [courses, setCourses] = useState(() => {
+    if (initialCourses && initialCourses.length > 0) return initialCourses;
+    if (appCourses && appCourses.length > 0) return appCourses;
+    return [];
+  });
+
+  // Sinkronkan selalu katalog live dari /api/catalog
+  useEffect(() => {
+    fetch("/api/catalog?limit=100", { cache: "no-store" })
+      .then((r) => r.json())
+      .then((data) => {
+        if (data.success && Array.isArray(data.courses) && data.courses.length > 0) {
+          setCourses(data.courses);
+        }
+      })
+      .catch(() => {});
+  }, []);
+
+  // Update jika appCourses berubah di context (misal saat admin membuat/mengedit kursus)
+  useEffect(() => {
+    if (appCourses && appCourses.length > 0) {
+      setCourses((prev) => {
+        if (!prev || prev.length === 0) return appCourses;
+        const map = new Map(appCourses.map((c) => [c.id, c]));
+        prev.forEach((c) => {
+          if (!map.has(c.id)) map.set(c.id, c);
+        });
+        return Array.from(map.values());
+      });
+    }
+  }, [appCourses]);
+
+  const distinctCategories = useMemo(() => {
+    const list = [...(initialCategories || appCategories || [])];
+    (courses || []).forEach((c) => {
+      if (
+        c.category &&
+        !list.some(
+          (x) =>
+            x.key?.toLowerCase() === c.category.toLowerCase() ||
+            x.name?.toLowerCase() === c.category.toLowerCase()
+        )
+      ) {
+        list.push({ key: c.category, name: c.category });
+      }
+    });
+    return list;
+  }, [initialCategories, appCategories, courses]);
+
+  const distinctLevels = useMemo(() => {
+    const list = [...(initialLevels || appLevels || [
+      { key: "Dasar", name: "Dasar" },
+      { key: "Menengah", name: "Menengah" },
+      { key: "Lanjutan", name: "Lanjutan" },
+      { key: "Eksekutif", name: "Eksekutif" }
+    ])];
+    (courses || []).forEach((c) => {
+      if (
+        c.level &&
+        !list.some(
+          (x) =>
+            x.key?.toLowerCase() === c.level.toLowerCase() ||
+            x.name?.toLowerCase() === c.level.toLowerCase()
+        )
+      ) {
+        list.push({ key: c.level, name: c.level });
+      }
+    });
+    return list;
+  }, [initialLevels, appLevels, courses]);
 
   const brandName = (platformSettings?.platform_name && !platformSettings.platform_name.includes("SDI") && platformSettings.platform_name !== "AI LMS")
     ? platformSettings.platform_name
@@ -79,11 +150,25 @@ export default function LandingPage() {
 
       const matchCategory =
         selectedCategory === "all" ||
-        course.category?.toLowerCase() === selectedCategory.toLowerCase();
+        course.category?.toLowerCase() === selectedCategory.toLowerCase() ||
+        distinctCategories.some(
+          (c) =>
+            (c.key?.toLowerCase() === selectedCategory.toLowerCase() ||
+              c.name?.toLowerCase() === selectedCategory.toLowerCase()) &&
+            (c.key?.toLowerCase() === course.category?.toLowerCase() ||
+              c.name?.toLowerCase() === course.category?.toLowerCase())
+        );
 
       const matchLevel =
         selectedLevel === "all" ||
-        course.level?.toLowerCase() === selectedLevel.toLowerCase();
+        course.level?.toLowerCase() === selectedLevel.toLowerCase() ||
+        distinctLevels.some(
+          (l) =>
+            (l.key?.toLowerCase() === selectedLevel.toLowerCase() ||
+              l.name?.toLowerCase() === selectedLevel.toLowerCase()) &&
+            (l.key?.toLowerCase() === course.level?.toLowerCase() ||
+              l.name?.toLowerCase() === course.level?.toLowerCase())
+        );
 
       const matchQuery =
         !searchQuery ||
@@ -1077,10 +1162,11 @@ export default function LandingPage() {
                   }}
                 >
                   <option value="all">Semua Topik</option>
-                  <option value="Procurement">Pengadaan Barang/Jasa (PBJ)</option>
-                  <option value="AI">Kecerdasan Buatan (AI)</option>
-                  <option value="Tech">Teknologi Informasi & Data</option>
-                  <option value="Leadership">Leadership & Management</option>
+                  {distinctCategories.map((cat) => (
+                    <option key={cat.key || cat.name} value={cat.key || cat.name}>
+                      {cat.name || cat.key}
+                    </option>
+                  ))}
                 </select>
               </div>
 
@@ -1101,9 +1187,11 @@ export default function LandingPage() {
                   }}
                 >
                   <option value="all">Semua Level</option>
-                  <option value="dasar">Dasar</option>
-                  <option value="menengah">Menengah</option>
-                  <option value="eksekutif">Eksekutif</option>
+                  {distinctLevels.map((lvl) => (
+                    <option key={lvl.key || lvl.name} value={lvl.key || lvl.name}>
+                      {lvl.name || lvl.key}
+                    </option>
+                  ))}
                 </select>
               </div>
             </div>

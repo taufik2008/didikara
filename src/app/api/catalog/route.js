@@ -2,6 +2,9 @@
  * GET /api/catalog?q=search&category=x&level=x&maxPrice=x&sort=rating
  * Public endpoint — tidak perlu login
  */
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
+
 import { NextResponse } from "next/server";
 import { query } from "@/lib/db";
 
@@ -132,7 +135,10 @@ export async function GET(request) {
     const { rows: categories } = await query("SELECT key, name FROM categories ORDER BY name");
     const { rows: levels }     = await query("SELECT key, name FROM levels ORDER BY name");
 
-    return NextResponse.json({ success: true, courses, total: parseInt(count), page, limit, categories, levels });
+    return NextResponse.json(
+      { success: true, courses, total: parseInt(count), page, limit, categories, levels },
+      { headers: { "Cache-Control": "no-store, no-cache, must-revalidate, max-age=0" } }
+    );
   } catch (err) {
     return NextResponse.json({ success: false, error: err.message }, { status: 500 });
   }
