@@ -73,10 +73,15 @@ export default function DashboardPage() {
   const gaps = activeSkills.map((skill, idx) => ({ name: skill.name, idx, gap: (targetSkills[idx] ?? 80) - (currentSkills[idx] ?? 50), currentVal: currentSkills[idx] ?? 50, targetVal: targetSkills[idx] ?? 80 }));
   const sortedGaps = [...gaps].sort((a, b) => b.gap - a.gap);
   const primaryGap = sortedGaps[0] || { name: 'Leadership', gap: 0 };
-  const skillToCourseId = { Leadership: 'c4', Procurement: 'c1', 'Data Analytics': 'c3', 'AI Literacy': 'c2', Finance: 'c5', Management: 'c6' };
-  const recommendedCourseId = skillToCourseId[primaryGap.name] || courses[0]?.id || 'c1';
-  const recommendedCourse = courses.find(c => c.id === recommendedCourseId) || courses[0];
-  const isEnrolled = enrolledCourses.includes(recommendedCourseId);
+  const findCourseForSkill = (skillName) => {
+    return courses.find(c =>
+      c.category?.toLowerCase() === skillName?.toLowerCase() ||
+      c.title?.toLowerCase().includes(skillName?.toLowerCase())
+    );
+  };
+  const recommendedCourse = findCourseForSkill(primaryGap.name) || courses[0] || null;
+  const recommendedCourseId = recommendedCourse?.id;
+  const isEnrolled = recommendedCourseId ? enrolledCourses.includes(recommendedCourseId) : false;
 
   return (
     <main className="page-view active">
@@ -164,7 +169,7 @@ export default function DashboardPage() {
               <div style={{ fontSize: "0.75rem", fontWeight: 600, color: "var(--text-secondary)", marginBottom: 8 }}>Prioritas Pengembangan Karir:</div>
               <div className="learning-path-timeline">
                 {sortedGaps.slice(0, 3).map((item, idx) => {
-                  const courseObj = courses.find(c => c.id === skillToCourseId[item.name]);
+                  const courseObj = findCourseForSkill(item.name);
                   return (
                     <div key={idx} className="timeline-step" style={{ opacity: 1 - idx * 0.15, marginBottom: 8 }}>
                       <div className="timeline-title" style={{ display: "flex", justifyContent: "space-between", fontSize: "0.75rem", fontWeight: 600 }}>

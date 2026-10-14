@@ -5,15 +5,32 @@ import { useApp } from "@/context/AppContext";
 
 export default function MarketplacePage() {
   const {
-    courses, categories, enrolledCourses, filterCategory, setFilterCategory,
+    courses, categories, levels, enrolledCourses, filterCategory, setFilterCategory,
     handleOpenClass, handleEnrollCourse, checkPrerequisite,
   } = useApp();
+
+  const distinctLevels = useMemo(() => {
+    const list = [...(levels || [])];
+    (courses || []).forEach((c) => {
+      if (
+        c.level &&
+        !list.some(
+          (x) =>
+            x.key?.toLowerCase() === c.level.toLowerCase() ||
+            x.name?.toLowerCase() === c.level.toLowerCase()
+        )
+      ) {
+        list.push({ key: c.level, name: c.level });
+      }
+    });
+    return list;
+  }, [levels, courses]);
 
   const [searchQuery, setSearchQuery] = useState("");
   const [activeFilterTab, setActiveFilterTab] = useState("category"); // "category" | "instructor"
   const [selectedLearningType, setSelectedLearningType] = useState("all"); // "all" | "self_learning" | "online" | "offline"
   const [selectedInstructor, setSelectedInstructor] = useState("all");
-  const [selectedLevel, setSelectedLevel] = useState("all"); // "all" | "Pemula" | "Menengah" | "Mahir"
+  const [selectedLevel, setSelectedLevel] = useState("all");
   const [selectedPriceRange, setSelectedPriceRange] = useState("all"); // "all" | "free" | "under500" | "above500"
   const [selectedMinRating, setSelectedMinRating] = useState("all"); // "all" | "4.5"
   const [showMembershipModal, setShowMembershipModal] = useState(false);
@@ -204,7 +221,11 @@ export default function MarketplacePage() {
       const matchInstructor = selectedInstructor === "all" || (course.instructor && course.instructor.name === selectedInstructor);
       
       const matchLevel = selectedLevel === "all" || 
-        (course.level && course.level.toLowerCase().includes(selectedLevel.toLowerCase()));
+        (course.level && course.level.toLowerCase() === selectedLevel.toLowerCase()) ||
+        distinctLevels.some(l => 
+          (l.key?.toLowerCase() === selectedLevel.toLowerCase() || l.name?.toLowerCase() === selectedLevel.toLowerCase()) &&
+          (l.key?.toLowerCase() === course.level?.toLowerCase() || l.name?.toLowerCase() === course.level?.toLowerCase())
+        );
 
       const rawPrice = Number(course.price) || 0;
       const matchPrice = selectedPriceRange === "all" ? true :
@@ -474,9 +495,11 @@ export default function MarketplacePage() {
               cursor: "pointer"
             }}>
             <option value="all">Semua Tingkat</option>
-            <option value="Pemula">Pemula</option>
-            <option value="Menengah">Menengah</option>
-            <option value="Mahir">Mahir</option>
+            {distinctLevels.map(lvl => (
+              <option key={lvl.key || lvl.name} value={lvl.key || lvl.name}>
+                {lvl.name || lvl.key}
+              </option>
+            ))}
           </select>
         </div>
 

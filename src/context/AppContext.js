@@ -6,238 +6,6 @@ import { loadAppData, syncEntity, loadEnrollments } from "@/services/courseServi
 import { startExam, submitExam, getExamHistory } from "@/services/examService";
 import { loadProgress, saveProgress } from "@/services/progressService";
 
-const initialUsers = [
-  { email: "peserta@ailms.id", fullname: "Ahmad Hidayat", role: "student", roleLabel: "Peserta Mandiri", avatar: "AH", stats: { hours: 14.5, courses: 1, certs: 1, competency: "B1 (Intermediate)" }, jobTitle: "Staff Procurement", organization: "Mandiri", status: "active", permissions: ["view_dashboard", "access_lms"], competencies: { current: [65, 70, 50, 45, 60, 40], target: [80, 85, 75, 70, 80, 75] } },
-  { email: "hr@company.com", fullname: "Siti Rahmawati", role: "corporate", roleLabel: "HR Manager - PT Bank Mandiri", avatar: "SR", stats: { hours: 450, courses: 8, certs: 32, competency: "Enterprise Account" }, jobTitle: "Human Capital Director", organization: "PT Bank Mandiri", status: "active", permissions: ["view_dashboard", "access_lms", "access_ai_portal"], competencies: { current: [75, 80, 60, 70, 65, 80], target: [90, 90, 80, 85, 80, 90] } },
-  { email: "gov@kemenkeu.go.id", fullname: "Drs. Bambang Wijaya, M.Si", role: "government", roleLabel: "Kepala Biro SDM - Kemenkeu", avatar: "BW", stats: { hours: 1250, courses: 15, certs: 142, competency: "Echelon II Portal" }, jobTitle: "Biro Kepegawaian", organization: "Kementerian Keuangan", status: "active", permissions: ["view_dashboard", "access_lms", "access_ai_portal"], competencies: { current: [80, 75, 70, 85, 75, 60], target: [95, 90, 85, 95, 90, 85] } },
-  { email: "admin@digidaya.tech", fullname: "Super Administrator", role: "admin", roleLabel: "Platform Admin & Auditor", avatar: "SA", stats: { hours: 0, courses: 10, certs: 250, competency: "Superuser" }, jobTitle: "System Admin", organization: "PT. SDI", status: "active", permissions: ["view_dashboard", "access_lms", "access_ai_portal", "manage_master_data"], competencies: { current: [80, 80, 80, 80, 80, 80], target: [90, 90, 90, 90, 90, 90] } }
-];
-
-const initialCourses = [
-  {
-    id: "c1",
-    title: "PBJ Level 1 (Pengadaan Barang & Jasa Pemerintah) - Workshop Tatap Muka",
-    category: "Procurement",
-    learningType: "offline",
-    typeLabel: "Offline (Tatap Muka)",
-    duration: "32 Jam (4 Hari)",
-    level: "Dasar",
-    price: 2500000,
-    priceLabel: "Rp 2,500,000",
-    rating: "4.9",
-    badge: "BNSP / LKPP Ready",
-    venue: "Hotel Grand Sahid Jaya, Jakarta Pusat",
-    schedule: "15 - 18 Oktober 2026 (08:30 - 16:30 WIB)",
-    quota: "Sisa 6 Kursi",
-    image: "https://images.unsplash.com/photo-1450133064473-71024230f91b?w=600&auto=format&fit=crop&q=80",
-    instructor: { name: "Dr. Ir. Budi Santoso, M.Si", title: "Ahli Pengadaan Utama & Asesor BNSP", org: "LKPP RI", avatar: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=120&auto=format&fit=crop&q=80" },
-    desc: "Pelatihan tatap muka intensif persiapan ujian sertifikasi PBJ Tingkat Dasar dengan simulasi kasus nyata, modul cetak, konsumsi, dan uji kompetensi asesor BNSP langsung di lokasi.",
-    features: ["Workshop Tatap Muka 4 Hari", "Modul Cetak & Seminar Kit Eksklusif", "Simulasi Studi Kasus Langsung", "Uji Kompetensi BNSP di Tempat", "Sertifikat Fisik & Digital"],
-    modules: [
-      {
-        title: "Modul 1: Ketentuan Umum & Pengantar PBJ",
-        lessons: [
-          { title: "1.1 Latar Belakang & Definisi PBJ Pemerintah", type: "video", url: "https://www.youtube.com/watch?v=kYJv_t7H6_I" },
-          { title: "1.2 Ruang Lingkup & Tujuan Pengadaan", type: "video", url: "https://www.youtube.com/watch?v=kYJv_t7H6_I" },
-          { title: "1.3 Etika & Prinsip Dasar Pengadaan", type: "video", url: "https://www.youtube.com/watch?v=kYJv_t7H6_I" },
-          { title: "1.4 Slide Presentasi: Ringkasan Regulasi PBJ (PowerPoint)", type: "pptx", url: "https://docs.google.com/presentation/d/1gKk9E7z3L0Bq5m9sY4vX8w/pub" }
-        ]
-      },
-      {
-        title: "Modul 2: Perencanaan Pengadaan",
-        lessons: [
-          { title: "2.1 Identifikasi Kebutuhan & RUP", type: "video", url: "https://www.youtube.com/watch?v=kYJv_t7H6_I" },
-          { title: "2.2 Penyusunan Anggaran & Pemaketan", type: "video", url: "https://www.youtube.com/watch?v=kYJv_t7H6_I" }
-        ]
-      },
-      {
-        title: "Modul 3: Persiapan & Pelaksanaan Kontrak",
-        lessons: [
-          { title: "3.1 Penyusunan HPS & Dokumen Pengadaan", type: "video", url: "https://www.youtube.com/watch?v=kYJv_t7H6_I" },
-          { title: "3.2 Pengawasan & Serah Terima Hasil Pekerjaan", type: "video", url: "https://www.youtube.com/watch?v=kYJv_t7H6_I" }
-        ]
-      }
-    ],
-    quiz: [{ q: "Siapakah yang menetapkan Rencana Umum Pengadaan (RUP)?", options: ["Pengguna Anggaran (PA) / Kuasa Pengguna Anggaran (KPA)", "Pejabat Pembuat Komitmen (PPK)", "Pokja Pemilihan", "Pejabat Pengadaan"], correct: 0 }, { q: "Berikut ini yang merupakan prinsip pengadaan barang/jasa pemerintah adalah...", options: ["Rahasia, Subyektif, Menguntungkan Sepihak", "Efisien, Efektif, Transparan, Terbuka, Bersaing, Adil, Akuntabel", "Cepat, Murah, Tanpa Dokumen, Langsung Beli", "Monopoli, Tertutup, Fleksibel Berlebihan"], correct: 1 }, { q: "Metode pemilihan Penyedia Barang/Pekerjaan Konstruksi/Jasa Lainnya yang dilakukan untuk barang/jasa yang bernilai di atas Rp 200 juta secara umum adalah...", options: ["Pengadaan Langsung", "Penunjukan Langsung", "Tender", "E-Purchasing"], correct: 2 }]
-  },
-  {
-    id: "c2",
-    title: "AI Strategy & Governance for Public Sector - Live Webinar Series",
-    category: "AI",
-    learningType: "online",
-    typeLabel: "Online (Live Webinar)",
-    duration: "18 Jam (6 Sesi Live)",
-    level: "Eksekutif",
-    price: 1500000,
-    priceLabel: "Rp 1,500,000",
-    rating: "4.9",
-    badge: "AI LMS Executive",
-    venue: "Live Zoom Interactive & AI Learning Portal",
-    schedule: "Setiap Selasa & Kamis (19:00 - 21:30 WIB)",
-    quota: "Sisa 14 Slot",
-    image: "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=600&auto=format&fit=crop&q=80",
-    instructor: { name: "Prof. Rian Gunawan, Ph.D", title: "AI Ethics & Public Policy Advisor", org: "Center for Digital Government", avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=120&auto=format&fit=crop&q=80" },
-    desc: "Kelas online interaktif dengan bimbingan langsung dari pakar AI kebijakan publik, diskusi studi kasus live, review tugas kebijakan AI instansi, dan rekaman sesi penuh.",
-    features: ["6 Sesi Live Webinar Interaktif (Zoom)", "Tanya Jawab & Bimbingan Langsung", "Review Tugas Kebijakan AI Instansi", "Akses Rekaman Video & Bahan Ajar", "Sertifikat Eksekutif Terverifikasi QR"],
-    modules: [
-      {
-        title: "Modul 1: Landasan Kecerdasan Buatan (AI Foundation)",
-        lessons: [
-          { title: "1.1 Pengantar AI & Transformasi Sektor Publik", type: "video", url: "https://www.youtube.com/watch?v=aircAruvnKk" },
-          { title: "1.2 Machine Learning & Generative AI", type: "video", url: "https://www.youtube.com/watch?v=G2fqAlgmoPo" },
-          { title: "1.3 Dampak AI terhadap Layanan Masyarakat", type: "video", url: "https://www.youtube.com/watch?v=aircAruvnKk" },
-          { title: "1.4 Slide PPT: Framework Tata Kelola AI Sektor Publik", type: "pptx", url: "https://docs.google.com/presentation/d/1gKk9E7z3L0Bq5m9sY4vX8w/pub" }
-        ]
-      },
-      {
-        title: "Modul 2: Tata Kelola AI & Regulasi",
-        lessons: [
-          { title: "2.1 Tata Kelola AI Sektor Publik", type: "video", url: "https://www.youtube.com/watch?v=G2fqAlgmoPo" },
-          { title: "2.2 Analisis Kebijakan Berbasis AI", type: "video", url: "https://www.youtube.com/watch?v=aircAruvnKk" }
-        ]
-      }
-    ],
-    quiz: [{ q: "Apa fokus utama dari AI Governance di sektor publik?", options: ["Mencari keuntungan komersial tertinggi dari AI", "Memastikan kepatuhan etika, keamanan, privasi data, dan keadilan dalam pengambilan keputusan AI", "Menggantikan seluruh staf pemerintahan dengan agen AI", "Menghapus regulasi hukum teknologi"], correct: 1 }]
-  },
-  {
-    id: "c3",
-    title: "Dasar Analisis Data & SQL untuk Pengambilan Keputusan",
-    category: "Tech",
-    learningType: "self_learning",
-    typeLabel: "Self-Learning (Belajar Mandiri)",
-    duration: "25 Jam",
-    level: "Dasar",
-    price: 0,
-    priceLabel: "Gratis (Free)",
-    rating: "4.8",
-    badge: "Open Courseware",
-    venue: "Akses Belajar Mandiri On-Demand 24/7",
-    schedule: "Fleksibel Kapan Saja (Self-Paced)",
-    quota: "Tanpa Batas Kuota",
-    image: "https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=600&auto=format&fit=crop&q=80",
-    instructor: { name: "Siti Rahmawati, M.Kom", title: "Lead Data Architect & BI Specialist", org: "TechGov Analytics", avatar: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=120&auto=format&fit=crop&q=80" },
-    desc: "Materi belajar mandiri gratis tanpa biaya untuk memahami fondasi analisis data, logika database SQL, dan pembuatan dashboard visualisasi interaktif.",
-    features: ["100% Gratis Tanpa Syarat", "Akses Video On-Demand 24/7", "Slide Materi PPT & Modul PDF", "Kuis Evaluasi Pemahaman Otomatis", "Sertifikat Kelulusan Digital Standar"],
-    modules: [
-      {
-        title: "Modul 1: Fundamental Data Analytics & SQL",
-        lessons: [
-          { title: "1.1 Pengantar Analisis Data & Visualisasi BI", type: "video", url: "https://www.youtube.com/watch?v=8j0UDiN7my4" },
-          { title: "1.2 Logika SQL & Data Modeling Praktis", type: "video", url: "https://www.youtube.com/watch?v=HXV3zeRR3h4" },
-          { title: "1.3 Slide PPT: Arsitektur Data Warehouse & BI Pipeline", type: "pptx", url: "https://docs.google.com/presentation/d/1gKk9E7z3L0Bq5m9sY4vX8w/pub" }
-        ]
-      }
-    ],
-    quiz: [{ q: "Fungsi agregat SQL mana yang digunakan untuk mencari rata-rata nilai kolom?", options: ["AVG", "SUM", "MEAN", "COUNT"], correct: 0 }]
-  },
-  {
-    id: "c4",
-    title: "Executive Leadership & Strategic Change Management - Offline Bootcamp",
-    category: "Leadership",
-    learningType: "offline",
-    typeLabel: "Offline (Tatap Muka)",
-    duration: "24 Jam (3 Hari)",
-    level: "Eksekutif",
-    price: 4800000,
-    priceLabel: "Rp 4,800,000",
-    rating: "4.9",
-    badge: "Top Management",
-    venue: "Hotel Sheraton Surabaya / Jakarta Room",
-    schedule: "24 - 26 November 2026 (09:00 - 17:00 WIB)",
-    quota: "Sisa 4 Kursi",
-    image: "https://images.unsplash.com/photo-1519389950473-47ba0277781c?w=600&auto=format&fit=crop&q=80",
-    instructor: { name: "Drs. Hendra Kusuma, MM", title: "Executive Leadership Coach", org: "Lembaga Administrasi Negara", avatar: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=120&auto=format&fit=crop&q=80" },
-    desc: "Bootcamp kepemimpinan tatap muka eksklusif bagi pimpinan organisasi untuk merumuskan manajemen perubahan strategis, simulasi kepemimpinan krisis, dan coaching 1-on-1.",
-    features: ["Workshop Tatap Muka 3 Hari di Hotel Bintang 5", "Executive Coaching 1-on-1", "Simulasi Kepemimpinan & Manajemen Krisis", "Makan Siang & Coffee Break Premium", "Sertifikat Eksekutif LAN / Asosiasi"],
-    modules: [
-      {
-        title: "Modul 1: Kepemimpinan Transformatif",
-        lessons: [
-          { title: "1.1 Menggerakkan Tim dan Visi Organisasi", type: "video", url: "https://www.youtube.com/watch?v=vlpKyLklDDY" },
-          { title: "1.2 Komunikasi Efektif dan Negosiasi Konflik", type: "video", url: "https://www.youtube.com/watch?v=HAnw168huqA" }
-        ]
-      }
-    ],
-    quiz: [{ q: "Apa kunci utama keberhasilan manajemen perubahan dalam organisasi?", options: ["Komunikasi transparan dan keterlibatan seluruh pemangku kepentingan", "Mengabaikan masukan dari karyawan", "Melakukan restrukturisasi tanpa pemberitahuan", "Menerapkan sanksi berat secara sepihak"], correct: 0 }]
-  },
-  {
-    id: "c5",
-    title: "Public Finance & Government Budgeting Essentials - Live Masterclass",
-    category: "Procurement",
-    learningType: "online",
-    typeLabel: "Online (Live Webinar)",
-    duration: "20 Jam (5 Sesi Live)",
-    level: "Menengah",
-    price: 1250000,
-    priceLabel: "Rp 1,250,000",
-    rating: "4.8",
-    badge: "Kemenkeu Standard",
-    venue: "Live Zoom Webinar & LMS Cloud",
-    schedule: "Setiap Rabu & Jumat (19:30 - 21:30 WIB)",
-    quota: "Sisa 18 Slot",
-    image: "https://images.unsplash.com/photo-1554224155-8d04cb21cd6c?w=600&auto=format&fit=crop&q=80",
-    instructor: { name: "Dra. Nurul Hidayati, Ak., CA", title: "Senior Public Financial Analyst", org: "Kementerian Keuangan RI", avatar: "https://images.unsplash.com/photo-1580489944761-15a19d654956?w=120&auto=format&fit=crop&q=80" },
-    desc: "Bedah mendalam sistem pengelolaan keuangan negara, siklus APBN/APBD, mekanisme perbendaharaan, serta audit kepatuhan melalui sesi tatap muka online interaktif.",
-    features: ["5 Sesi Live Webinar Interaktif", "Studi Kasus Penyusunan DIPA & RKA-KL", "Kompilasi Regulasi Keuangan Negara", "Tanya Jawab Langsung Asesor Kemenkeu", "Sertifikat Kelulusan Terakreditasi"],
-    modules: [
-      {
-        title: "Modul 1: Siklus Anggaran Negara",
-        lessons: [
-          { title: "1.1 Tahapan Perencanaan dan Penganggaran", type: "video", url: "https://www.youtube.com/watch?v=8j0UDiN7my4" },
-          { title: "1.2 Pelaksanaan dan Pengawasan Anggaran", type: "video", url: "https://www.youtube.com/watch?v=8j0UDiN7my4" }
-        ]
-      }
-    ],
-    quiz: [{ q: "Dokumen apa yang memuat rencana kerja dan anggaran Kementerian/Lembaga?", options: ["DIPA (Daftar Isian Pelaksanaan Anggaran)", "RKA-KL", "APBN", "RUP"], correct: 1 }]
-  },
-  {
-    id: "c6",
-    title: "Pengantar Efisiensi Administrasi & Birokrasi Lean",
-    category: "Leadership",
-    learningType: "self_learning",
-    typeLabel: "Self-Learning (Belajar Mandiri)",
-    duration: "15 Jam",
-    level: "Dasar",
-    price: 0,
-    priceLabel: "Gratis (Free)",
-    rating: "4.7",
-    badge: "Efficiency Special",
-    venue: "Akses Belajar Mandiri On-Demand 24/7",
-    schedule: "Fleksibel Kapan Saja (Self-Paced)",
-    quota: "Tanpa Batas Kuota",
-    image: "https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=600&auto=format&fit=crop&q=80",
-    instructor: { name: "Bambang Wijaya, S.T., MBA", title: "Lean Process & Efficiency Consultant", org: "Public Sector Excellence", avatar: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=120&auto=format&fit=crop&q=80" },
-    desc: "Materi belajar mandiri gratis untuk memahami konsep dasar Lean Government, eliminasi pemborosan proses administrasi, dan percepatan alur layanan birokrasi.",
-    features: ["100% Gratis Tanpa Biaya", "Akses Materi Video & Slide 24/7", "Studi Kasus Lean Administration", "Kuis Pemahaman Mandiri", "Sertifikat Partisipasi Digital"],
-    modules: [
-      {
-        title: "Modul 1: Dasar Manajemen Operasional",
-        lessons: [
-          { title: "1.1 Pemetaan Proses Bisnis & Lean Operations", type: "video", url: "https://www.youtube.com/watch?v=vlpKyLklDDY" },
-          { title: "1.2 Eliminasi Pemborosan (Waste) di Birokrasi", type: "video", url: "https://www.youtube.com/watch?v=vlpKyLklDDY" }
-        ]
-      }
-    ],
-    quiz: [{ q: "Metodologi apa yang fokus pada eliminasi pemborosan untuk efisiensi?", options: ["Lean Management", "Traditional Management", "Ad-hoc Planning", "Crisis Management"], correct: 0 }]
-  }
-];
-
-
-
-const initialCategories = [
-  { key: "AI", name: "Kecerdasan Buatan (AI)" },
-  { key: "Tech", name: "Teknologi Informasi" },
-  { key: "Procurement", name: "Pengadaan Barang/Jasa" },
-  { key: "Leadership", name: "Leadership & Management" }
-];
-
-const initialLevels = [
-  { key: "Dasar", name: "Dasar" },
-  { key: "Menengah", name: "Menengah" },
-  { key: "Lanjutan", name: "Lanjutan" },
-  { key: "Eksekutif", name: "Eksekutif" }
-];
-
 const initialCompetencySkills = [
   { key: "leadership", name: "Leadership" },
   { key: "procurement", name: "Procurement" },
@@ -271,9 +39,9 @@ const PAGE_BY_PATH = Object.fromEntries(
 );
 
 export function AppProvider({ children }) {
-  const [users, setUsers] = useState(initialUsers);
-  const [categories, setCategories] = useState(initialCategories);
-  const [levels, setLevels] = useState(initialLevels);
+  const [users, setUsers] = useState([]);
+  const [categories, setCategories] = useState([]);
+  const [levels, setLevels] = useState([]);
   const [competencySkills, setCompetencySkills] = useState(initialCompetencySkills);
   const [newCatKey, setNewCatKey] = useState("");
   const [newCatName, setNewCatName] = useState("");
@@ -281,7 +49,7 @@ export function AppProvider({ children }) {
   const [newLvlName, setNewLvlName] = useState("");
   const [newSkillKey, setNewSkillKey] = useState("");
   const [newSkillName, setNewSkillName] = useState("");
-  const [courses, setCourses] = useState(initialCourses);
+  const [courses, setCourses] = useState([]);
   const [activeRole, setActiveRole] = useState("student");
   const [currentUser, setCurrentUser] = useState(null);
   // Sesi masih diperiksa ke server; dipakai agar halaman login tidak berkedip
@@ -362,17 +130,10 @@ export function AppProvider({ children }) {
   const [uploadStatus, setUploadStatus] = useState("");
   const [attendanceLog, setAttendanceLog] = useState([]);
   const [checkedIn, setCheckedIn] = useState(false);
-  const [forumPosts, setForumPosts] = useState([
-    { id: 1, user: "Budi Santoso", label: "Peserta Mandiri", text: "Selamat pagi rekan-rekan, izin bertanya apakah ada materi tambahan terkait tata cara penyusunan HPS?", time: "2 jam yang lalu" },
-    { id: 2, user: "Prof. Dr. Kadir", label: "PT. SDI", text: "Pagi Budi, materi HPS secara detail dibahas di Modul 3. Anda juga bisa mengunduh modul panduan LKPP di lampiran overview.", time: "1 jam yang lalu" }
-  ]);
+  const [forumPosts, setForumPosts] = useState([]);
   const [forumInput, setForumInput] = useState("");
-  const [certificates, setCertificates] = useState([
-    { id: "AILMS-TX-1002A", courseId: "c1", title: "PBJ Level 1 (Pengadaan Barang & Jasa Pemerintah)", date: "05 Juni 2026", idCode: "AILMS-TX-1002A" }
-  ]);
-  const [transactions, setTransactions] = useState([
-    { invoice: "INV-2026-001", user: "Ahmad Hidayat", program: "PBJ Level 1", amount: 2500000, type: "QRIS", status: "Berhasil" }
-  ]);
+  const [certificates, setCertificates] = useState([]);
+  const [transactions, setTransactions] = useState([]);
   const [paymentModalActive, setPaymentModalActive] = useState(false);
   const [selectedPayCourse, setSelectedPayCourse] = useState(null);
   const [paymentMethod, setPaymentMethod] = useState("QRIS");
@@ -459,14 +220,14 @@ export function AppProvider({ children }) {
           if (json.data.categories) setCategories(json.data.categories);
           if (json.data.levels) setLevels(json.data.levels);
           setDbMode("postgresql");
-        } else if (catalogRes.status === "fulfilled" && catalogRes.value?.success && Array.isArray(catalogRes.value?.courses) && catalogRes.value.courses.length > 0) {
-          // Pengunjung publik / landing page tanpa login: muat kursus riil dari basis data
-          setCourses(catalogRes.value.courses);
+        } else if (catalogRes.status === "fulfilled" && catalogRes.value?.success) {
+          // Pengunjung publik / landing page tanpa login: muat data riil dari basis data
+          setCourses(catalogRes.value.courses || []);
           if (catalogRes.value.categories?.length > 0) setCategories(catalogRes.value.categories);
           if (catalogRes.value.levels?.length > 0) setLevels(catalogRes.value.levels);
           setDbMode("postgresql");
         } else {
-          setDbMode("demo");
+          setDbMode("postgresql");
         }
 
         if (sessionUser) {

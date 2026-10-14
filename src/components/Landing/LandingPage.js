@@ -95,12 +95,7 @@ export default function LandingPage({ initialCourses, initialCategories, initial
   }, [initialCategories, appCategories, courses]);
 
   const distinctLevels = useMemo(() => {
-    const list = [...(initialLevels || appLevels || [
-      { key: "Dasar", name: "Dasar" },
-      { key: "Menengah", name: "Menengah" },
-      { key: "Lanjutan", name: "Lanjutan" },
-      { key: "Eksekutif", name: "Eksekutif" }
-    ])];
+    const list = [...(initialLevels || appLevels || [])];
     (courses || []).forEach((c) => {
       if (
         c.level &&
@@ -182,88 +177,106 @@ export default function LandingPage({ initialCourses, initialCategories, initial
     });
   }, [courses, selectedLearningType, selectedCategory, selectedLevel, searchQuery]);
 
-  // Distinct Instructors List
+  // Distinct Instructors List - diekstrak murni dari kursus di database
   const instructorsList = useMemo(() => {
-    const DEFAULT_INSTRUCTORS = [
-      {
-        name: "Dr. Ir. Hendro Prasetyo, M.T., CCMS",
-        title: "Praktisi Senior & Asesor PBJ Nasional",
-        org: "Ikatan Ahli Pengadaan Indonesia (IAPI)",
-        avatar: "HP",
-        courseCount: 3,
-        specialty: "Pengadaan Barang & Jasa",
-        bio: "Asesor dan konsultan pengadaan barang/jasa dengan pengalaman lebih dari 18 tahun dalam pendampingan proyek strategis nasional."
-      },
-      {
-        name: "Dr. Pratama Wicaksono, M.Sc.",
-        title: "AI Policy Researcher & GovTech Advisor",
-        org: "Pusat Riset Kecerdasan Artifisial BRIN",
-        avatar: "PW",
-        courseCount: 2,
-        specialty: "Artificial Intelligence & GovTech",
-        bio: "Peneliti kecerdasan artifisial dan penasihat transformasi digital sektor publik dengan fokus tata kelola AI beretika."
-      },
-      {
-        name: "Rina Setyowati, S.Kom., M.M.",
-        title: "Principal Data Architect & BI Specialist",
-        org: "Kemenkeu Data Analytics Center",
-        avatar: "RS",
-        courseCount: 2,
-        specialty: "Data Analytics & SQL",
-        bio: "Praktisi arsitektur data dan visualisasi BI dengan spesialisasi pemodelan data terpadu untuk pengambil kebijakan strategis."
-      },
-      {
-        name: "Budi Santoso, S.T., M.M., PMP",
-        title: "Executive Coach & Management Consultant",
-        org: "Lembaga Manajemen Eksekutif Indonesia",
-        avatar: "BS",
-        courseCount: 2,
-        specialty: "Kepemimpinan & Birokrasi Lean",
-        bio: "Konsultan kepemimpinan transformasi dan implementasi lean operations di kementerian, lembaga, dan BUMN."
-      }
-    ];
-
-    const defaultBios = {
-      "Dr. Ir. Budi Santoso, M.Si": "Praktisi senior pengadaan dan asesor bersertifikasi BNSP dengan rekam jejak panjang dalam tata kelola pengadaan barang dan jasa pemerintah.",
-      "Prof. Rian Gunawan, Ph.D": "Pakar kebijakan kecerdasan buatan dan penasihat transformasi digital sektor publik dengan fokus pada implementasi AI yang beretika dan bertanggung jawab.",
-      "Siti Rahmawati, M.Kom": "Arsitek data dan spesialis Business Intelligence yang berpengalaman membangun sistem analitik data terintegrasi di instansi publik dan korporat.",
-      "Drs. Hendra Kusuma, MM": "Executive coach dan konsultan kepemimpinan yang berfokus pada pengembangan kapasitas manajerial dan komunikasi strategis organisasi.",
-      "Dra. Nurul Hidayati, Ak., CA": "Analis keuangan sektor publik berpengalaman dalam perencanaan anggaran, pengawasan fiskal, dan akuntabilitas keuangan negara.",
-      "Bambang Wijaya, S.T., MBA": "Konsultan efisiensi proses bisnis dan implementasi lean administration untuk optimalisasi birokrasi dan layanan publik."
-    };
-
-    if (!courses || !Array.isArray(courses) || courses.length === 0) return DEFAULT_INSTRUCTORS;
+    if (!courses || !Array.isArray(courses) || courses.length === 0) return [];
     const map = new Map();
-    courses.forEach(c => {
-      const instName = typeof c.instructor === "object" ? c.instructor?.name : (typeof c.instructor === "string" ? c.instructor : null);
+    courses.forEach((c) => {
+      const instName =
+        typeof c.instructor === "object"
+          ? c.instructor?.name
+          : typeof c.instructor === "string"
+          ? c.instructor
+          : null;
       if (instName && !map.has(instName)) {
-        const instObj = typeof c.instructor === "object" ? c.instructor : { name: instName, title: "Praktisi Senior & Asesor", org: "Lembaga Sertifikasi Nasional", avatar: instName.slice(0, 2).toUpperCase() };
+        const instObj =
+          typeof c.instructor === "object"
+            ? c.instructor
+            : {
+                name: instName,
+                title: "Praktisi & Pengajar Ahli",
+                org: "LMS Certified",
+                avatar: instName.slice(0, 2).toUpperCase()
+              };
         map.set(instName, {
           ...instObj,
           name: instName,
-          bio: instObj.bio || defaultBios[instName] || `Praktisi dan pengajar bersertifikasi nasional di bidang ${c.category || "Kompetensi Profesional"}.`,
-          courseCount: courses.filter(x => (typeof x.instructor === "object" ? x.instructor?.name : x.instructor) === instName).length,
-          specialty: c.category || "Kompetensi Nasional",
-          sampleCourse: c.title,
+          title: instObj.title || "Praktisi & Pengajar Ahli",
+          org: instObj.org || "LMS Certified",
+          avatar: instObj.avatar || instName.slice(0, 2).toUpperCase(),
+          bio:
+            instObj.bio ||
+            `Praktisi dan pengajar berpengalaman di bidang ${c.category || "Kompetensi Profesional"}.`,
+          courseCount: courses.filter(
+            (x) =>
+              (typeof x.instructor === "object" ? x.instructor?.name : x.instructor) ===
+              instName
+          ).length,
+          specialty: c.category || "Kompetensi Profesional",
+          sampleCourse: c.title
         });
       }
     });
-    return map.size > 0 ? Array.from(map.values()) : DEFAULT_INSTRUCTORS;
+    return Array.from(map.values());
   }, [courses]);
 
-  // Demo Quiz Data
-  const demoQuiz = {
-    question: "Siapakah yang berwenang menetapkan Rencana Umum Pengadaan (RUP) pada Pengadaan Barang/Jasa Pemerintah?",
-    options: [
-      "Pejabat Pembuat Komitmen (PPK)",
-      "Pengguna Anggaran (PA) / Kuasa Pengguna Anggaran (KPA)",
-      "Kelompok Kerja (Pokja) Pemilihan",
-      "Pejabat Pengadaan (PP)"
-    ],
-    correct: 1,
-    explanation:
-      "Sesuai Pasal 9 ayat (1) huruf a Perpres No. 16/2018 jo. No. 12/2021, Pengguna Anggaran (PA) bertugas dan berwenang menetapkan dan mengumumkan RUP."
-  };
+  // Demo Quiz Data - diambil dinamis dari kursus database yang memiliki kuis
+  const demoQuiz = useMemo(() => {
+    for (const c of courses || []) {
+      if (Array.isArray(c.quiz) && c.quiz.length > 0) {
+        const q = c.quiz[0];
+        if (q && q.q && Array.isArray(q.options) && typeof q.correct === "number") {
+          return {
+            courseTitle: c.title,
+            question: q.q,
+            options: q.options,
+            correct: q.correct,
+            explanation: `Materi evaluasi ini diambil langsung dari kurikulum kursus "${c.title}".`
+          };
+        }
+      }
+    }
+    return null;
+  }, [courses]);
+
+  // Preview Course & Lessons untuk simulator LMS interaktif di landing page
+  const previewCourse = useMemo(() => {
+    return (
+      courses?.find(
+        (c) =>
+          Array.isArray(c.modules) &&
+          c.modules.length > 0 &&
+          Array.isArray(c.modules[0].lessons) &&
+          c.modules[0].lessons.length > 0
+      ) || courses?.[0] || null
+    );
+  }, [courses]);
+
+  const previewVideoEmbed = useMemo(() => {
+    const lesson = previewCourse?.modules?.[0]?.lessons?.[0];
+    if (!lesson?.url) return null;
+    let url = lesson.url;
+    if (url.includes("youtube.com/watch?v=")) {
+      return url.replace("watch?v=", "embed/");
+    }
+    if (url.includes("youtu.be/")) {
+      return url.replace("youtu.be/", "www.youtube.com/embed/");
+    }
+    return url;
+  }, [previewCourse]);
+
+  const previewLessons = useMemo(() => {
+    const list = previewCourse?.modules?.[0]?.lessons || [];
+    if (list.length > 0) {
+      return list.slice(0, 4).map((l, i) => ({
+        title: l.title || `Pelajaran ${i + 1}`,
+        type: l.type || "video",
+        dur: l.type === "video" ? "Video" : "Dokumen",
+        active: i === 0
+      }));
+    }
+    return [];
+  }, [previewCourse]);
 
   const handleDemoQuizSelect = (index) => {
     setDemoQuizAnswer(index);
@@ -1560,7 +1573,7 @@ export default function LandingPage({ initialCourses, initialCategories, initial
                 <span style={{ width: 10, height: 10, borderRadius: "50%", background: "#eab308", display: "inline-block" }} />
                 <span style={{ width: 10, height: 10, borderRadius: "50%", background: "#10b981", display: "inline-block" }} />
                 <span style={{ fontSize: "0.82rem", fontWeight: 600, color: "var(--text-secondary)", marginLeft: 8 }}>
-                  Modul 1: Ketentuan Umum & Pengantar PBJ
+                  {previewCourse?.modules?.[0]?.title || previewCourse?.title || "Materi Pelajaran Kursus"}
                 </span>
               </div>
               <span
@@ -1578,13 +1591,19 @@ export default function LandingPage({ initialCourses, initialCategories, initial
             </div>
 
             <div style={{ position: "relative", width: "100%", height: 260, backgroundColor: "#000" }}>
-              <iframe
-                src="https://www.youtube.com/embed/kYJv_t7H6_I?rel=0"
-                title="Pratinjau Materi PBJ Level 1"
-                style={{ width: "100%", height: "100%", border: "none" }}
-                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                allowFullScreen
-              />
+              {previewVideoEmbed ? (
+                <iframe
+                  src={previewVideoEmbed}
+                  title={previewCourse?.title || "Pratinjau Materi"}
+                  style={{ width: "100%", height: "100%", border: "none" }}
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                  allowFullScreen
+                />
+              ) : (
+                <div style={{ width: "100%", height: "100%", display: "flex", alignItems: "center", justifyContent: "center", color: "#94a3b8", fontSize: "0.9rem" }}>
+                  Video materi akan dimuat di sini
+                </div>
+              )}
             </div>
 
             <div style={{ padding: "18px 20px", flex: 1, background: "var(--bg-card)" }}>
@@ -1592,12 +1611,7 @@ export default function LandingPage({ initialCourses, initialCategories, initial
                 Daftar Pelajaran Modul Terpilih
               </div>
               <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-                {[
-                  { title: "1.1 Latar Belakang & Definisi PBJ Pemerintah", type: "video", dur: "12 Menit", active: true },
-                  { title: "1.2 Ruang Lingkup & Tujuan Pengadaan", type: "video", dur: "18 Menit", active: false },
-                  { title: "1.3 Etika & Prinsip Dasar Pengadaan", type: "video", dur: "15 Menit", active: false },
-                  { title: "1.4 Slide PPT: Ringkasan Regulasi PBJ", type: "pptx", dur: "Slide PDF", active: false }
-                ].map((l, i) => (
+                {previewLessons.map((l, i) => (
                   <div
                     key={i}
                     style={{
@@ -1630,147 +1644,149 @@ export default function LandingPage({ initialCourses, initialCategories, initial
           </div>
 
           {/* Right: Interactive Quiz Simulator */}
-          <div
-            style={{
-              borderRadius: 20,
-              padding: 28,
-              background: "var(--bg-card)",
-              border: "1px solid var(--border-color)",
-              display: "flex",
-              flexDirection: "column",
-              justifyContent: "space-between",
-              boxShadow: "var(--shadow-xl)"
-            }}
-          >
-            <div>
-              <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 18 }}>
-                <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                  <HelpCircle size={20} color="var(--primary)" />
-                  <span style={{ fontSize: "0.85rem", fontWeight: 700, color: "var(--primary)", textTransform: "uppercase" }}>
-                    Simulasi Kuis Kompetensi
-                  </span>
-                </div>
-                <span style={{ fontSize: "0.78rem", color: "var(--text-muted)" }}>Soal Latihan #1</span>
-              </div>
-
-              <h4 style={{ fontSize: "1.1rem", fontWeight: 700, lineHeight: 1.5, marginBottom: 20 }}>
-                {demoQuiz.question}
-              </h4>
-
-              {/* Options */}
-              <div style={{ display: "flex", flexDirection: "column", gap: 10, marginBottom: 20 }}>
-                {demoQuiz.options.map((option, idx) => {
-                  const isSelected = demoQuizAnswer === idx;
-                  const isCorrect = idx === demoQuiz.correct;
-                  let bg = "var(--bg-tertiary)";
-                  let border = "1px solid var(--border-color)";
-                  let color = "var(--text-primary)";
-
-                  if (demoQuizSubmitted) {
-                    if (isCorrect) {
-                      bg = "rgba(16, 185, 129, 0.2)";
-                      border = "1px solid #10b981";
-                      color = "#10b981";
-                    } else if (isSelected) {
-                      bg = "rgba(239, 68, 68, 0.2)";
-                      border = "1px solid #ef4444";
-                      color = "#ef4444";
-                    }
-                  }
-
-                  return (
-                    <button
-                      key={idx}
-                      onClick={() => handleDemoQuizSelect(idx)}
-                      disabled={demoQuizSubmitted}
-                      style={{
-                        padding: "12px 16px",
-                        borderRadius: 10,
-                        background: bg,
-                        border: border,
-                        color: color,
-                        textAlign: "left",
-                        fontSize: "0.88rem",
-                        fontWeight: isSelected ? 600 : 400,
-                        cursor: demoQuizSubmitted ? "default" : "pointer",
-                        display: "flex",
-                        alignItems: "center",
-                        justifyContent: "space-between",
-                        transition: "all 0.15s ease"
-                      }}
-                    >
-                      <span>
-                        <strong style={{ marginRight: 8 }}>{String.fromCharCode(65 + idx)}.</strong> {option}
-                      </span>
-                      {demoQuizSubmitted && isCorrect && <Check size={18} color="#10b981" />}
-                      {demoQuizSubmitted && isSelected && !isCorrect && <X size={18} color="#ef4444" />}
-                    </button>
-                  );
-                })}
-              </div>
-
-              {/* Feedback box */}
-              {demoQuizSubmitted && (
-                <div
-                  style={{
-                    padding: 16,
-                    borderRadius: 12,
-                    background: demoQuizAnswer === demoQuiz.correct ? "rgba(16, 185, 129, 0.12)" : "rgba(239, 68, 68, 0.12)",
-                    border: `1px solid ${demoQuizAnswer === demoQuiz.correct ? "rgba(16, 185, 129, 0.3)" : "rgba(239, 68, 68, 0.3)"}`,
-                    fontSize: "0.84rem",
-                    lineHeight: 1.5,
-                    marginBottom: 16
-                  }}
-                >
-                  <div style={{ fontWeight: 700, marginBottom: 4, color: demoQuizAnswer === demoQuiz.correct ? "#10b981" : "#ef4444" }}>
-                    {demoQuizAnswer === demoQuiz.correct ? "🎉 Jawaban Benar!" : "❌ Kurang Tepat"}
+          {demoQuiz && (
+            <div
+              style={{
+                borderRadius: 20,
+                padding: 28,
+                background: "var(--bg-card)",
+                border: "1px solid var(--border-color)",
+                display: "flex",
+                flexDirection: "column",
+                justifyContent: "space-between",
+                boxShadow: "var(--shadow-xl)"
+              }}
+            >
+              <div>
+                <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 18 }}>
+                  <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                    <HelpCircle size={20} color="var(--primary)" />
+                    <span style={{ fontSize: "0.85rem", fontWeight: 700, color: "var(--primary)", textTransform: "uppercase" }}>
+                      Simulasi Kuis Kompetensi
+                    </span>
                   </div>
-                  <p style={{ color: "var(--text-secondary)", margin: 0 }}>{demoQuiz.explanation}</p>
+                  <span style={{ fontSize: "0.78rem", color: "var(--text-muted)" }}>Soal Latihan #1</span>
                 </div>
-              )}
-            </div>
 
-            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", paddingTop: 16, borderTop: "1px solid var(--border-color)" }}>
-              {demoQuizSubmitted ? (
+                <h4 style={{ fontSize: "1.1rem", fontWeight: 700, lineHeight: 1.5, marginBottom: 20 }}>
+                  {demoQuiz.question}
+                </h4>
+
+                {/* Options */}
+                <div style={{ display: "flex", flexDirection: "column", gap: 10, marginBottom: 20 }}>
+                  {demoQuiz.options.map((option, idx) => {
+                    const isSelected = demoQuizAnswer === idx;
+                    const isCorrect = idx === demoQuiz.correct;
+                    let bg = "var(--bg-tertiary)";
+                    let border = "1px solid var(--border-color)";
+                    let color = "var(--text-primary)";
+
+                    if (demoQuizSubmitted) {
+                      if (isCorrect) {
+                        bg = "rgba(16, 185, 129, 0.2)";
+                        border = "1px solid #10b981";
+                        color = "#10b981";
+                      } else if (isSelected) {
+                        bg = "rgba(239, 68, 68, 0.2)";
+                        border = "1px solid #ef4444";
+                        color = "#ef4444";
+                      }
+                    }
+
+                    return (
+                      <button
+                        key={idx}
+                        onClick={() => handleDemoQuizSelect(idx)}
+                        disabled={demoQuizSubmitted}
+                        style={{
+                          padding: "12px 16px",
+                          borderRadius: 10,
+                          background: bg,
+                          border: border,
+                          color: color,
+                          textAlign: "left",
+                          fontSize: "0.88rem",
+                          fontWeight: isSelected ? 600 : 400,
+                          cursor: demoQuizSubmitted ? "default" : "pointer",
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "space-between",
+                          transition: "all 0.15s ease"
+                        }}
+                      >
+                        <span>
+                          <strong style={{ marginRight: 8 }}>{String.fromCharCode(65 + idx)}.</strong> {option}
+                        </span>
+                        {demoQuizSubmitted && isCorrect && <Check size={18} color="#10b981" />}
+                        {demoQuizSubmitted && isSelected && !isCorrect && <X size={18} color="#ef4444" />}
+                      </button>
+                    );
+                  })}
+                </div>
+
+                {/* Feedback box */}
+                {demoQuizSubmitted && (
+                  <div
+                    style={{
+                      padding: 16,
+                      borderRadius: 12,
+                      background: demoQuizAnswer === demoQuiz.correct ? "rgba(16, 185, 129, 0.12)" : "rgba(239, 68, 68, 0.12)",
+                      border: `1px solid ${demoQuizAnswer === demoQuiz.correct ? "rgba(16, 185, 129, 0.3)" : "rgba(239, 68, 68, 0.3)"}`,
+                      fontSize: "0.84rem",
+                      lineHeight: 1.5,
+                      marginBottom: 16
+                    }}
+                  >
+                    <div style={{ fontWeight: 700, marginBottom: 4, color: demoQuizAnswer === demoQuiz.correct ? "#10b981" : "#ef4444" }}>
+                      {demoQuizAnswer === demoQuiz.correct ? "🎉 Jawaban Benar!" : "❌ Kurang Tepat"}
+                    </div>
+                    <p style={{ color: "var(--text-secondary)", margin: 0 }}>{demoQuiz.explanation}</p>
+                  </div>
+                )}
+              </div>
+
+              <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", paddingTop: 16, borderTop: "1px solid var(--border-color)" }}>
+                {demoQuizSubmitted ? (
+                  <button
+                    onClick={handleResetQuiz}
+                    style={{
+                      background: "none",
+                      border: "none",
+                      color: "var(--primary)",
+                      fontSize: "0.82rem",
+                      fontWeight: 600,
+                      cursor: "pointer",
+                      padding: 0
+                    }}
+                  >
+                    Coba Ulangi Soal
+                  </button>
+                ) : (
+                  <span style={{ fontSize: "0.8rem", color: "var(--text-muted)" }}>Pilih salah satu jawaban di atas</span>
+                )}
+
                 <button
-                  onClick={handleResetQuiz}
+                  onClick={() => router.push("/dashboard")}
                   style={{
-                    background: "none",
+                    padding: "8px 16px",
+                    borderRadius: 8,
+                    background: "var(--primary-gradient)",
+                    color: "#fff",
                     border: "none",
-                    color: "var(--primary)",
-                    fontSize: "0.82rem",
                     fontWeight: 600,
+                    fontSize: "0.82rem",
                     cursor: "pointer",
-                    padding: 0
+                    display: "flex",
+                    alignItems: "center",
+                    gap: 6
                   }}
                 >
-                  Coba Ulangi Soal
+                  <span>Akses Semua Ujian</span>
+                  <ChevronRight size={14} />
                 </button>
-              ) : (
-                <span style={{ fontSize: "0.8rem", color: "var(--text-muted)" }}>Pilih salah satu jawaban di atas</span>
-              )}
-
-              <button
-                onClick={() => router.push("/dashboard")}
-                style={{
-                  padding: "8px 16px",
-                  borderRadius: 8,
-                  background: "var(--primary-gradient)",
-                  color: "#fff",
-                  border: "none",
-                  fontWeight: 600,
-                  fontSize: "0.82rem",
-                  cursor: "pointer",
-                  display: "flex",
-                  alignItems: "center",
-                  gap: 6
-                }}
-              >
-                <span>Akses Semua Ujian</span>
-                <ChevronRight size={14} />
-              </button>
+              </div>
             </div>
-          </div>
+          )}
         </div>
       </section>
 
@@ -1861,14 +1877,15 @@ export default function LandingPage({ initialCourses, initialCategories, initial
       </section>
 
       {/* ── INSTRUCTORS SECTION (#instruktur) ── */}
-      <section
-        id="instruktur"
-        style={{
-          padding: "80px 24px",
-          maxWidth: 1240,
-          margin: "0 auto"
-        }}
-      >
+      {instructorsList.length > 0 && (
+        <section
+          id="instruktur"
+          style={{
+            padding: "80px 24px",
+            maxWidth: 1240,
+            margin: "0 auto"
+          }}
+        >
         <div style={{ textAlign: "center", marginBottom: 48 }}>
           <div style={{ fontSize: "0.8rem", fontWeight: 700, color: "var(--primary)", textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: 6 }}>
             Dewan Pengajar &amp; Praktisi
@@ -1992,6 +2009,7 @@ export default function LandingPage({ initialCourses, initialCategories, initial
           ))}
         </div>
       </section>
+      )}
 
       {/* ── FAQ SECTION (#faq) ── */}
       <section id="faq" style={{ padding: "80px 24px", maxWidth: 860, margin: "0 auto" }}>
