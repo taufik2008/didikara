@@ -865,6 +865,60 @@ export default function LmsManageModal() {
                               )}
                             </div>
 
+                            {Boolean(lessonObj.url && (lessonObj.url.includes("drive.google.com") || lessonObj.url.includes("docs.google.com"))) && (
+                              <div style={{
+                                padding: "8px 12px", borderRadius: 8,
+                                background: "rgba(59, 130, 246, 0.08)", border: "1px solid rgba(59, 130, 246, 0.25)",
+                                display: "flex", flexDirection: "column", gap: 6, fontSize: "0.75rem"
+                              }}>
+                                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: 6 }}>
+                                  <span style={{ color: "#60a5fa", fontWeight: 600, display: "flex", alignItems: "center", gap: 6 }}>
+                                    📁 File Google Drive Terdeteksi
+                                  </span>
+                                  <div style={{ display: "flex", gap: 6 }}>
+                                    <button
+                                      type="button"
+                                      onClick={async () => {
+                                        try {
+                                          const res = await fetch("/api/drive/grant-access", {
+                                            method: "POST",
+                                            headers: { "Content-Type": "application/json" },
+                                            body: JSON.stringify({ url: lessonObj.url }),
+                                          });
+                                          const json = await res.json();
+                                          alert(json.message || (json.success ? "Akses publik berhasil disetel!" : "Perlu verifikasi"));
+                                        } catch (err) {
+                                          alert("Gagal memproses otomatis: " + err.message);
+                                        }
+                                      }}
+                                      style={{
+                                        padding: "3px 10px", fontSize: "0.72rem", borderRadius: 6,
+                                        background: "rgba(16, 185, 129, 0.2)", border: "1px solid rgba(16, 185, 129, 0.4)",
+                                        color: "#34d399", cursor: "pointer", fontWeight: 600, display: "flex", alignItems: "center", gap: 4
+                                      }}
+                                    >
+                                      ⚡ Berikan Akses Publik Otomatis
+                                    </button>
+                                    <a
+                                      href={lessonObj.url.replace(/\/preview.*$/, "/view?usp=sharing").replace(/\/view.*$/, "/view?usp=sharing")}
+                                      target="_blank"
+                                      rel="noreferrer"
+                                      style={{
+                                        padding: "3px 10px", fontSize: "0.72rem", borderRadius: 6,
+                                        background: "rgba(255, 255, 255, 0.06)", border: "1px solid var(--border-color)",
+                                        color: "var(--text-primary)", textDecoration: "none", display: "flex", alignItems: "center", gap: 4
+                                      }}
+                                    >
+                                      🔗 Buka Pengaturan Izin di Drive ↗
+                                    </a>
+                                  </div>
+                                </div>
+                                <p style={{ margin: 0, color: "var(--text-secondary)", fontSize: "0.72rem", lineHeight: 1.45 }}>
+                                  💡 <strong>Agar semua peserta/audiens dapat langsung menonton tanpa pesan &quot;Minta Akses&quot;:</strong> Pastikan di Google Drive akses file ini diatur ke <em>&quot;Siapa saja yang memiliki link (Anyone with the link) &rarr; Pelihat (Viewer)&quot;</em>.
+                                </p>
+                              </div>
+                            )}
+
                             {/* Preset Demo URL Chips */}
                             {lessonObj.type !== "text" && (
                               <div style={{ display: "flex", gap: 6, flexWrap: "wrap", alignItems: "center", paddingLeft: 2 }}>

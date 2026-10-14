@@ -263,6 +263,41 @@ export default function CrudModal() {
                     </div>
                   </div>
 
+                  {(courseForm.learningType === "offline" || courseForm.learningType === "online") && (
+                    <div style={{ display: "grid", gridTemplateColumns: "1.4fr 1.4fr 1.2fr", gap: 12, marginBottom: 16, padding: "12px 14px", background: "rgba(255,255,255,0.03)", borderRadius: 8, border: "1px dashed var(--border-color)" }}>
+                      <div className="form-group" style={{ margin: 0 }}>
+                        <label style={{ fontSize: "0.75rem", marginBottom: 4 }}>{courseForm.learningType === "offline" ? "Lokasi / Hotel Tatap Muka" : "Platform / Venue Online"}</label>
+                        <input
+                          type="text"
+                          value={courseForm.venue || ""}
+                          onChange={(e) => setCourseForm({ ...courseForm, venue: e.target.value })}
+                          placeholder={courseForm.learningType === "offline" ? "Contoh: Hotel Sheraton Surabaya" : "Contoh: Live Zoom Interactive"}
+                          style={{ paddingLeft: 10, fontSize: "0.8rem", height: 36 }}
+                        />
+                      </div>
+                      <div className="form-group" style={{ margin: 0 }}>
+                        <label style={{ fontSize: "0.75rem", marginBottom: 4 }}>Jadwal / Waktu Pelaksanaan</label>
+                        <input
+                          type="text"
+                          value={courseForm.schedule || ""}
+                          onChange={(e) => setCourseForm({ ...courseForm, schedule: e.target.value })}
+                          placeholder={courseForm.learningType === "offline" ? "Contoh: 24 - 26 Nov 2026 (09:00 - 17:00 WIB)" : "Contoh: Setiap Sabtu (09:00 - 15:00 WIB)"}
+                          style={{ paddingLeft: 10, fontSize: "0.8rem", height: 36 }}
+                        />
+                      </div>
+                      <div className="form-group" style={{ margin: 0 }}>
+                        <label style={{ fontSize: "0.75rem", marginBottom: 4 }}>Kuota Peserta</label>
+                        <input
+                          type="text"
+                          value={courseForm.quota || ""}
+                          onChange={(e) => setCourseForm({ ...courseForm, quota: e.target.value })}
+                          placeholder="Contoh: Sisa 6 Kursi"
+                          style={{ paddingLeft: 10, fontSize: "0.8rem", height: 36 }}
+                        />
+                      </div>
+                    </div>
+                  )}
+
                   {/* Upload Image Section */}
                   <div className="form-group">
                     <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 8 }}>

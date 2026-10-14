@@ -94,12 +94,24 @@ const SEED_USERS = [
 
 const SEED_COURSES = [
   {
-    id: "c1", title: "PBJ Level 1 (Pengadaan Barang & Jasa Pemerintah)",
-    category: "Procurement", duration: "30 Jam", level: "Dasar",
-    price: 2500000, priceLabel: "Rp 2,500,000", rating: "4.8", badge: "BNSP / LKPP Ready",
+    id: "c1",
+    title: "PBJ Level 1 (Pengadaan Barang & Jasa Pemerintah)",
+    category: "Procurement",
+    learningType: "offline",
+    typeLabel: "Offline (Tatap Muka)",
+    duration: "32 Jam (4 Hari)",
+    level: "Dasar",
+    price: 2500000,
+    priceLabel: "Rp 2,500,000",
+    rating: "4.9",
+    badge: "BNSP / LKPP Ready",
+    venue: "Hotel Grand Sahid Jaya, Jakarta Pusat",
+    schedule: "15 - 18 Oktober 2026 (08:30 - 16:30 WIB)",
+    quota: "Sisa 6 Kursi",
     image: "https://images.unsplash.com/photo-1450133064473-71024230f91b?w=600&auto=format&fit=crop&q=80",
     instructor: { name: "Dr. Ir. Budi Santoso, M.Si", title: "Ahli Pengadaan Utama & Asesor BNSP", org: "LKPP RI", avatar: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=120&auto=format&fit=crop&q=80" },
-    desc: "Materi persiapan lengkap untuk ujian sertifikasi keahlian Pengadaan Barang dan Jasa Pemerintah Tingkat Dasar sesuai Perpres No. 16/2018 dan perubahannya.",
+    desc: "Pelatihan tatap muka intensif persiapan ujian sertifikasi PBJ Tingkat Dasar dengan simulasi kasus nyata, modul cetak, konsumsi, dan uji kompetensi asesor BNSP langsung di lokasi.",
+    features: ["Workshop Tatap Muka 4 Hari", "Modul Cetak & Seminar Kit Eksklusif", "Simulasi Studi Kasus Langsung", "Uji Kompetensi BNSP di Tempat", "Sertifikat Fisik & Digital"],
     modules: [
       {
         title: "Modul 1: Ketentuan Umum & Pengantar PBJ",
@@ -128,16 +140,28 @@ const SEED_COURSES = [
     quiz: [
       { q: "Siapakah yang menetapkan Rencana Umum Pengadaan (RUP)?", options: ["Pengguna Anggaran (PA) / Kuasa Pengguna Anggaran (KPA)", "Pejabat Pembuat Komitmen (PPK)", "Pokja Pemilihan", "Pejabat Pengadaan"], correct: 0 },
       { q: "Berikut ini yang merupakan prinsip pengadaan barang/jasa pemerintah adalah...", options: ["Rahasia, Subyektif, Menguntungkan Sepihak", "Efisien, Efektif, Transparan, Terbuka, Bersaing, Adil, Akuntabel", "Cepat, Murah, Tanpa Dokumen, Langsung Beli", "Monopoli, Tertutup, Fleksibel Berlebihan"], correct: 1 },
-      { q: "Metode pemilihan Penyedia untuk barang/jasa di atas Rp 200 juta secara umum adalah...", options: ["Pengadaan Langsung", "Penunjukan Langsung", "Tender", "E-Purchasing"], correct: 2 },
-    ],
+      { q: "Metode pemilihan Penyedia Barang/Pekerjaan Konstruksi/Jasa Lainnya yang dilakukan untuk barang/jasa yang bernilai di atas Rp 200 juta secara umum adalah...", options: ["Pengadaan Langsung", "Penunjukan Langsung", "Tender", "E-Purchasing"], correct: 2 }
+    ]
   },
   {
-    id: "c2", title: "AI Strategy & Governance for Government Leaders",
-    category: "AI", duration: "15 Jam", level: "Eksekutif",
-    price: 7500000, priceLabel: "Rp 7,500,000", rating: "4.9", badge: "AI LMS Executive",
+    id: "c2",
+    title: "AI Strategy & Governance for Public Sector - Live Webinar Series",
+    category: "AI",
+    learningType: "online",
+    typeLabel: "Online (Live Webinar)",
+    duration: "18 Jam (6 Sesi Live)",
+    level: "Eksekutif",
+    price: 1500000,
+    priceLabel: "Rp 1,500,000",
+    rating: "4.9",
+    badge: "AI LMS Executive",
+    venue: "Live Zoom Interactive & AI Learning Portal",
+    schedule: "Setiap Selasa & Kamis (19:00 - 21:30 WIB)",
+    quota: "Sisa 14 Slot",
     image: "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=600&auto=format&fit=crop&q=80",
     instructor: { name: "Prof. Rian Gunawan, Ph.D", title: "AI Ethics & Public Policy Advisor", org: "Center for Digital Government", avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=120&auto=format&fit=crop&q=80" },
-    desc: "Kurikulum khusus dirancang untuk pejabat pemerintahan dalam merumuskan regulasi, tata kelola data, dan strategi transformasi AI di sektor publik.",
+    desc: "Kelas online interaktif dengan bimbingan langsung dari pakar AI kebijakan publik, diskusi studi kasus live, review tugas kebijakan AI instansi, dan rekaman sesi penuh.",
+    features: ["6 Sesi Live Webinar Interaktif (Zoom)", "Tanya Jawab & Bimbingan Langsung", "Review Tugas Kebijakan AI Instansi", "Akses Rekaman Video & Bahan Ajar", "Sertifikat Eksekutif Terverifikasi QR"],
     modules: [
       {
         title: "Modul 1: Landasan Kecerdasan Buatan (AI Foundation)",
@@ -157,16 +181,28 @@ const SEED_COURSES = [
       }
     ],
     quiz: [
-      { q: "Apa fokus utama dari AI Governance di sektor publik?", options: ["Mencari keuntungan komersial tertinggi dari AI", "Memastikan kepatuhan etika, keamanan, privasi data, dan keadilan dalam pengambilan keputusan AI", "Menggantikan seluruh staf pemerintahan dengan agen AI", "Menghapus regulasi hukum teknologi"], correct: 1 },
-    ],
+      { q: "Apa fokus utama dari AI Governance di sektor publik?", options: ["Mencari keuntungan komersial tertinggi dari AI", "Memastikan kepatuhan etika, keamanan, privasi data, dan keadilan dalam pengambilan keputusan AI", "Menggantikan seluruh staf pemerintahan dengan agen AI", "Menghapus regulasi hukum teknologi"], correct: 1 }
+    ]
   },
   {
-    id: "c3", title: "Data Analytics & Business Intelligence",
-    category: "Tech", duration: "45 Jam", level: "Menengah",
-    price: 3500000, priceLabel: "Rp 3,500,000", rating: "4.7", badge: "Industry Certified",
+    id: "c3",
+    title: "Dasar Analisis Data & SQL untuk Pengambilan Keputusan",
+    category: "Tech",
+    learningType: "self_learning",
+    typeLabel: "Self-Learning (Belajar Mandiri)",
+    duration: "25 Jam",
+    level: "Dasar",
+    price: 0,
+    priceLabel: "Gratis (Free)",
+    rating: "4.8",
+    badge: "Open Courseware",
+    venue: "Akses Belajar Mandiri On-Demand 24/7",
+    schedule: "Fleksibel Kapan Saja (Self-Paced)",
+    quota: "Tanpa Batas Kuota",
     image: "https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=600&auto=format&fit=crop&q=80",
     instructor: { name: "Siti Rahmawati, M.Kom", title: "Lead Data Architect & BI Specialist", org: "TechGov Analytics", avatar: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=120&auto=format&fit=crop&q=80" },
-    desc: "Pelajari visualisasi data menggunakan Tableau/Power BI, pemodelan data warehouse, serta analisis SQL tingkat lanjut.",
+    desc: "Materi belajar mandiri gratis tanpa biaya untuk memahami fondasi analisis data, logika database SQL, dan pembuatan dashboard visualisasi interaktif.",
+    features: ["100% Gratis Tanpa Syarat", "Akses Video On-Demand 24/7", "Slide Materi PPT & Modul PDF", "Kuis Evaluasi Pemahaman Otomatis", "Sertifikat Kelulusan Digital Standar"],
     modules: [
       {
         title: "Modul 1: Fundamental Data Analytics & SQL",
@@ -177,15 +213,27 @@ const SEED_COURSES = [
         ]
       }
     ],
-    quiz: [{ q: "Fungsi agregat SQL mana yang digunakan untuk mencari rata-rata nilai kolom?", options: ["AVG", "SUM", "MEAN", "COUNT"], correct: 0 }],
+    quiz: [{ q: "Fungsi agregat SQL mana yang digunakan untuk mencari rata-rata nilai kolom?", options: ["AVG", "SUM", "MEAN", "COUNT"], correct: 0 }]
   },
   {
-    id: "c4", title: "Executive Leadership & Strategic Change Management",
-    category: "Leadership", duration: "24 Jam", level: "Eksekutif",
-    price: 5000000, priceLabel: "Rp 5,000,000", rating: "4.9", badge: "Top Management",
+    id: "c4",
+    title: "Executive Leadership & Strategic Change Management - Offline Bootcamp",
+    category: "Leadership",
+    learningType: "offline",
+    typeLabel: "Offline (Tatap Muka)",
+    duration: "24 Jam (3 Hari)",
+    level: "Eksekutif",
+    price: 4800000,
+    priceLabel: "Rp 4,800,000",
+    rating: "4.9",
+    badge: "Top Management",
+    venue: "Hotel Sheraton Surabaya / Jakarta Room",
+    schedule: "24 - 26 November 2026 (09:00 - 17:00 WIB)",
+    quota: "Sisa 4 Kursi",
     image: "https://images.unsplash.com/photo-1519389950473-47ba0277781c?w=600&auto=format&fit=crop&q=80",
     instructor: { name: "Drs. Hendra Kusuma, MM", title: "Executive Leadership Coach", org: "Lembaga Administrasi Negara", avatar: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=120&auto=format&fit=crop&q=80" },
-    desc: "Panduan komprehensif bagi pimpinan organisasi untuk mengelola perubahan strategis.",
+    desc: "Bootcamp kepemimpinan tatap muka eksklusif bagi pimpinan organisasi untuk merumuskan manajemen perubahan strategis, simulasi kepemimpinan krisis, dan coaching 1-on-1.",
+    features: ["Workshop Tatap Muka 3 Hari di Hotel Bintang 5", "Executive Coaching 1-on-1", "Simulasi Kepemimpinan & Manajemen Krisis", "Makan Siang & Coffee Break Premium", "Sertifikat Eksekutif LAN / Asosiasi"],
     modules: [
       {
         title: "Modul 1: Kepemimpinan Transformatif",
@@ -195,15 +243,27 @@ const SEED_COURSES = [
         ]
       }
     ],
-    quiz: [{ q: "Apa kunci utama keberhasilan manajemen perubahan dalam organisasi?", options: ["Komunikasi transparan dan keterlibatan seluruh pemangku kepentingan", "Mengabaikan masukan dari karyawan", "Melakukan restrukturisasi tanpa pemberitahuan", "Menerapkan sanksi berat secara sepihak"], correct: 0 }],
+    quiz: [{ q: "Apa kunci utama keberhasilan manajemen perubahan dalam organisasi?", options: ["Komunikasi transparan dan keterlibatan seluruh pemangku kepentingan", "Mengabaikan masukan dari karyawan", "Melakukan restrukturisasi tanpa pemberitahuan", "Menerapkan sanksi berat secara sepihak"], correct: 0 }]
   },
   {
-    id: "c5", title: "Public Finance & Government Budgeting Essentials",
-    category: "Procurement", duration: "28 Jam", level: "Menengah",
-    price: 3000000, priceLabel: "Rp 3,000,000", rating: "4.8", badge: "Kemenkeu Standard",
+    id: "c5",
+    title: "Public Finance & Government Budgeting Essentials - Live Masterclass",
+    category: "Procurement",
+    learningType: "online",
+    typeLabel: "Online (Live Webinar)",
+    duration: "20 Jam (5 Sesi Live)",
+    level: "Menengah",
+    price: 1250000,
+    priceLabel: "Rp 1,250,000",
+    rating: "4.8",
+    badge: "Kemenkeu Standard",
+    venue: "Live Zoom Webinar & LMS Cloud",
+    schedule: "Setiap Rabu & Jumat (19:30 - 21:30 WIB)",
+    quota: "Sisa 18 Slot",
     image: "https://images.unsplash.com/photo-1554224155-8d04cb21cd6c?w=600&auto=format&fit=crop&q=80",
     instructor: { name: "Dra. Nurul Hidayati, Ak., CA", title: "Senior Public Financial Analyst", org: "Kementerian Keuangan RI", avatar: "https://images.unsplash.com/photo-1580489944761-15a19d654956?w=120&auto=format&fit=crop&q=80" },
-    desc: "Pelajari sistem pengelolaan keuangan negara, penyusunan APBN/APBD, mekanisme perbendaharaan.",
+    desc: "Bedah mendalam sistem pengelolaan keuangan negara, siklus APBN/APBD, mekanisme perbendaharaan, serta audit kepatuhan melalui sesi tatap muka online interaktif.",
+    features: ["5 Sesi Live Webinar Interaktif", "Studi Kasus Penyusunan DIPA & RKA-KL", "Kompilasi Regulasi Keuangan Negara", "Tanya Jawab Langsung Asesor Kemenkeu", "Sertifikat Kelulusan Terakreditasi"],
     modules: [
       {
         title: "Modul 1: Siklus Anggaran Negara",
@@ -213,15 +273,27 @@ const SEED_COURSES = [
         ]
       }
     ],
-    quiz: [{ q: "Dokumen apa yang memuat rencana kerja dan anggaran Kementerian/Lembaga?", options: ["DIPA (Daftar Isian Pelaksanaan Anggaran)", "RKA-KL", "APBN", "RUP"], correct: 1 }],
+    quiz: [{ q: "Dokumen apa yang memuat rencana kerja dan anggaran Kementerian/Lembaga?", options: ["DIPA (Daftar Isian Pelaksanaan Anggaran)", "RKA-KL", "APBN", "RUP"], correct: 1 }]
   },
   {
-    id: "c6", title: "Operational Management & Bureaucratic Efficiency",
-    category: "Leadership", duration: "20 Jam", level: "Dasar",
-    price: 2200000, priceLabel: "Rp 2,200,000", rating: "4.6", badge: "Efficiency Special",
+    id: "c6",
+    title: "Pengantar Efisiensi Administrasi & Birokrasi Lean",
+    category: "Leadership",
+    learningType: "self_learning",
+    typeLabel: "Self-Learning (Belajar Mandiri)",
+    duration: "15 Jam",
+    level: "Dasar",
+    price: 0,
+    priceLabel: "Gratis (Free)",
+    rating: "4.7",
+    badge: "Efficiency Special",
+    venue: "Akses Belajar Mandiri On-Demand 24/7",
+    schedule: "Fleksibel Kapan Saja (Self-Paced)",
+    quota: "Tanpa Batas Kuota",
     image: "https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=600&auto=format&fit=crop&q=80",
     instructor: { name: "Bambang Wijaya, S.T., MBA", title: "Lean Process & Efficiency Consultant", org: "Public Sector Excellence", avatar: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=120&auto=format&fit=crop&q=80" },
-    desc: "Optimalkan efisiensi operasional organisasi melalui metodologi Lean dan pemetaan proses bisnis.",
+    desc: "Materi belajar mandiri gratis untuk memahami konsep dasar Lean Government, eliminasi pemborosan proses administrasi, dan percepatan alur layanan birokrasi.",
+    features: ["100% Gratis Tanpa Biaya", "Akses Materi Video & Slide 24/7", "Studi Kasus Lean Administration", "Kuis Pemahaman Mandiri", "Sertifikat Partisipasi Digital"],
     modules: [
       {
         title: "Modul 1: Dasar Manajemen Operasional",
@@ -231,8 +303,8 @@ const SEED_COURSES = [
         ]
       }
     ],
-    quiz: [{ q: "Metodologi apa yang fokus pada eliminasi pemborosan untuk efisiensi?", options: ["Lean Management", "Traditional Management", "Ad-hoc Planning", "Crisis Management"], correct: 0 }],
-  },
+    quiz: [{ q: "Metodologi apa yang fokus pada eliminasi pemborosan untuk efisiensi?", options: ["Lean Management", "Traditional Management", "Ad-hoc Planning", "Crisis Management"], correct: 0 }]
+  }
 ];
 
 const SEED_CATEGORIES = [
@@ -288,21 +360,36 @@ async function createTables(client) {
     )
   `);
 
-  // Fase 2: tambah kolom exam_settings, image, dan instructor ke tabel courses yang sudah ada
+  // Fase 2 & Landing Page: tambah kolom exam_settings, image, instructor, learning_type, type_label, venue, schedule, quota, features
   await client.query(`
     ALTER TABLE courses ADD COLUMN IF NOT EXISTS exam_settings JSONB NOT NULL DEFAULT '{"timeLimit":0,"maxAttempts":0,"passingScore":70}';
     ALTER TABLE courses ADD COLUMN IF NOT EXISTS image TEXT NOT NULL DEFAULT '';
     ALTER TABLE courses ADD COLUMN IF NOT EXISTS instructor JSONB NOT NULL DEFAULT '{}';
+    ALTER TABLE courses ADD COLUMN IF NOT EXISTS learning_type VARCHAR(50) NOT NULL DEFAULT 'self_learning';
+    ALTER TABLE courses ADD COLUMN IF NOT EXISTS type_label VARCHAR(100) NOT NULL DEFAULT 'Self-Learning (Belajar Mandiri)';
+    ALTER TABLE courses ADD COLUMN IF NOT EXISTS venue TEXT NOT NULL DEFAULT '';
+    ALTER TABLE courses ADD COLUMN IF NOT EXISTS schedule TEXT NOT NULL DEFAULT '';
+    ALTER TABLE courses ADD COLUMN IF NOT EXISTS quota VARCHAR(50) NOT NULL DEFAULT '';
+    ALTER TABLE courses ADD COLUMN IF NOT EXISTS features JSONB NOT NULL DEFAULT '[]';
   `);
 
-  // Backfill seed image dan instructor jika masih kosong di database
+  // Backfill seed image, instructor, learning_type, type_label, venue, schedule, quota, features jika masih kosong di database
   for (const c of SEED_COURSES) {
     await client.query(`
       UPDATE courses
       SET image = CASE WHEN image = '' OR image IS NULL THEN $1 ELSE image END,
-          instructor = CASE WHEN instructor = '{}'::jsonb OR instructor IS NULL THEN $2::jsonb ELSE instructor END
-      WHERE id = $3
-    `, [c.image, JSON.stringify(c.instructor), c.id]).catch(() => {});
+          instructor = CASE WHEN instructor = '{}'::jsonb OR instructor IS NULL THEN $2::jsonb ELSE instructor END,
+          learning_type = CASE WHEN learning_type IS NULL OR learning_type = '' THEN $3 ELSE learning_type END,
+          type_label = CASE WHEN type_label IS NULL OR type_label = '' THEN $4 ELSE type_label END,
+          venue = CASE WHEN venue IS NULL OR venue = '' THEN $5 ELSE venue END,
+          schedule = CASE WHEN schedule IS NULL OR schedule = '' THEN $6 ELSE schedule END,
+          quota = CASE WHEN quota IS NULL OR quota = '' THEN $7 ELSE quota END,
+          features = CASE WHEN features IS NULL OR features = '[]'::jsonb THEN $8::jsonb ELSE features END
+      WHERE id = $9
+    `, [
+      c.image, JSON.stringify(c.instructor || {}), c.learningType, c.typeLabel,
+      c.venue, c.schedule, c.quota, JSON.stringify(c.features || []), c.id
+    ]).catch(() => {});
   }
 
   await client.query(`
@@ -1107,11 +1194,12 @@ async function seedCourses(client) {
   for (const c of SEED_COURSES) {
     await client.query(
       `INSERT INTO courses
-         (id, title, category, duration, level, price, price_label, rating, badge, image, description, modules, quiz)
-       VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13)
+         (id, title, category, duration, level, price, price_label, rating, badge, image, instructor, description, modules, quiz, learning_type, type_label, venue, schedule, quota, features)
+       VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17,$18,$19,$20)
        ON CONFLICT (id) DO NOTHING`,
       [c.id, c.title, c.category, c.duration, c.level, c.price, c.priceLabel,
-       c.rating, c.badge, c.image || '', c.desc, JSON.stringify(c.modules), JSON.stringify(c.quiz)]
+       c.rating, c.badge, c.image || '', JSON.stringify(c.instructor || {}), c.desc, JSON.stringify(c.modules), JSON.stringify(c.quiz),
+       c.learningType || 'self_learning', c.typeLabel || 'Self-Learning (Belajar Mandiri)', c.venue || '', c.schedule || '', c.quota || '', JSON.stringify(c.features || [])]
     );
   }
 }

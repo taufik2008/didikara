@@ -76,14 +76,15 @@ export async function POST(request) {
       requestBody: { role: "reader", type: "anyone" },
     });
 
-    // Buat URL yang bisa di-embed
+    // Buat URL yang bisa di-embed langsung ke iframe player
     let url;
     if (mimeType === "application/pdf") {
       url = `https://drive.google.com/file/d/${fileId}/preview`;
     } else if (mimeType.includes("presentation") || mimeType.includes("powerpoint")) {
       url = `https://docs.google.com/presentation/d/${fileId}/embed?start=false&loop=false&delayms=3000`;
     } else {
-      url = `https://drive.google.com/file/d/${fileId}/view`;
+      // Untuk video (MP4, WEBM, dll.) dan berkas media lainnya, gunakan /preview agar bisa di-embed langsung
+      url = `https://drive.google.com/file/d/${fileId}/preview`;
     }
 
     return NextResponse.json({ success: true, url, fileId, fileName });

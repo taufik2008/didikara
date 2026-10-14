@@ -219,6 +219,17 @@ export default function VideoPlayerV2({
     } catch {}
   }, [activeCourse?.id, activeLessonIndex, videoProgress]);
 
+  // Otomatis minta grant-access via serverless Drive API jika video dari Google Drive
+  useEffect(() => {
+    if (lessonUrl && (lessonUrl.includes("drive.google.com") || lessonUrl.includes("docs.google.com"))) {
+      fetch("/api/drive/grant-access", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ url: lessonUrl, userEmail: currentUser?.email || "" }),
+      }).catch(() => {});
+    }
+  }, [lessonUrl, currentUser?.email]);
+
   // ── Helper Handlers ────────────────────────────────────────────────────────
   const handleToggleOfflineCache = () => {
     if (!activeCourse?.id) return;
@@ -443,13 +454,42 @@ export default function VideoPlayerV2({
         />
       ) : driveEmbed ? (
         /* Case C: Google Drive MP4 Video (Auto-converted to preview iframe) */
-        <iframe
-          src={driveEmbed}
-          title={lessonTitle}
-          style={iframeStyle}
-          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; fullscreen"
-          allowFullScreen
-        />
+        <div style={{ width: "100%", height: "100%", display: "flex", flexDirection: "column", position: "relative" }}>
+          <iframe
+            src={driveEmbed}
+            title={lessonTitle}
+            style={{ ...iframeStyle, flex: 1, minHeight: isFullscreen ? "100%" : "480px" }}
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; fullscreen"
+            allowFullScreen
+          />
+          <div style={{
+            display: "flex", alignItems: "center", justifyContent: "space-between",
+            padding: "8px 16px", background: "rgba(15, 23, 42, 0.95)", borderTop: "1px solid rgba(255,255,255,0.08)",
+            fontSize: "0.78rem", color: "#cbd5e1", flexWrap: "wrap", gap: 8, zIndex: 10
+          }}>
+            <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+              <span style={{ display: "inline-block", width: 8, height: 8, borderRadius: "50%", background: "#10b981" }} />
+              <span>Video Google Drive</span>
+            </div>
+            <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+              <span style={{ color: "#94a3b8", fontSize: "0.75rem" }}>
+                Jika video meminta izin akses:
+              </span>
+              <a
+                href={lessonUrl.replace(/\/preview.*$/, "/view").replace(/\/view.*$/, "/view")}
+                target="_blank"
+                rel="noreferrer"
+                style={{
+                  display: "inline-flex", alignItems: "center", gap: 5, padding: "4px 10px",
+                  borderRadius: 6, background: "rgba(59, 130, 246, 0.18)", border: "1px solid rgba(59, 130, 246, 0.4)",
+                  color: "#60a5fa", fontSize: "0.75rem", textDecoration: "none", fontWeight: 600
+                }}
+              >
+                <ExternalLink size={12} /> Buka / Minta Akses Google Drive ↗
+              </a>
+            </div>
+          </div>
+        </div>
       ) : loomEmbed ? (
         /* Case D: Loom Video Embed */
         <iframe

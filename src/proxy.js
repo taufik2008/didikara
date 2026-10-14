@@ -20,6 +20,8 @@ const publicPaths = [
   "/api/email/inbound",
   // Settings publik untuk tarif membership & instruksi pembayaran
   "/api/settings",
+  // Pemberian izin akses materi Google Drive
+  "/api/drive/grant-access",
 ];
 
 export async function proxy(request) {

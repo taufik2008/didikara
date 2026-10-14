@@ -68,10 +68,24 @@ export async function GET(request) {
       if (typeof instructor === 'string') {
         try { instructor = JSON.parse(instructor); } catch {}
       }
+      let features = row.features || [];
+      if (typeof features === 'string') {
+        try { features = JSON.parse(features); } catch {}
+      }
+
+      const learningType = row.learning_type || (row.price === 0 ? "self_learning" : "online");
+      const typeLabel = row.type_label || (
+        learningType === "online" ? "Online (Live Webinar)" :
+        learningType === "offline" ? "Offline (Tatap Muka)" :
+        "Self-Learning (Belajar Mandiri)"
+      );
+
       return {
         id: row.id,
         title: row.title,
         category: row.category,
+        learningType,
+        typeLabel,
         duration: row.duration,
         level: row.level,
         price: row.price,
@@ -79,6 +93,10 @@ export async function GET(request) {
         rating: row.rating,
         badge: row.badge,
         image: row.image || '',
+        venue: row.venue || '',
+        schedule: row.schedule || '',
+        quota: row.quota || '',
+        features: Array.isArray(features) ? features : [],
         instructor: instructor && instructor.name ? instructor : (row.instructor || null),
         desc: row.description,
         modules: typeof row.modules === 'string' ? JSON.parse(row.modules) : row.modules,
@@ -215,13 +233,28 @@ export async function POST(request) {
       }
     } else if (type === "course") {
       if (action === "save") {
-        const { id, title, category, duration, level, price, priceLabel, rating, badge, image, instructor, desc, modules, quiz, examSettings, prerequisiteCourseId } = data;
+        const {
+          id, title, category, duration, level, price, priceLabel, rating, badge,
+          image, instructor, desc, modules, quiz, examSettings, prerequisiteCourseId,
+          learningType, typeLabel, venue, schedule, quota, features
+        } = data;
         const examSettingsJson = JSON.stringify(examSettings || { timeLimit: 0, maxAttempts: 0, passingScore: 70 });
         const instructorJson = JSON.stringify(instructor || {});
+        const featuresJson = JSON.stringify(features || []);
+        const resolvedLearningType = learningType || (price === 0 ? "self_learning" : "online");
+        const resolvedTypeLabel = typeLabel || (
+          resolvedLearningType === "online" ? "Online (Live Webinar)" :
+          resolvedLearningType === "offline" ? "Offline (Tatap Muka)" :
+          "Self-Learning (Belajar Mandiri)"
+        );
 
         await query(`
-          INSERT INTO courses (id, title, category, duration, level, price, price_label, rating, badge, image, instructor, description, modules, quiz, exam_settings, prerequisite_course_id)
-          VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16)
+          INSERT INTO courses (
+            id, title, category, duration, level, price, price_label, rating, badge,
+            image, instructor, description, modules, quiz, exam_settings, prerequisite_course_id,
+            learning_type, type_label, venue, schedule, quota, features
+          )
+          VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20, $21, $22)
           ON CONFLICT (id)
           DO UPDATE SET
             title = EXCLUDED.title,
@@ -238,11 +271,19 @@ export async function POST(request) {
             modules = EXCLUDED.modules,
             quiz = EXCLUDED.quiz,
             exam_settings = EXCLUDED.exam_settings,
-            prerequisite_course_id = EXCLUDED.prerequisite_course_id
+            prerequisite_course_id = EXCLUDED.prerequisite_course_id,
+            learning_type = EXCLUDED.learning_type,
+            type_label = EXCLUDED.type_label,
+            venue = EXCLUDED.venue,
+            schedule = EXCLUDED.schedule,
+            quota = EXCLUDED.quota,
+            features = EXCLUDED.features,
+            deleted_at = NULL
         `, [
           id, title, category, duration, level, price, priceLabel,
-          rating, badge, image || '', instructorJson, desc, JSON.stringify(modules), JSON.stringify(quiz),
-          examSettingsJson, prerequisiteCourseId || null
+          rating || '5.0', badge || '', image || '', instructorJson, desc || '', JSON.stringify(modules || []), JSON.stringify(quiz || []),
+          examSettingsJson, prerequisiteCourseId || null,
+          resolvedLearningType, resolvedTypeLabel, venue || '', schedule || '', quota || '', featuresJson
         ]);
       } else if (action === "delete") {
         // Idem: sertifikat dan riwayat ujian menunjuk course_id ini.

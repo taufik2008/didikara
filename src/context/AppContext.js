@@ -391,7 +391,8 @@ export function AppProvider({ children }) {
   const [crudType, setCrudType] = useState("course");
   const [editingId, setEditingId] = useState(null);
   const [courseForm, setCourseForm] = useState({
-    title: "", category: "AI", duration: "", level: "Dasar", price: "", badge: "", image: "",
+    title: "", category: "AI", learningType: "self_learning", duration: "", level: "Dasar", price: "", badge: "", image: "",
+    venue: "", schedule: "", quota: "", features: [],
     instructorName: "", instructorTitle: "", instructorEmail: "", instructorAvatar: "", instructorOrg: "", desc: ""
   });
   const [userForm, setUserForm] = useState({
@@ -431,10 +432,11 @@ export function AppProvider({ children }) {
   useEffect(() => {
     async function initApp() {
       try {
-        const [sessionRes, appDataRes, settingsRes] = await Promise.allSettled([
+        const [sessionRes, appDataRes, settingsRes, catalogRes] = await Promise.allSettled([
           getSessionApi(),
           loadAppData(),
           fetch("/api/settings").then(r => r.json()),
+          fetch("/api/catalog?limit=100").then(r => r.json()),
         ]);
 
         if (settingsRes.status === "fulfilled" && settingsRes.value?.success && settingsRes.value?.settings) {
@@ -456,6 +458,12 @@ export function AppProvider({ children }) {
           setCertificates(json.data.certificates || []);
           if (json.data.categories) setCategories(json.data.categories);
           if (json.data.levels) setLevels(json.data.levels);
+          setDbMode("postgresql");
+        } else if (catalogRes.status === "fulfilled" && catalogRes.value?.success && Array.isArray(catalogRes.value?.courses) && catalogRes.value.courses.length > 0) {
+          // Pengunjung publik / landing page tanpa login: muat kursus riil dari basis data
+          setCourses(catalogRes.value.courses);
+          if (catalogRes.value.categories?.length > 0) setCategories(catalogRes.value.categories);
+          if (catalogRes.value.levels?.length > 0) setLevels(catalogRes.value.levels);
           setDbMode("postgresql");
         } else {
           setDbMode("demo");
@@ -618,6 +626,14 @@ export function AppProvider({ children }) {
     setExamHistory([]);
     setDbLessonProgress({});
     await logoutApi();
+    fetch("/api/catalog?limit=100")
+      .then(r => r.json())
+      .then(cat => {
+        if (cat.success && Array.isArray(cat.courses) && cat.courses.length > 0) {
+          setCourses(cat.courses);
+        }
+      })
+      .catch(() => {});
   };
 
   /**
@@ -1016,20 +1032,24 @@ export function AppProvider({ children }) {
     if (type === "course") {
       if (action === "edit" && record) {
         setCourseForm({
-          title: record.title,
-          category: record.category,
+          title: record.title || "",
+          category: record.category || "AI",
           learningType: record.learningType || "self_learning",
-          duration: record.duration,
-          level: record.level,
-          price: record.price,
-          badge: record.badge,
+          duration: record.duration || "",
+          level: record.level || "Dasar",
+          price: record.price || 0,
+          badge: record.badge || "",
           image: record.image || "",
+          venue: record.venue || "",
+          schedule: record.schedule || "",
+          quota: record.quota || "",
+          features: record.features || [],
           instructorName: record.instructor?.name || "",
           instructorTitle: record.instructor?.title || "",
           instructorEmail: record.instructor?.email || "",
           instructorAvatar: record.instructor?.avatar || "",
           instructorOrg: record.instructor?.org || "",
-          desc: record.desc
+          desc: record.desc || record.description || ""
         });
       } else {
         setCourseForm({
@@ -1038,9 +1058,13 @@ export function AppProvider({ children }) {
           learningType: "self_learning",
           duration: "10 Jam",
           level: levels[0]?.key || "Dasar",
-          price: 1000000,
-          badge: "Sertifikasi",
+          price: 0,
+          badge: "Kursus Baru",
           image: "",
+          venue: "",
+          schedule: "",
+          quota: "",
+          features: [],
           instructorName: "",
           instructorTitle: "",
           instructorEmail: "",
@@ -1065,9 +1089,23 @@ export function AppProvider({ children }) {
     e.preventDefault();
     if (crudType === "course") {
       const formattedPrice = parseInt(courseForm.price) || 0;
-      const priceLabel = formattedPrice === 0 ? "Gratis" : `Rp ${formattedPrice.toLocaleString('id-ID')}`;
-      const lType = courseForm.learningType || "self_learning";
+      const priceLabel = formattedPrice === 0 ? "Gratis (Free)" : `Rp ${formattedPrice.toLocaleString('id-ID')}`;
+      const lType = courseForm.learningType || (formattedPrice === 0 ? "self_learning" : "online");
       const typeLabel = lType === "online" ? "Online (Live Webinar)" : lType === "offline" ? "Offline (Tatap Muka)" : "Self-Learning (Belajar Mandiri)";
+      const defaultVenue = lType === "offline" ? "Hotel / Ruang Pelatihan Tatap Muka" : lType === "online" ? "Live Interactive Zoom / Google Meet" : "Akses Belajar Mandiri On-Demand 24/7";
+      const defaultSchedule = lType === "offline" ? "Jadwal Ditentukan" : lType === "online" ? "Sesi Live Interaktif" : "Fleksibel Kapan Saja (Self-Paced)";
+      const defaultQuota = lType === "offline" ? "Kuota Terbatas" : lType === "online" ? "Slot Tersedia" : "Tanpa Batas Kuota";
+      const defaultFeatures = lType === "offline"
+        ? ["Workshop Tatap Muka", "Modul Cetak & Seminar Kit", "Simulasi Studi Kasus Langsung", "Sertifikat Fisik & Digital"]
+        : lType === "online"
+        ? ["Live Webinar Interaktif (Zoom)", "Tanya Jawab & Bimbingan Langsung", "Akses Rekaman Video & Slide", "Sertifikat Digital"]
+        : ["100% Gratis & Fleksibel", "Akses Video On-Demand 24/7", "Slide PPT & Modul PDF", "Kuis Evaluasi Otomatis", "Sertifikat Kelulusan Standar"];
+
+      const venue = courseForm.venue?.trim() ? courseForm.venue : defaultVenue;
+      const schedule = courseForm.schedule?.trim() ? courseForm.schedule : defaultSchedule;
+      const quota = courseForm.quota?.trim() ? courseForm.quota : defaultQuota;
+      const features = (courseForm.features && courseForm.features.length > 0) ? courseForm.features : defaultFeatures;
+
       const instructorObj = courseForm.instructorName ? {
         name: courseForm.instructorName,
         title: courseForm.instructorTitle || "Pengajar Ahli",
@@ -1078,7 +1116,7 @@ export function AppProvider({ children }) {
 
       if (crudAction === "add") {
         const newCourse = {
-          id: `c${courses.length + 1}`,
+          id: `c${Date.now()}`,
           title: courseForm.title,
           category: courseForm.category,
           learningType: lType,
@@ -1090,9 +1128,14 @@ export function AppProvider({ children }) {
           rating: "5.0",
           badge: courseForm.badge || "Kursus Baru",
           image: courseForm.image || "",
+          venue,
+          schedule,
+          quota,
+          features,
           instructor: instructorObj,
           desc: courseForm.desc,
-          modules: [{ title: "Modul 1: Pendahuluan", lessons: ["1.1 Pengenalan Materi", "1.2 Dasar Teori & Logika Kerja"] }],
+          description: courseForm.desc,
+          modules: [{ title: "Modul 1: Pendahuluan", lessons: [{ title: "1.1 Pengenalan Materi", type: "text", url: "" }, { title: "1.2 Dasar Teori & Logika Kerja", type: "text", url: "" }] }],
           quiz: [{ q: "Apa nama platform ini?", options: ["DIDIKARA", "LMS Biasa", "Course Finder", "Study Hub"], correct: 0 }]
         };
         setCourses(prev => [...prev, newCourse]);
@@ -1118,8 +1161,13 @@ export function AppProvider({ children }) {
           priceLabel,
           badge: courseForm.badge,
           image: courseForm.image || "",
+          venue: courseForm.venue?.trim() ? courseForm.venue : (targetCourse?.venue || defaultVenue),
+          schedule: courseForm.schedule?.trim() ? courseForm.schedule : (targetCourse?.schedule || defaultSchedule),
+          quota: courseForm.quota?.trim() ? courseForm.quota : (targetCourse?.quota || defaultQuota),
+          features: (courseForm.features && courseForm.features.length > 0) ? courseForm.features : (targetCourse?.features || defaultFeatures),
           instructor: instructorObj || targetCourse?.instructor,
-          desc: courseForm.desc
+          desc: courseForm.desc,
+          description: courseForm.desc
         };
         setCourses(prev => prev.map(c => c.id === editingId ? updatedCourse : c));
         syncWithDb("course", "save", updatedCourse);
@@ -1167,6 +1215,12 @@ export function AppProvider({ children }) {
     const courseCopy = JSON.parse(JSON.stringify(course));
     if (!courseCopy.modules) courseCopy.modules = [];
     if (!courseCopy.quiz) courseCopy.quiz = [];
+    courseCopy.modules = courseCopy.modules.map(m => ({
+      ...m,
+      lessons: Array.isArray(m.lessons)
+        ? m.lessons.map(l => (typeof l === "string" ? { title: l, type: "video", url: "" } : l))
+        : []
+    }));
     setSelectedLmsCourse(courseCopy);
     setLmsManageTab("materials");
     setNewLessonInput({});
@@ -1177,10 +1231,26 @@ export function AppProvider({ children }) {
   const handleLmsDeleteModule = (modIdx) => setSelectedLmsCourse(prev => ({ ...prev, modules: prev.modules.filter((_, idx) => idx !== modIdx) }));
   const handleLmsModuleTitleChange = (modIdx, value) => setSelectedLmsCourse(prev => ({ ...prev, modules: prev.modules.map((m, idx) => idx === modIdx ? { ...m, title: value } : m) }));
   const handleLmsAddLesson = (modIdx) => {
-    const lessonText = newLessonInput[modIdx] || "";
-    if (!lessonText.trim()) return;
-    setSelectedLmsCourse(prev => ({ ...prev, modules: prev.modules.map((m, idx) => idx === modIdx ? { ...m, lessons: [...m.lessons, { title: lessonText.trim(), type: "text", url: "" }] } : m) }));
-    setNewLessonInput(prev => ({ ...prev, [modIdx]: "" }));
+    setSelectedLmsCourse(prev => {
+      if (!prev || !prev.modules) return prev;
+      return {
+        ...prev,
+        modules: prev.modules.map((m, idx) => {
+          if (idx !== modIdx) return m;
+          const currentLessons = Array.isArray(m.lessons) ? m.lessons : [];
+          const nextIndex = currentLessons.length + 1;
+          const newLesson = {
+            title: `${idx + 1}.${nextIndex} Pelajaran Baru`,
+            type: "video",
+            url: ""
+          };
+          return {
+            ...m,
+            lessons: [...currentLessons, newLesson]
+          };
+        })
+      };
+    });
   };
   const handleLmsDeleteLesson = (modIdx, lessonIdx) => setSelectedLmsCourse(prev => ({ ...prev, modules: prev.modules.map((m, idx) => idx === modIdx ? { ...m, lessons: m.lessons.filter((_, lIdx) => lIdx !== lessonIdx) } : m) }));
   const handleLmsLessonChange = (modIdx, lessonIdx, field, value) => setSelectedLmsCourse(prev => ({ ...prev, modules: prev.modules.map((m, idx) => idx === modIdx ? { ...m, lessons: m.lessons.map((l, lIdx) => lIdx === lessonIdx ? { ...(typeof l === 'string' ? { title: l, type: 'text', url: '' } : l), [field]: value } : l) } : m) }));
@@ -1200,6 +1270,23 @@ export function AppProvider({ children }) {
       setSelectedAnswers({});
       setQuizResultMessage(null);
     }
+
+    // Otomatis berikan akses publik untuk video/file Google Drive yang tersimpan
+    try {
+      (selectedLmsCourse.modules || []).forEach(m => {
+        (m.lessons || []).forEach(l => {
+          const lUrl = typeof l === "string" ? "" : (l?.url || "");
+          if (lUrl.includes("drive.google.com") || lUrl.includes("docs.google.com")) {
+            fetch("/api/drive/grant-access", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ url: lUrl }),
+            }).catch(() => {});
+          }
+        });
+      });
+    } catch {}
+
     setLmsManageModalActive(false);
     alert(`Materi dan Soal Ujian untuk "${selectedLmsCourse.title}" berhasil diperbarui!`);
   };
