@@ -197,7 +197,7 @@ const SEED_COURSES = [
     rating: "4.8",
     badge: "Open Courseware",
     venue: "Akses Belajar Mandiri On-Demand 24/7",
-    schedule: "Fleksibel Kapan Saja (Self-Paced)",
+    schedule: "Fleksibel Kapan Saja (Tanpa Jadwal)",
     quota: "Tanpa Batas Kuota",
     image: "https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=600&auto=format&fit=crop&q=80",
     instructor: { name: "Siti Rahmawati, M.Kom", title: "Lead Data Architect & BI Specialist", org: "TechGov Analytics", avatar: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=120&auto=format&fit=crop&q=80" },
@@ -373,16 +373,16 @@ async function createTables(client) {
     ALTER TABLE courses ADD COLUMN IF NOT EXISTS features JSONB NOT NULL DEFAULT '[]';
   `);
 
-  // Backfill seed image, instructor, learning_type, type_label, venue, schedule, quota, features jika masih kosong di database
+  // Backfill seed image, instructor, learning_type, type_label, venue, schedule, quota, features jika masih kosong atau perlu sinkronisasi
   for (const c of SEED_COURSES) {
     await client.query(`
       UPDATE courses
       SET image = CASE WHEN image = '' OR image IS NULL THEN $1 ELSE image END,
           instructor = CASE WHEN instructor = '{}'::jsonb OR instructor IS NULL THEN $2::jsonb ELSE instructor END,
-          learning_type = CASE WHEN learning_type IS NULL OR learning_type = '' THEN $3 ELSE learning_type END,
-          type_label = CASE WHEN type_label IS NULL OR type_label = '' THEN $4 ELSE type_label END,
+          learning_type = $3,
+          type_label = $4,
           venue = CASE WHEN venue IS NULL OR venue = '' THEN $5 ELSE venue END,
-          schedule = CASE WHEN schedule IS NULL OR schedule = '' THEN $6 ELSE schedule END,
+          schedule = $6,
           quota = CASE WHEN quota IS NULL OR quota = '' THEN $7 ELSE quota END,
           features = CASE WHEN features IS NULL OR features = '[]'::jsonb THEN $8::jsonb ELSE features END
       WHERE id = $9

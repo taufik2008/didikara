@@ -781,7 +781,7 @@ export default function LandingPage() {
                   📌 Alur Pendaftaran:
                 </div>
                 <div style={{ fontSize: "0.8rem", color: "var(--text-secondary)", lineHeight: 1.5 }}>
-                  <strong>1. Pilih Kursus</strong> ➔ <strong>2. Klik "Mulai Belajar" / Daftar</strong> ➔ <strong>3. Langsung Terdaftar & Akses Modul Terbuka Seketika</strong> (Tersedia Gratis & Berbayar).
+                  <strong>1. Pilih Kursus</strong> ➔ <strong>2. Klik "Mulai Belajar" / Daftar</strong> ➔ <strong>3. Langsung Tonton Video Tanpa Perlu Pilih Jadwal</strong> (Akses Fleksibel On-Demand 24/7).
                 </div>
               </div>
             </div>
@@ -1281,7 +1281,11 @@ export default function LandingPage() {
                       >
                         {course.learningType === "offline" ? <MapPin size={13} /> : course.learningType === "online" ? <Calendar size={13} /> : <Zap size={13} />}
                         <span style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
-                          {course.venue || course.schedule || "Akses Mandiri On-Demand"}
+                          {course.learningType === "offline"
+                            ? (course.venue || "Hotel / Venue Pelatihan")
+                            : course.learningType === "online"
+                            ? (course.schedule || "Live Webinar Terjadwal")
+                            : "Fleksibel Kapan Saja (Tanpa Jadwal)"}
                         </span>
                       </div>
 
@@ -2328,7 +2332,7 @@ export default function LandingPage() {
                           {Number(selectedCourseModal?.price) === 0 ? "Rp 0" : (selectedCourseModal?.priceLabel || `Rp ${Number(selectedCourseModal?.price || 0).toLocaleString("id-ID")}`)}
                         </div>
                         <p style={{ fontSize: "0.76rem", color: "var(--text-secondary)", lineHeight: 1.4 }}>
-                          Akses on-demand video & slide 24/7, kuis pemahaman, dan sertifikat partisipasi digital.
+                          Akses on-demand video & materi mandiri 24/7 (hanya lihat video, tanpa perlu pilih jadwal), kuis pemahaman, dan sertifikat partisipasi digital.
                         </p>
                       </div>
                       <div style={{ marginTop: 12, fontSize: "0.74rem", fontWeight: 700, color: "#10b981" }}>

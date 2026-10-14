@@ -1093,7 +1093,7 @@ export function AppProvider({ children }) {
       const lType = courseForm.learningType || (formattedPrice === 0 ? "self_learning" : "online");
       const typeLabel = lType === "online" ? "Online (Live Webinar)" : lType === "offline" ? "Offline (Tatap Muka)" : "Self-Learning (Belajar Mandiri)";
       const defaultVenue = lType === "offline" ? "Hotel / Ruang Pelatihan Tatap Muka" : lType === "online" ? "Live Interactive Zoom / Google Meet" : "Akses Belajar Mandiri On-Demand 24/7";
-      const defaultSchedule = lType === "offline" ? "Jadwal Ditentukan" : lType === "online" ? "Sesi Live Interaktif" : "Fleksibel Kapan Saja (Self-Paced)";
+      const defaultSchedule = lType === "offline" ? "Jadwal Ditentukan" : lType === "online" ? "Sesi Live Interaktif" : "Fleksibel Kapan Saja (Tanpa Jadwal)";
       const defaultQuota = lType === "offline" ? "Kuota Terbatas" : lType === "online" ? "Slot Tersedia" : "Tanpa Batas Kuota";
       const defaultFeatures = lType === "offline"
         ? ["Workshop Tatap Muka", "Modul Cetak & Seminar Kit", "Simulasi Studi Kasus Langsung", "Sertifikat Fisik & Digital"]
@@ -1101,9 +1101,9 @@ export function AppProvider({ children }) {
         ? ["Live Webinar Interaktif (Zoom)", "Tanya Jawab & Bimbingan Langsung", "Akses Rekaman Video & Slide", "Sertifikat Digital"]
         : ["100% Gratis & Fleksibel", "Akses Video On-Demand 24/7", "Slide PPT & Modul PDF", "Kuis Evaluasi Otomatis", "Sertifikat Kelulusan Standar"];
 
-      const venue = courseForm.venue?.trim() ? courseForm.venue : defaultVenue;
-      const schedule = courseForm.schedule?.trim() ? courseForm.schedule : defaultSchedule;
-      const quota = courseForm.quota?.trim() ? courseForm.quota : defaultQuota;
+      const venue = lType === "self_learning" ? "Akses Belajar Mandiri On-Demand 24/7" : (courseForm.venue?.trim() ? courseForm.venue : defaultVenue);
+      const schedule = lType === "self_learning" ? "Fleksibel Kapan Saja (Tanpa Jadwal)" : (courseForm.schedule?.trim() ? courseForm.schedule : defaultSchedule);
+      const quota = lType === "self_learning" ? "Tanpa Batas Kuota" : (courseForm.quota?.trim() ? courseForm.quota : defaultQuota);
       const features = (courseForm.features && courseForm.features.length > 0) ? courseForm.features : defaultFeatures;
 
       const instructorObj = courseForm.instructorName ? {
@@ -1161,9 +1161,9 @@ export function AppProvider({ children }) {
           priceLabel,
           badge: courseForm.badge,
           image: courseForm.image || "",
-          venue: courseForm.venue?.trim() ? courseForm.venue : (targetCourse?.venue || defaultVenue),
-          schedule: courseForm.schedule?.trim() ? courseForm.schedule : (targetCourse?.schedule || defaultSchedule),
-          quota: courseForm.quota?.trim() ? courseForm.quota : (targetCourse?.quota || defaultQuota),
+          venue: lType === "self_learning" ? "Akses Belajar Mandiri On-Demand 24/7" : (courseForm.venue?.trim() ? courseForm.venue : (targetCourse?.venue || defaultVenue)),
+          schedule: lType === "self_learning" ? "Fleksibel Kapan Saja (Tanpa Jadwal)" : (courseForm.schedule?.trim() ? courseForm.schedule : (targetCourse?.schedule || defaultSchedule)),
+          quota: lType === "self_learning" ? "Tanpa Batas Kuota" : (courseForm.quota?.trim() ? courseForm.quota : (targetCourse?.quota || defaultQuota)),
           features: (courseForm.features && courseForm.features.length > 0) ? courseForm.features : (targetCourse?.features || defaultFeatures),
           instructor: instructorObj || targetCourse?.instructor,
           desc: courseForm.desc,

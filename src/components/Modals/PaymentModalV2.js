@@ -179,6 +179,12 @@ export default function PaymentModal() {
 
   const finalCalculatedPrice = Math.max(0, rawPrice - promoSaving);
 
+  const isMembership = selectedPayCourse?.id?.startsWith("membership-") || selectedPayCourse?.badge === "ALL-ACCESS MEMBERSHIP";
+  const isSelfLearning = selectedPayCourse?.learningType === "self_learning"
+    || selectedPayCourse?.learning_type === "self_learning"
+    || (selectedPayCourse?.typeLabel && String(selectedPayCourse.typeLabel).toLowerCase().includes("self"))
+    || (!selectedPayCourse?.learningType && (selectedPayCourse?.isFree || Number(selectedPayCourse?.price) === 0));
+
   const handleCreateOrder = async () => {
     setLoading(true); setError("");
     try {
@@ -188,7 +194,7 @@ export default function PaymentModal() {
         body: JSON.stringify({
           courseId: selectedPayCourse.id,
           promoCode: appliedPromo?.code || null,
-          batch: selectedBatch,
+          batch: isSelfLearning ? "Self-Learning (Tanpa Jadwal)" : isMembership ? "All-Access Instant" : selectedBatch,
         }),
       });
       const data = await res.json();
@@ -277,21 +283,19 @@ export default function PaymentModal() {
     </button>
   );
 
-  const isMembership = selectedPayCourse?.id?.startsWith("membership-") || selectedPayCourse?.badge === "ALL-ACCESS MEMBERSHIP";
-
   if (step === "info") return (
     <div className="modal-overlay active">
       <div className="modal-content glass-panel" style={{ maxWidth: 480, maxHeight: "90vh", overflowY: "auto" }}>
         <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:16 }}>
           <h3 style={{ margin:0, fontSize: "1.1rem" }}>
-            {isMembership ? "👑 Pendaftaran Membership All-Access" : "Pendaftaran Pelatihan"}
+            {isMembership ? "👑 Pendaftaran Membership All-Access" : isSelfLearning ? "Akses Belajar Mandiri (Self-Learning)" : "Pendaftaran Pelatihan"}
           </h3>
           <CloseBtn/>
         </div>
         <StepBar/>
         <CourseCard/>
 
-        {/* ── Status Akses Langganan / Pilihan Batch ── */}
+        {/* ── Status Akses Langganan / Self-Learning / Pilihan Batch ── */}
         {isMembership ? (
           <div className="glass-card" style={{
             padding: 14, marginBottom: 14,
@@ -302,6 +306,18 @@ export default function PaymentModal() {
             </div>
             <div style={{ fontSize: "0.74rem", color: "var(--text-secondary)", lineHeight: 1.5 }}>
               Paket membership ini langsung aktif seketika setelah pembayaran. Anda bebas mengakses seluruh 100+ modul kelas dan ujian kapan saja tanpa terikat jadwal batch tertentu.
+            </div>
+          </div>
+        ) : isSelfLearning ? (
+          <div className="glass-card" style={{
+            padding: 14, marginBottom: 14,
+            background: "rgba(16,185,129,0.08)", border: "1px solid rgba(16,185,129,0.3)"
+          }}>
+            <div style={{ display: "flex", alignItems: "center", gap: 8, color: "#34d399", fontWeight: 700, fontSize: "0.82rem", marginBottom: 4 }}>
+              <Zap size={15} /> Akses Belajar Mandiri (Self-Learning Video On-Demand)
+            </div>
+            <div style={{ fontSize: "0.74rem", color: "var(--text-secondary)", lineHeight: 1.5 }}>
+              Kursus ini berformat <strong>Self-Learning (hanya lihat video & materi mandiri)</strong>. Anda dapat langsung menonton seluruh video dan materi kapan saja secara fleksibel (self-paced) <strong>tanpa perlu memilih jadwal pelatihan</strong>.
             </div>
           </div>
         ) : (
@@ -438,7 +454,15 @@ export default function PaymentModal() {
         <div style={{ display:"flex", gap:10 }}>
           <button className="btn btn-secondary" onClick={() => setPaymentModalActive(false)} style={{ flex:1 }}>Batal</button>
           <button className="btn btn-primary" onClick={handleCreateOrder} disabled={loading} style={{ flex:2 }}>
-            {loading ? <><Loader size={14} style={{ marginRight:6, animation:"spin 1s linear infinite" }}/>Memproses...</> : "Lanjutkan Pembayaran →"}
+            {loading ? (
+              <><Loader size={14} style={{ marginRight:6, animation:"spin 1s linear infinite" }}/>Memproses...</>
+            ) : finalCalculatedPrice === 0 ? (
+              "Mulai Belajar Sekarang (Gratis) →"
+            ) : isSelfLearning ? (
+              "Buka Akses Video Sekarang →"
+            ) : (
+              "Lanjutkan Pembayaran →"
+            )}
           </button>
         </div>
       </div>
