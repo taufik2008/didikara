@@ -2221,8 +2221,12 @@ export default function LandingPage({ initialCourses, initialCategories, initial
         >
           <div>&copy; 2026 DIDIKARA Platform Nasional. Hak Cipta Dilindungi Undang-Undang.</div>
           <div style={{ display: "flex", gap: 16 }}>
-            <span>Ketentuan Layanan</span>
-            <span>Kebijakan Privasi</span>
+            <Link href="/legal/syarat-ketentuan" style={{ color: "inherit", textDecoration: "none", transition: "color 0.2s ease" }}>
+              Ketentuan Layanan
+            </Link>
+            <Link href="/legal/privasi" style={{ color: "inherit", textDecoration: "none", transition: "color 0.2s ease" }}>
+              Kebijakan Privasi
+            </Link>
             <span>Standar Akreditasi BNSP</span>
           </div>
         </div>
