@@ -22,8 +22,8 @@ export async function POST(request) {
   }
 
   const { orderId, action, notes } = body;
-  if (!orderId || !["approve","reject"].includes(action))
-    return NextResponse.json({ error: "orderId dan action (approve/reject) wajib" }, { status: 400 });
+  if (!orderId || !["approve", "reject", "refund"].includes(action))
+    return NextResponse.json({ error: "orderId dan action (approve/reject/refund) wajib" }, { status: 400 });
 
   try {
     const { rows: [order] } = await query(
@@ -31,13 +31,56 @@ export async function POST(request) {
     );
     if (!order) return NextResponse.json({ error: "Order tidak ditemukan" }, { status: 404 });
 
-    // Admin atau pemilik order yang menjalankan simulasi auto-settlement
-    if (user.role !== "admin" && user.email !== order.user_email) {
+    if (action === "refund" && user.role !== "admin") {
+      return NextResponse.json({ error: "Hanya admin yang dapat memproses refund" }, { status: 403 });
+    }
+
+    // Admin atau pemilik order yang menjalankan simulasi auto-settlement (approve/reject)
+    if (action !== "refund" && user.role !== "admin" && user.email !== order.user_email) {
       return NextResponse.json({ error: "Hanya admin atau pemilik order yang berwenang" }, { status: 403 });
     }
 
-    const newStatus  = action === "approve" ? "paid" : "failed";
     const adminNotes = notes || "";
+
+    if (action === "refund") {
+      if (order.status !== "paid") {
+        return NextResponse.json({ error: "Hanya order berstatus 'paid' yang dapat di-refund" }, { status: 400 });
+      }
+
+      await query(
+        `UPDATE payment_orders
+         SET status = 'refunded',
+             metadata = metadata || $1::jsonb,
+             updated_at = NOW()
+         WHERE id = $2`,
+        [JSON.stringify({ refund_reason: adminNotes, refunded_by: user.email, refunded_at: new Date().toISOString() }), orderId]
+      );
+
+      // Cabut enrollment aktif jika ada
+      if (order.course_id) {
+        await query(
+          "UPDATE enrollments SET status = 'cancelled' WHERE user_email = $1 AND course_id = $2",
+          [order.user_email, order.course_id]
+        ).catch(() => {});
+      }
+
+      await catatAudit(user.email, "refund_payment", "payment_order", orderId, {
+        amount: Number(order.amount) || 0,
+        course_id: order.course_id,
+        user_email: order.user_email,
+        notes: adminNotes,
+      });
+
+      await query(
+        `INSERT INTO notifications (user_email, type, title, message)
+         VALUES ($1, 'info', 'Pengembalian Dana (Refund)', $2)`,
+        [order.user_email, `Pembayaran order ${orderId} telah diproses untuk pengembalian dana (refund). ${adminNotes ? "Catatan: " + adminNotes : ""}`]
+      ).catch(() => {});
+
+      return NextResponse.json({ success: true, status: "refunded" });
+    }
+
+    const newStatus  = action === "approve" ? "paid" : "failed";
 
     // Update order
     await query(

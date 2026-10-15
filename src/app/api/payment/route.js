@@ -18,6 +18,22 @@ export async function GET(request) {
   const user = await authenticateRequest(request);
   if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
+  // Auto-sweep: tandai order pending yang telah melewati batas waktu sebagai expired
+  try {
+    const { rows: expiredOrders } = await query(`
+      UPDATE payment_orders
+         SET status = 'expired', updated_at = NOW()
+       WHERE status = 'pending' AND expired_at IS NOT NULL AND expired_at < NOW()
+      RETURNING id, user_email
+    `);
+    for (const exp of expiredOrders) {
+      await catatAudit("system", "expire_payment_order", "payment_order", exp.id, {
+        user_email: exp.user_email,
+        reason: "auto_sweep_expired",
+      }).catch(() => {});
+    }
+  } catch {}
+
   if (orderId) {
     const { rows: [order] } = await query(
       `SELECT po.*, COALESCE(c.title, (po.metadata->>'course_title'), 'Membership All-Access') AS course_title FROM payment_orders po
