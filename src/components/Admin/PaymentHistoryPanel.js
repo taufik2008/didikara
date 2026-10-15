@@ -135,10 +135,10 @@ export default function PaymentHistoryPanel() {
           { key:"pending", label:"Pending" },
           { key:"failed",  label:"Ditolak" },
         ].map(f => (
-          <div key={f.key} className={`filter-pill ${filter===f.key?"active":""}`}
-            onClick={() => setFilter(f.key)} style={{ fontSize:"0.75rem" }}>
+          <button type="button" key={f.key} className={`filter-pill ${filter===f.key?"active":""}`}
+            onClick={() => setFilter(f.key)} style={{ fontSize:"0.75rem", border:"none", cursor:"pointer" }}>
             {f.label}
-          </div>
+          </button>
         ))}
       </div>
 

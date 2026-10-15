@@ -2437,6 +2437,9 @@ export default function LandingPage({ initialCourses, initialCategories, initial
                   <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))", gap: 14, marginBottom: 20 }}>
                     {/* Option 1: Self Learning */}
                     <div
+                      role="button"
+                      tabIndex={0}
+                      onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); setSelectedModalTier("self_learning"); } }}
                       onClick={() => setSelectedModalTier("self_learning")}
                       style={{
                         padding: 16,
@@ -2468,6 +2471,9 @@ export default function LandingPage({ initialCourses, initialCategories, initial
 
                     {/* Option 2: Online Live */}
                     <div
+                      role="button"
+                      tabIndex={0}
+                      onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); setSelectedModalTier("online"); } }}
                       onClick={() => setSelectedModalTier("online")}
                       style={{
                         padding: 16,
@@ -2499,6 +2505,9 @@ export default function LandingPage({ initialCourses, initialCategories, initial
 
                     {/* Option 3: Offline Workshop */}
                     <div
+                      role="button"
+                      tabIndex={0}
+                      onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); setSelectedModalTier("offline"); } }}
                       onClick={() => setSelectedModalTier("offline")}
                       style={{
                         padding: 16,

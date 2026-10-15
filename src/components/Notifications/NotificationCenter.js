@@ -151,10 +151,19 @@ export default function NotificationCenter() {
               const isNew = !n.read_at;
               return (
                 <div key={n.id}
+                  role="button"
+                  tabIndex={0}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter" || e.key === " ") {
+                      e.preventDefault();
+                      if (isNew) markOneRead(n.id);
+                      if (n.link) window.location.href = n.link;
+                    }
+                  }}
                   onClick={() => { if (isNew) markOneRead(n.id); if (n.link) window.location.href = n.link; }}
                   style={{
                     padding: "12px 16px", borderBottom: "1px solid rgba(255,255,255,0.04)",
-                    cursor: n.link ? "pointer" : "default",
+                    cursor: "pointer",
                     background: isNew ? "rgba(249, 115, 22,0.06)" : "transparent",
                     display: "flex", gap: 12, alignItems: "flex-start",
                     transition: "background 0.15s",
