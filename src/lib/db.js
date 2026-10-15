@@ -688,34 +688,36 @@ async function createTables(client) {
   } catch { /* tabel mungkin belum ada */ }
 
   // ─── Migrasi: Akun Admin admin@digidaya.tech ────────────────────────────────
-  try {
-    const { rows: digidayaAdmin } = await client.query("SELECT email FROM users WHERE email = 'admin@digidaya.tech'");
-    if (digidayaAdmin.length === 0) {
-      const hashed = await bcrypt.hash('password123', 10);
-      await client.query(
-        `INSERT INTO users
-           (email, password, fullname, role, role_label, avatar, stats, job_title, organization, status, permissions, competencies)
-         VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12)
-         ON CONFLICT (email) DO UPDATE SET password = $2`,
-        [
-          'admin@digidaya.tech',
-          hashed,
-          'Super Administrator',
-          'admin',
-          'Platform Admin & Auditor',
-          'SA',
-          JSON.stringify({ hours: 0, courses: 10, certs: 250, competency: 'Superuser' }),
-          'System Admin',
-          'PT. SDI',
-          'active',
-          JSON.stringify(['view_dashboard', 'access_lms', 'access_ai_portal', 'manage_master_data']),
-          JSON.stringify({ current: [80, 80, 80, 80, 80, 80], target: [90, 90, 90, 90, 90, 90] }),
-        ]
-      );
-      console.log('✅ Akun admin@digidaya.tech berhasil dipersiapkan');
+  if (process.env.SEED_DEMO_ACCOUNTS !== "false") {
+    try {
+      const { rows: digidayaAdmin } = await client.query("SELECT email FROM users WHERE email = 'admin@digidaya.tech'");
+      if (digidayaAdmin.length === 0) {
+        const hashed = await bcrypt.hash('password123', 10);
+        await client.query(
+          `INSERT INTO users
+             (email, password, fullname, role, role_label, avatar, stats, job_title, organization, status, permissions, competencies)
+           VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12)
+           ON CONFLICT (email) DO NOTHING`,
+          [
+            'admin@digidaya.tech',
+            hashed,
+            'Super Administrator',
+            'admin',
+            'Platform Admin & Auditor',
+            'SA',
+            JSON.stringify({ hours: 0, courses: 10, certs: 250, competency: 'Superuser' }),
+            'System Admin',
+            'PT. SDI',
+            'active',
+            JSON.stringify(['view_dashboard', 'access_lms', 'access_ai_portal', 'manage_master_data']),
+            JSON.stringify({ current: [80, 80, 80, 80, 80, 80], target: [90, 90, 90, 90, 90, 90] }),
+          ]
+        );
+        console.log('✅ Akun admin@digidaya.tech berhasil dipersiapkan');
+      }
+    } catch (adminErr) {
+      console.warn('Admin init note:', adminErr?.message);
     }
-  } catch (adminErr) {
-    console.warn('Admin init note:', adminErr?.message);
   }
 
 
@@ -1180,6 +1182,9 @@ export async function initDB() {
 // ─── Seed Functions ───────────────────────────────────────────────────────────
 
 async function seedUsers(client) {
+  if (process.env.SEED_DEMO_ACCOUNTS === "false") {
+    return;
+  }
   for (const u of SEED_USERS) {
     const hashed = await bcrypt.hash(u.password, 10);
     await client.query(
