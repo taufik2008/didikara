@@ -1048,6 +1048,22 @@ async function createTables(client) {
   await client.query(`CREATE INDEX IF NOT EXISTS idx_ta_course      ON training_assignments(course_id)`);
   await client.query(`CREATE INDEX IF NOT EXISTS idx_course_instructors_user ON course_instructors(user_email)`);
 
+  // ─── Riwayat Rekomendasi & Perencanaan AI Planner (D.4) ─────────────────
+  await client.query(`
+    CREATE TABLE IF NOT EXISTS ai_planner_results (
+      id SERIAL PRIMARY KEY,
+      user_email      VARCHAR(255) NOT NULL REFERENCES users(email) ON DELETE CASCADE,
+      planner_type    VARCHAR(50)  NOT NULL DEFAULT 'gov',
+      organization    VARCHAR(255) DEFAULT '',
+      target_role     VARCHAR(255) DEFAULT '',
+      current_skills  JSONB NOT NULL DEFAULT '[]',
+      gap_analysis    JSONB NOT NULL DEFAULT '{}',
+      recommendations JSONB NOT NULL DEFAULT '[]',
+      created_at      TIMESTAMPTZ DEFAULT NOW()
+    )
+  `);
+  await client.query(`CREATE INDEX IF NOT EXISTS idx_ai_planner_user ON ai_planner_results(user_email)`);
+
   await client.query(`
     CREATE TABLE IF NOT EXISTS email_queue (
       id SERIAL PRIMARY KEY,

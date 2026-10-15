@@ -4,6 +4,32 @@ import { callGemini, isMockMode } from "@/lib/ai";
 import { query } from "@/lib/db";
 import { hasPermission, PERMISSIONS } from "@/lib/permissions";
 
+export async function GET(request) {
+  try {
+    const auth = await authenticateRequest(request);
+    if (!auth?.email) {
+      return NextResponse.json({ success: false, error: "Unauthorized" }, { status: 401 });
+    }
+
+    const { rows: history } = await query(
+      `SELECT id, planner_type, organization, target_role, current_skills, gap_analysis, recommendations, created_at
+       FROM ai_planner_results
+       WHERE user_email = $1
+       ORDER BY created_at DESC
+       LIMIT 20`,
+      [auth.email]
+    ).catch(() => ({ rows: [] }));
+
+    return NextResponse.json({
+      success: true,
+      history,
+    });
+  } catch (error) {
+    console.error("AI Planner GET Error:", error);
+    return NextResponse.json({ success: false, error: "Gagal memuat riwayat AI planner" }, { status: 500 });
+  }
+}
+
 export async function POST(request) {
   try {
     // Peran diambil dari JWT, bukan header x-user-role yang disuntikkan proxy —
@@ -38,8 +64,12 @@ export async function POST(request) {
     }
 
     let prompt = "";
+    let orgName = "";
+    let targetRole = "";
     if (type === 'gov') {
       const { instansi, jabatan, target, pegawai } = body;
+      orgName = instansi || "";
+      targetRole = jabatan || "";
       prompt = `Anda adalah AI Training Recommendation Engine untuk AI LMS.
 Berdasarkan input perencanaan berikut:
 - Nama Instansi/Kementerian: ${instansi}
@@ -59,6 +89,7 @@ Format JSON output harus tepat seperti berikut:
 HANYA kembalikan JSON. Jangan sertakan teks markdown, penjelasan, atau blok kode. Output harus berupa JSON murni yang valid.`;
     } else {
       const { currentJob, targetJob } = body;
+      targetRole = targetJob || "";
       prompt = `Anda adalah Competency Development Planner untuk AI LMS.
 Berdasarkan input jalur karir berikut:
 - Jabatan Saat Ini: ${currentJob}
@@ -85,10 +116,32 @@ HANYA kembalikan JSON. Jangan sertakan teks markdown, penjelasan, atau blok kode
     const resultText = await callGemini(prompt, { json: true, maxOutputTokens: 2048 });
     const parsedResult = JSON.parse(resultText.trim());
 
+    // Simpan hasil perencanaan ke tabel ai_planner_results (D.4)
+    let savedId = null;
+    try {
+      const { rows: [saved] } = await query(
+        `INSERT INTO ai_planner_results (user_email, planner_type, organization, target_role, gap_analysis, recommendations)
+         VALUES ($1, $2, $3, $4, $5, $6)
+         RETURNING id`,
+        [
+          auth.email,
+          type || "gov",
+          orgName,
+          targetRole,
+          JSON.stringify(parsedResult.gaps || {}),
+          JSON.stringify(parsedResult.steps || parsedResult.recommendations || []),
+        ]
+      );
+      savedId = saved?.id;
+    } catch (saveErr) {
+      console.warn("Failed to persist AI planner result:", saveErr.message);
+    }
+
     return NextResponse.json({
       success: true,
       isMock: false,
-      data: parsedResult
+      data: parsedResult,
+      savedId,
     });
 
   } catch (error) {
