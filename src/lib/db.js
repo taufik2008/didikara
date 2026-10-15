@@ -1028,6 +1028,23 @@ async function createTables(client) {
       UNIQUE(course_id, user_email)
     )
   `);
+
+  // ─── Penugasan Pelatihan Karyawan & Pelacakan Kepatuhan (D.1) ───────────
+  await client.query(`
+    CREATE TABLE IF NOT EXISTS training_assignments (
+      id SERIAL PRIMARY KEY,
+      course_id    VARCHAR(50)  NOT NULL REFERENCES courses(id) ON DELETE CASCADE,
+      assigned_to  VARCHAR(255) NOT NULL REFERENCES users(email) ON DELETE CASCADE,
+      assigned_by  VARCHAR(255) NOT NULL REFERENCES users(email) ON DELETE CASCADE,
+      due_date     TIMESTAMPTZ,
+      is_mandatory BOOLEAN NOT NULL DEFAULT TRUE,
+      completed_at TIMESTAMPTZ DEFAULT NULL,
+      created_at   TIMESTAMPTZ DEFAULT NOW(),
+      UNIQUE(course_id, assigned_to)
+    )
+  `);
+  await client.query(`CREATE INDEX IF NOT EXISTS idx_ta_assigned_to ON training_assignments(assigned_to)`);
+  await client.query(`CREATE INDEX IF NOT EXISTS idx_ta_course      ON training_assignments(course_id)`);
   await client.query(`CREATE INDEX IF NOT EXISTS idx_course_instructors_user ON course_instructors(user_email)`);
 
   await client.query(`
