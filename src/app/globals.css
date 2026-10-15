@@ -1977,6 +1977,69 @@ th, td {
     }
 }
 
+/* ── Ponsel umum (<= 640px) ──────────────────────────────────────────────── */
+@media (max-width: 640px) {
+    .page-view {
+        padding: 14px;
+    }
+    .modal-content {
+        padding: 20px 16px;
+        max-width: 95%;
+        max-height: 85vh;
+        overflow-y: auto;
+    }
+    .header {
+        padding: 12px 14px;
+    }
+    .header-actions {
+        gap: 8px;
+    }
+    .stats-grid,
+    .role-selector {
+        grid-template-columns: 1fr;
+    }
+    h1 {
+        font-size: 1.45rem !important;
+    }
+    h2 {
+        font-size: 1.25rem !important;
+    }
+    h3 {
+        font-size: 1.1rem !important;
+    }
+}
+
+/* ── Ponsel ringkas & Safe Area Notch (<= 480px) ─────────────────────────── */
+@media (max-width: 480px) {
+    .page-view {
+        padding-left: max(12px, env(safe-area-inset-left));
+        padding-right: max(12px, env(safe-area-inset-right));
+        padding-top: 12px;
+    }
+    .modal-content {
+        width: 100%;
+        max-width: 100%;
+        border-radius: 16px 16px 0 0;
+        margin-top: auto;
+        padding: 20px 16px calc(20px + env(safe-area-inset-bottom));
+        max-height: 90vh;
+    }
+    .modal-overlay.active {
+        align-items: flex-end;
+        padding: 0;
+    }
+    /* Touch target minimal 44px untuk aksesibilitas jemari di ponsel */
+    button,
+    .btn,
+    select,
+    .filter-dropdown,
+    input[type="text"],
+    input[type="email"],
+    input[type="password"] {
+        min-height: 44px;
+    }
+}
+
 /* Hormati preferensi sistem untuk mengurangi animasi. */
 @media (prefers-reduced-motion: reduce) {
     *,
