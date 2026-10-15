@@ -34,8 +34,8 @@ export async function GET(request) {
     const certResult = isAdmin
       ? await query("SELECT * FROM certificates")
       : await query("SELECT * FROM certificates WHERE user_email = $1", [auth.email]);
-    const categoriesResult = await query("SELECT * FROM categories ORDER BY name ASC");
-    const levelsResult = await query("SELECT * FROM levels ORDER BY name ASC");
+    const categoriesResult = await query("SELECT * FROM categories WHERE deleted_at IS NULL ORDER BY name ASC");
+    const levelsResult = await query("SELECT * FROM levels WHERE deleted_at IS NULL ORDER BY name ASC");
 
     // Format database fields to match Frontend JS state keys
     // Hash password TIDAK PERNAH ikut dikirim ke klien. Sebelumnya field ini
@@ -322,10 +322,10 @@ export async function POST(request) {
         await query(`
           INSERT INTO categories (key, name)
           VALUES ($1, $2)
-          ON CONFLICT (key) DO UPDATE SET name = EXCLUDED.name
+          ON CONFLICT (key) DO UPDATE SET name = EXCLUDED.name, deleted_at = NULL
         `, [key, name]);
       } else if (action === "delete") {
-                await query(`DELETE FROM categories WHERE key = $1`, [data.key]);
+        await query(`UPDATE categories SET deleted_at = NOW() WHERE key = $1`, [data.key]);
       }
     } else if (type === "level") {
       if (action === "save") {
@@ -333,10 +333,10 @@ export async function POST(request) {
         await query(`
           INSERT INTO levels (key, name)
           VALUES ($1, $2)
-          ON CONFLICT (key) DO UPDATE SET name = EXCLUDED.name
+          ON CONFLICT (key) DO UPDATE SET name = EXCLUDED.name, deleted_at = NULL
         `, [key, name]);
       } else if (action === "delete") {
-        await query(`DELETE FROM levels WHERE key = $1`, [data.key]);
+        await query(`UPDATE levels SET deleted_at = NOW() WHERE key = $1`, [data.key]);
       }
     }
 

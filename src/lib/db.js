@@ -416,16 +416,20 @@ async function createTables(client) {
   await client.query(`
     CREATE TABLE IF NOT EXISTS categories (
       key VARCHAR(50) PRIMARY KEY,
-      name VARCHAR(100) NOT NULL
+      name VARCHAR(100) NOT NULL,
+      deleted_at TIMESTAMPTZ DEFAULT NULL
     )
   `);
+  await client.query(`ALTER TABLE categories ADD COLUMN IF NOT EXISTS deleted_at TIMESTAMPTZ DEFAULT NULL`);
 
   await client.query(`
     CREATE TABLE IF NOT EXISTS levels (
       key VARCHAR(50) PRIMARY KEY,
-      name VARCHAR(100) NOT NULL
+      name VARCHAR(100) NOT NULL,
+      deleted_at TIMESTAMPTZ DEFAULT NULL
     )
   `);
+  await client.query(`ALTER TABLE levels ADD COLUMN IF NOT EXISTS deleted_at TIMESTAMPTZ DEFAULT NULL`);
 
   // Enterprise tables (Fase 1)
   await client.query(`
