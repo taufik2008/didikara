@@ -55,7 +55,7 @@ export async function GET(request) {
 
   // ── Kop ────────────────────────────────────────────────────────────────
   doc.font("Helvetica-Bold").fontSize(20).fillColor("#1e3a8a")
-     .text(cfg.platformName || "AI LMS", 50, 50);
+     .text(cfg.platformName || "DIDIKARA", 50, 50);
   doc.font("Helvetica").fontSize(9).fillColor("#475569")
      .text("Platform Pelatihan & Sertifikasi Kompetensi", 50, 74);
 
@@ -71,6 +71,7 @@ export async function GET(request) {
     paid: "LUNAS", pending: "MENUNGGU PEMBAYARAN",
     waiting_confirmation: "MENUNGGU KONFIRMASI", failed: "DITOLAK",
     expired: "KEDALUWARSA", cancelled: "DIBATALKAN",
+    refunded: "DIKEMBALIKAN (REFUND)",
   }[order.status] || String(order.status || "").toUpperCase();
 
   doc.fontSize(9).fillColor("#64748b").text("Ditagihkan kepada", 50, 120);
