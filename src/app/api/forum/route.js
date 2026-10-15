@@ -32,13 +32,13 @@ export async function GET(request) {
         `SELECT fp.*, u.fullname, u.avatar, u.role
          FROM forum_posts fp
          JOIN users u ON u.email = fp.user_email
-         WHERE fp.course_id = $1 AND fp.deleted_at IS NULL
+         WHERE fp.course_id = $1 AND fp.deleted_at IS NULL AND COALESCE(fp.status, 'approved') != 'hidden'
          ORDER BY fp.created_at DESC
          LIMIT $2 OFFSET $3`,
         [courseId, limit, offset]
       ),
       query(
-        "SELECT COUNT(*) FROM forum_posts WHERE course_id = $1 AND deleted_at IS NULL",
+        "SELECT COUNT(*) FROM forum_posts WHERE course_id = $1 AND deleted_at IS NULL AND COALESCE(status, 'approved') != 'hidden'",
         [courseId]
       ),
     ]);
@@ -98,3 +98,74 @@ export async function DELETE(request) {
     return NextResponse.json({ error: err.message }, { status: 500 });
   }
 }
+
+export async function PATCH(request) {
+  const user = await authenticateRequest(request);
+  if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+
+  const body = await request.json().catch(() => ({}));
+  const { id, action, reason, status } = body;
+
+  if (!id) {
+    return NextResponse.json({ error: "id post wajib disertakan" }, { status: 400 });
+  }
+
+  try {
+    if (action === "report") {
+      // Pelaporan oleh pengguna (auto-flag jika report_count >= 3)
+      const res = await query(
+        `UPDATE forum_posts
+         SET report_count = report_count + 1,
+             flagged_reason = CASE WHEN $2::text <> '' THEN $2::text ELSE flagged_reason END,
+             status = CASE WHEN report_count + 1 >= 3 THEN 'flagged' ELSE status END
+         WHERE id = $1
+         RETURNING id, report_count, status`,
+        [id, reason || "Dilaporkan oleh pengguna"]
+      );
+
+      if (res.rows.length === 0) {
+        return NextResponse.json({ error: "Post tidak ditemukan" }, { status: 404 });
+      }
+
+      return NextResponse.json({
+        success: true,
+        message: "Laporan post forum berhasil dikirim",
+        post: res.rows[0],
+      });
+    }
+
+    if (action === "moderate") {
+      // Tindakan moderasi status hanya untuk admin
+      if (user.role !== "admin") {
+        return NextResponse.json({ error: "Hanya admin yang memiliki wewenang moderasi forum" }, { status: 403 });
+      }
+
+      if (!status || !["approved", "hidden", "flagged"].includes(status)) {
+        return NextResponse.json({ error: "Status moderasi tidak valid ('approved', 'hidden', 'flagged')" }, { status: 400 });
+      }
+
+      const res = await query(
+        `UPDATE forum_posts
+         SET status = $2
+         WHERE id = $1
+         RETURNING id, status, report_count`,
+        [id, status]
+      );
+
+      if (res.rows.length === 0) {
+        return NextResponse.json({ error: "Post tidak ditemukan" }, { status: 404 });
+      }
+
+      return NextResponse.json({
+        success: true,
+        message: `Status post berhasil dimoderasi menjadi ${status}`,
+        post: res.rows[0],
+      });
+    }
+
+    return NextResponse.json({ error: "Aksi tidak dikenali. Gunakan 'report' atau 'moderate'" }, { status: 400 });
+  } catch (err) {
+    return NextResponse.json({ error: err.message }, { status: 500 });
+  }
+}
+

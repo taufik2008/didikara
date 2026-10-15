@@ -15,12 +15,14 @@ export async function GET(request) {
   const offset   = (page - 1) * limit;
 
   if (!courseId) {
-    // Semua rata-rata rating per kursus (untuk catalog)
+    // Semua rata-rata rating per kursus (untuk catalog), mengecualikan review hidden
     const { rows } = await query(`
       SELECT course_id,
              ROUND(AVG(rating)::numeric, 1) AS avg_rating,
              COUNT(*) AS review_count
-      FROM course_reviews GROUP BY course_id
+      FROM course_reviews
+      WHERE COALESCE(status, 'approved') != 'hidden'
+      GROUP BY course_id
     `).catch(() => ({ rows: [] }));
     return NextResponse.json({ success: true, ratings: rows });
   }
@@ -29,7 +31,7 @@ export async function GET(request) {
     const { rows: reviews } = await query(`
       SELECT cr.*, u.fullname, u.avatar
       FROM course_reviews cr JOIN users u ON u.email = cr.user_email
-      WHERE cr.course_id = $1
+      WHERE cr.course_id = $1 AND COALESCE(cr.status, 'approved') != 'hidden'
       ORDER BY cr.created_at DESC LIMIT $2 OFFSET $3
     `, [courseId, limit, offset]);
 
@@ -41,7 +43,8 @@ export async function GET(request) {
              COUNT(*) FILTER (WHERE rating=3) AS r3,
              COUNT(*) FILTER (WHERE rating=2) AS r2,
              COUNT(*) FILTER (WHERE rating=1) AS r1
-      FROM course_reviews WHERE course_id = $1
+      FROM course_reviews
+      WHERE course_id = $1 AND COALESCE(status, 'approved') != 'hidden'
     `, [courseId]);
 
     return NextResponse.json({ success: true, reviews, stats, page, limit });
@@ -78,7 +81,8 @@ export async function POST(request) {
     // Update avg rating di tabel courses
     await query(`
       UPDATE courses SET rating = (
-        SELECT ROUND(AVG(rating)::numeric,1) FROM course_reviews WHERE course_id = $1
+        SELECT ROUND(AVG(rating)::numeric,1) FROM course_reviews
+        WHERE course_id = $1 AND COALESCE(status, 'approved') != 'hidden'
       ) WHERE id = $1
     `, [courseId]).catch(() => {});
 
@@ -103,3 +107,86 @@ export async function DELETE(request) {
     return NextResponse.json({ error: err.message }, { status: 500 });
   }
 }
+
+export async function PATCH(request) {
+  const user = await authenticateRequest(request);
+  if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+
+  const body = await request.json().catch(() => ({}));
+  const { reviewId, id, action, reason, status } = body;
+  const targetId = reviewId || id;
+
+  if (!targetId) {
+    return NextResponse.json({ error: "reviewId wajib disertakan" }, { status: 400 });
+  }
+
+  try {
+    if (action === "report") {
+      // Pelaporan ulasan tidak pantas / spam oleh peserta (auto-flag jika report_count >= 3)
+      const res = await query(
+        `UPDATE course_reviews
+         SET report_count = report_count + 1,
+             flagged_reason = CASE WHEN $2::text <> '' THEN $2::text ELSE flagged_reason END,
+             status = CASE WHEN report_count + 1 >= 3 THEN 'flagged' ELSE status END
+         WHERE id = $1
+         RETURNING id, course_id, status, report_count`,
+        [targetId, reason || "Dilaporkan tidak pantas"]
+      );
+
+      if (res.rows.length === 0) {
+        return NextResponse.json({ error: "Ulasan tidak ditemukan" }, { status: 404 });
+      }
+
+      return NextResponse.json({
+        success: true,
+        message: "Laporan ulasan berhasil dicatat",
+        review: res.rows[0],
+      });
+    }
+
+    if (action === "moderate") {
+      // Moderasi ulasan (hanya peran admin)
+      if (user.role !== "admin") {
+        return NextResponse.json({ error: "Hanya admin yang memiliki wewenang moderasi ulasan" }, { status: 403 });
+      }
+
+      if (!status || !["approved", "hidden", "flagged"].includes(status)) {
+        return NextResponse.json({ error: "Status moderasi tidak valid ('approved', 'hidden', 'flagged')" }, { status: 400 });
+      }
+
+      const res = await query(
+        `UPDATE course_reviews
+         SET status = $2
+         WHERE id = $1
+         RETURNING id, course_id, status, report_count`,
+        [targetId, status]
+      );
+
+      if (res.rows.length === 0) {
+        return NextResponse.json({ error: "Ulasan tidak ditemukan" }, { status: 404 });
+      }
+
+      const updatedReview = res.rows[0];
+
+      // Perbarui rata-rata rating kursus dengan mengecualikan ulasan yang disembunyikan
+      await query(`
+        UPDATE courses SET rating = (
+          SELECT COALESCE(ROUND(AVG(rating)::numeric,1), 5.0)
+          FROM course_reviews
+          WHERE course_id = $1 AND COALESCE(status, 'approved') != 'hidden'
+        ) WHERE id = $1
+      `, [updatedReview.course_id]).catch(() => {});
+
+      return NextResponse.json({
+        success: true,
+        message: `Status ulasan berhasil dimoderasi menjadi ${status}`,
+        review: updatedReview,
+      });
+    }
+
+    return NextResponse.json({ error: "Aksi tidak dikenali. Gunakan 'report' atau 'moderate'" }, { status: 400 });
+  } catch (err) {
+    return NextResponse.json({ error: err.message }, { status: 500 });
+  }
+}
+

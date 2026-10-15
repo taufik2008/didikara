@@ -465,6 +465,9 @@ async function createTables(client) {
       user_email VARCHAR(255) NOT NULL,
       user_label VARCHAR(100),
       content TEXT NOT NULL,
+      status VARCHAR(20) NOT NULL DEFAULT 'approved',
+      report_count INT NOT NULL DEFAULT 0,
+      flagged_reason TEXT DEFAULT '',
       created_at TIMESTAMPTZ DEFAULT NOW()
     )
   `);
@@ -667,6 +670,9 @@ async function createTables(client) {
 
   // ─── Fase 3: Migrasi kolom tambahan ──────────────────────────────────────
   await client.query(`ALTER TABLE forum_posts ADD COLUMN IF NOT EXISTS deleted_at TIMESTAMPTZ DEFAULT NULL`);
+  await client.query(`ALTER TABLE forum_posts ADD COLUMN IF NOT EXISTS status VARCHAR(20) NOT NULL DEFAULT 'approved'`).catch(()=>{});
+  await client.query(`ALTER TABLE forum_posts ADD COLUMN IF NOT EXISTS report_count INT NOT NULL DEFAULT 0`).catch(()=>{});
+  await client.query(`ALTER TABLE forum_posts ADD COLUMN IF NOT EXISTS flagged_reason TEXT DEFAULT ''`).catch(()=>{});
 
   // Performance indexes
   await client.query(`CREATE INDEX IF NOT EXISTS idx_exam_attempts_user    ON exam_attempts(user_email)`);
@@ -1134,11 +1140,17 @@ async function createTables(client) {
       rating INT NOT NULL CHECK (rating BETWEEN 1 AND 5),
       comment TEXT DEFAULT '',
       helpful_count INT DEFAULT 0,
+      status VARCHAR(20) NOT NULL DEFAULT 'approved',
+      report_count INT NOT NULL DEFAULT 0,
+      flagged_reason TEXT DEFAULT '',
       created_at TIMESTAMPTZ DEFAULT NOW(),
       updated_at TIMESTAMPTZ DEFAULT NOW(),
       UNIQUE(course_id, user_email)
     )
   `);
+  await client.query(`ALTER TABLE course_reviews ADD COLUMN IF NOT EXISTS status VARCHAR(20) NOT NULL DEFAULT 'approved'`).catch(()=>{});
+  await client.query(`ALTER TABLE course_reviews ADD COLUMN IF NOT EXISTS report_count INT NOT NULL DEFAULT 0`).catch(()=>{});
+  await client.query(`ALTER TABLE course_reviews ADD COLUMN IF NOT EXISTS flagged_reason TEXT DEFAULT ''`).catch(()=>{});
 
   // ─── Fase 5: Push Subscriptions ──────────────────────────────────────────
   await client.query(`
