@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { authenticateRequest } from "@/lib/auth";
 
 function extractDriveFileId(url) {
   if (!url || typeof url !== "string") return null;
@@ -9,6 +10,11 @@ function extractDriveFileId(url) {
 
 export async function POST(request) {
   try {
+    const user = await authenticateRequest(request);
+    if (!user) {
+      return NextResponse.json({ success: false, error: "Unauthorized" }, { status: 401 });
+    }
+
     const body = await request.json().catch(() => ({}));
     const rawUrl = body.url || "";
     const directFileId = body.fileId || "";
