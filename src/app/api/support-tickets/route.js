@@ -39,6 +39,14 @@ export async function GET(request) {
       return NextResponse.json({ success: true, ticket: tiket, messages: pesan });
     }
 
+    const page   = Math.max(1, parseInt(searchParams.get("page") || "1"));
+    const limit  = Math.min(100, Math.max(1, parseInt(searchParams.get("limit") || "20")));
+    const offset = (page - 1) * limit;
+
+    const { rows: [{ count: totalCount }] } = await query(`
+      SELECT COUNT(*) AS count FROM support_tickets WHERE ($1 = '' OR status = $1)
+    `, [status]);
+
     const { rows } = await query(`
       SELECT t.*,
              (SELECT COUNT(*) FROM support_ticket_messages m WHERE m.ticket_id = t.id) AS jumlah_pesan,
@@ -47,8 +55,8 @@ export async function GET(request) {
         FROM support_tickets t
        WHERE ($1 = '' OR t.status = $1)
        ORDER BY t.last_message_at DESC
-       LIMIT 100
-    `, [status]);
+       LIMIT $2 OFFSET $3
+    `, [status, limit, offset]);
 
     const { rows: [hitung] } = await query(`
       SELECT COUNT(*) FILTER (WHERE status = 'open')    AS terbuka,
@@ -57,7 +65,14 @@ export async function GET(request) {
         FROM support_tickets
     `);
 
-    return NextResponse.json({ success: true, tickets: rows, ringkas: hitung });
+    return NextResponse.json({
+      success: true,
+      tickets: rows,
+      ringkas: hitung,
+      total: parseInt(totalCount, 10),
+      page,
+      limit,
+    });
   } catch (err) {
     return NextResponse.json({ error: err.message }, { status: 500 });
   }

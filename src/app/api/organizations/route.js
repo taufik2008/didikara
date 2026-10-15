@@ -42,10 +42,22 @@ export async function GET(request) {
 
   const batas = await batasOrganisasi(user);
   if (!batas.admin && !batas.id) {
-    return NextResponse.json({ success: true, organizations: [] });
+    return NextResponse.json({ success: true, organizations: [], total: 0, page: 1, limit: 20 });
   }
 
+  const { searchParams } = new URL(request.url);
+  const page   = Math.max(1, parseInt(searchParams.get("page") || "1"));
+  const limit  = Math.min(100, Math.max(1, parseInt(searchParams.get("limit") || "20")));
+  const offset = (page - 1) * limit;
+
   try {
+    const { rows: [{ count: totalCount }] } = await query(`
+      SELECT COUNT(*) AS count
+      FROM organizations o
+      WHERE o.deleted_at IS NULL
+        AND ($1::int IS NULL OR o.id = $1)
+    `, [batas.admin ? null : batas.id]);
+
     const orgs = await query(`
       SELECT o.*,
         json_agg(
@@ -59,8 +71,16 @@ export async function GET(request) {
         AND ($1::int IS NULL OR o.id = $1)
       GROUP BY o.id
       ORDER BY o.name
-    `, [batas.admin ? null : batas.id]);
-    return NextResponse.json({ success: true, organizations: orgs.rows });
+      LIMIT $2 OFFSET $3
+    `, [batas.admin ? null : batas.id, limit, offset]);
+
+    return NextResponse.json({
+      success: true,
+      organizations: orgs.rows,
+      total: parseInt(totalCount, 10),
+      page,
+      limit,
+    });
   } catch (err) {
     return NextResponse.json({ success: false, error: err.message }, { status: 503 });
   }

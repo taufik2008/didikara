@@ -79,10 +79,13 @@ export async function POST(request) {
          AND reminder_24h_at IS NULL
          AND scheduled_at BETWEEN NOW() AND NOW() + INTERVAL '24 hours'
     `);
-    for (const sess of h24) {
-      hasil.penerima += await kirimPengingat(sess, "besok");
-      await query("UPDATE live_sessions SET reminder_24h_at = NOW() WHERE id = $1", [sess.id]);
-      hasil.reminder24h++;
+    if (h24.length > 0) {
+      for (const sess of h24) {
+        hasil.penerima += await kirimPengingat(sess, "besok");
+        hasil.reminder24h++;
+      }
+      const h24Ids = h24.map(s => s.id);
+      await query("UPDATE live_sessions SET reminder_24h_at = NOW() WHERE id = ANY($1::int[])", [h24Ids]);
     }
 
     // ── 2. Pengingat H-1 jam ────────────────────────────────────────────────
@@ -92,28 +95,39 @@ export async function POST(request) {
          AND reminder_1h_at IS NULL
          AND scheduled_at BETWEEN NOW() AND NOW() + INTERVAL '1 hour'
     `);
-    for (const sess of h1) {
-      hasil.penerima += await kirimPengingat(sess, "dalam 1 jam");
-      await query("UPDATE live_sessions SET reminder_1h_at = NOW() WHERE id = $1", [sess.id]);
-      hasil.reminder1h++;
+    if (h1.length > 0) {
+      for (const sess of h1) {
+        hasil.penerima += await kirimPengingat(sess, "dalam 1 jam");
+        hasil.reminder1h++;
+      }
+      const h1Ids = h1.map(s => s.id);
+      await query("UPDATE live_sessions SET reminder_1h_at = NOW() WHERE id = ANY($1::int[])", [h1Ids]);
     }
 
     // ── 3. Perpindahan status ───────────────────────────────────────────────
-    // Ambang waktunya mengikuti jendela yang sama dengan tombol Bergabung,
-    // supaya label "LIVE SEKARANG" dan tombolnya tidak pernah berbeda pendapat.
+    // Ambang waktunya mengikuti jendela yang sama dengan tombol Bergabung.
+    // Dioptimalkan dengan batch UPDATE berbasis ANY($1::int[]) untuk efisiensi beban cron.
     const { rows: aktif } = await query(
       "SELECT * FROM live_sessions WHERE deleted_at IS NULL AND status IN ('scheduled','live')"
     );
+    const liveIds = [];
+    const completedIds = [];
     for (const sess of aktif) {
       const { buka, tutup } = jendelaBergabung(sess);
       const kini = Date.now();
       if (sess.status === "scheduled" && kini >= buka && kini <= tutup) {
-        await query("UPDATE live_sessions SET status = 'live' WHERE id = $1", [sess.id]);
-        hasil.jadiLive++;
+        liveIds.push(sess.id);
       } else if (kini > tutup) {
-        await query("UPDATE live_sessions SET status = 'completed' WHERE id = $1", [sess.id]);
-        hasil.jadiSelesai++;
+        completedIds.push(sess.id);
       }
+    }
+    if (liveIds.length > 0) {
+      await query("UPDATE live_sessions SET status = 'live' WHERE id = ANY($1::int[])", [liveIds]);
+      hasil.jadiLive += liveIds.length;
+    }
+    if (completedIds.length > 0) {
+      await query("UPDATE live_sessions SET status = 'completed' WHERE id = ANY($1::int[])", [completedIds]);
+      hasil.jadiSelesai += completedIds.length;
     }
 
     // ── 4. Pengingat untuk instruktur ───────────────────────────────────────
@@ -134,13 +148,17 @@ export async function POST(request) {
        RETURNING id, user_email, course_id, invoice_number
     `).catch(() => ({ rows: [] }));
 
-    for (const order of kedaluwarsa) {
-      await query(
-        `INSERT INTO notifications (user_email, type, title, message, link)
-         VALUES ($1, 'warning', 'Order Kedaluwarsa', $2, '/marketplace')`,
-        [order.user_email,
-         `Order ${order.invoice_number || order.id} melewati batas waktu pembayaran dan dibatalkan otomatis. Silakan pesan ulang bila masih berminat.`]
-      ).catch(() => {});
+    if (kedaluwarsa.length > 0) {
+      const notifValues = [];
+      const notifParams = [];
+      kedaluwarsa.forEach((order, i) => {
+        const p1 = i * 2 + 1;
+        const p2 = i * 2 + 2;
+        notifParams.push(order.user_email);
+        notifParams.push(`Order ${order.invoice_number || order.id} melewati batas waktu pembayaran dan dibatalkan otomatis. Silakan pesan ulang bila masih berminat.`);
+        notifValues.push(`($${p1}, 'warning', 'Order Kedaluwarsa', $${p2}, '/marketplace')`);
+      });
+      await query(`INSERT INTO notifications (user_email, type, title, message, link) VALUES ${notifValues.join(", ")}`, notifParams).catch(() => {});
     }
     hasil.orderKedaluwarsa = kedaluwarsa.length;
 

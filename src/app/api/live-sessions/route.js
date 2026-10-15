@@ -42,8 +42,11 @@ export async function GET(request) {
     if (upcoming) syarat.push("ls.scheduled_at > NOW() - INTERVAL '2 hours'");
 
     // Batas keterlihatan menurut peran.
-    if (user.role !== "admin") {
+    let taughtSet = new Set();
+    const isAdmin = user.role === "admin";
+    if (!isAdmin) {
       const diampu = await taughtCourseIds(user);
+      taughtSet = new Set(diampu || []);
       params.push(diampu || []);
       const idxAmpu = params.length;
       syarat.push(`(
@@ -95,9 +98,10 @@ export async function GET(request) {
     // Link meeting tidak dikirim ke sembarang orang: hanya pengelola sesi, atau
     // peserta terdaftar ketika jendela bergabung sudah terbuka. Peserta tetap
     // bergabung lewat /api/live-sessions/join agar kehadiran tercatat.
+    // Otorisasi dicek secara in-memory (O(1)) tanpa query N+1 ke database.
     const sessions = [];
     for (const s of rows) {
-      const pengelola   = await canManageSession(user, s);
+      const pengelola   = isAdmin || (s.instructor_email && s.instructor_email === user.email) || (s.course_id && taughtSet.has(s.course_id));
       const terdaftar   = s.my_status === "registered";
       const bolehGabung = terdaftar && bolehBergabungSekarang(s);
       sessions.push({
@@ -105,7 +109,7 @@ export async function GET(request) {
         meet_link: pengelola ? s.meet_link : "",
         has_meet_link: Boolean(s.meet_link),
         can_join: bolehGabung,
-        can_manage: pengelola,
+        can_manage: Boolean(pengelola),
         is_registered: terdaftar,
         is_waitlisted: s.my_status === "waitlisted",
         is_full: Number(s.registered_count) >= Number(s.max_participants || 0),

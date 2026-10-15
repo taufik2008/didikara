@@ -93,25 +93,49 @@ export async function POST(request) {
       `, [periodStart, periodEnd]);
 
       let dibuat = 0;
-      for (const baris of hitung) {
-        const bruto = Number(baris.gross_amount) || 0;
-        const pct   = Number(baris.share_pct) || 0;
-        const nilai = Math.round(bruto * pct / 100);
+      if (hitung.length > 0) {
+        const emails = [];
+        const grossList = [];
+        const pctList = [];
+        const payoutList = [];
+        const orderCounts = [];
 
-        // Baris yang sudah ditandai dibayar tidak ditimpa — angka pembayaran
-        // yang sudah dieksekusi keuangan tidak boleh berubah diam-diam.
-        await query(`
+        for (const baris of hitung) {
+          const bruto = Number(baris.gross_amount) || 0;
+          const pct   = Number(baris.share_pct) || 0;
+          const nilai = Math.round(bruto * pct / 100);
+
+          emails.push(baris.user_email);
+          grossList.push(bruto);
+          pctList.push(pct);
+          payoutList.push(nilai);
+          orderCounts.push(Number(baris.order_count) || 0);
+        }
+
+        // Eksekusi satu batch INSERT ... ON CONFLICT menggunakan unnest()
+        const res = await query(`
           INSERT INTO instructor_payouts
             (user_email, period_start, period_end, gross_amount, share_pct, payout_amount, order_count)
-          VALUES ($1,$2,$3,$4,$5,$6,$7)
+          SELECT
+            u.email,
+            $1::date,
+            $2::date,
+            u.gross,
+            u.pct,
+            u.payout,
+            u.orders
+          FROM unnest($3::text[], $4::numeric[], $5::numeric[], $6::numeric[], $7::int[])
+            AS u(email, gross, pct, payout, orders)
           ON CONFLICT (user_email, period_start, period_end) DO UPDATE SET
             gross_amount  = EXCLUDED.gross_amount,
             share_pct     = EXCLUDED.share_pct,
             payout_amount = EXCLUDED.payout_amount,
             order_count   = EXCLUDED.order_count
           WHERE instructor_payouts.status = 'unpaid'
-        `, [baris.user_email, periodStart, periodEnd, bruto, pct, nilai, Number(baris.order_count) || 0]);
-        dibuat++;
+          RETURNING id
+        `, [periodStart, periodEnd, emails, grossList, pctList, payoutList, orderCounts]);
+
+        dibuat = res.rows.length;
       }
 
       await catatAudit(user.email, "generate_instructor_payouts", "instructor_payout",

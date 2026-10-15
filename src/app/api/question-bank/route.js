@@ -39,16 +39,33 @@ export async function GET(request) {
     return NextResponse.json({ success: false, error: "Akses ditolak" }, { status: 403 });
   }
 
+  const page       = Math.max(1, parseInt(searchParams.get("page") || "1"));
+  const limit      = Math.min(100, Math.max(1, parseInt(searchParams.get("limit") || "20")));
+  const offset     = (page - 1) * limit;
+
   try {
+    let countSql = "SELECT COUNT(*) AS count FROM question_bank WHERE course_id = $1";
+    const countParams = [courseId];
+    if (category) { countSql += ` AND category = $${countParams.length + 1}`; countParams.push(category); }
+    if (difficulty) { countSql += ` AND difficulty = $${countParams.length + 1}`; countParams.push(difficulty); }
+    const { rows: [{ count: totalCount }] } = await query(countSql, countParams);
+
     let sql = "SELECT id, question, options, correct, category, difficulty, created_at FROM question_bank WHERE course_id = $1";
     const params = [courseId];
 
     if (category) { sql += ` AND category = $${params.length + 1}`; params.push(category); }
     if (difficulty) { sql += ` AND difficulty = $${params.length + 1}`; params.push(difficulty); }
-    sql += " ORDER BY created_at DESC";
+    sql += ` ORDER BY created_at DESC LIMIT $${params.length + 1} OFFSET $${params.length + 2}`;
+    params.push(limit, offset);
 
     const result = await query(sql, params);
-    return NextResponse.json({ success: true, questions: result.rows });
+    return NextResponse.json({
+      success: true,
+      questions: result.rows,
+      total: parseInt(totalCount, 10),
+      page,
+      limit,
+    });
   } catch {
     return NextResponse.json({ success: false, error: "DB tidak tersedia" }, { status: 503 });
   }

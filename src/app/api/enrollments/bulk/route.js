@@ -109,29 +109,26 @@ export async function POST(request) {
       }
     }
 
-    // Batch insert enrollments
-    let enrolled = 0, skipped = 0;
-    for (const email of emails) {
-      try {
-        await query(
-          `INSERT INTO enrollments (user_email, course_id, status)
-           VALUES ($1, $2, 'active')
-           ON CONFLICT (user_email, course_id) DO NOTHING`,
-          [email, courseId]
-        );
-        enrolled++;
+    // Batch insert enrollments menggunakan unnest()
+    const { rows: inserted } = await query(
+      `INSERT INTO enrollments (user_email, course_id, status)
+       SELECT unnest($1::text[]), $2, 'active'
+       ON CONFLICT (user_email, course_id) DO NOTHING
+       RETURNING user_email`,
+      [emails, courseId]
+    );
 
-        // Buat notifikasi untuk tiap user
-        try {
-          const courseRes = await query("SELECT title FROM courses WHERE id = $1", [courseId]);
-          const courseTitle = courseRes.rows[0]?.title || courseId;
-          await query(
-            `INSERT INTO notifications (user_email, type, title, message, link)
-             VALUES ($1, 'enrollment', 'Enrollment Baru', $2, $3)`,
-            [email, `Anda telah didaftarkan ke kursus: ${courseTitle}`, `/lms`]
-          );
-        } catch { /* notifikasi opsional */ }
-      } catch { skipped++; }
+    const enrolledEmails = inserted.map(r => r.user_email);
+    const enrolled = enrolledEmails.length;
+    const skipped = emails.length - enrolled;
+
+    // Batch insert notifikasi untuk peserta yang baru didaftarkan
+    if (enrolledEmails.length > 0) {
+      await query(
+        `INSERT INTO notifications (user_email, type, title, message, link)
+         SELECT unnest($1::text[]), 'enrollment', 'Enrollment Baru', $2, '/kelas'`,
+        [enrolledEmails, `Anda telah didaftarkan ke kursus: ${kursus.title}`]
+      ).catch(() => {});
     }
 
     // Audit log

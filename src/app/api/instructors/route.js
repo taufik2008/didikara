@@ -59,8 +59,18 @@ export async function GET(request) {
 
   const { searchParams } = new URL(request.url);
   const sendiri = searchParams.get("me") === "1" || user.role !== "admin";
+  const page    = Math.max(1, parseInt(searchParams.get("page") || "1"));
+  const limit   = Math.min(100, Math.max(1, parseInt(searchParams.get("limit") || "20")));
+  const offset  = (page - 1) * limit;
 
   try {
+    const { rows: [{ count: totalCount }] } = await query(`
+      SELECT COUNT(*) AS count
+        FROM instructor_profiles p
+        JOIN users u ON u.email = p.user_email AND u.deleted_at IS NULL
+       WHERE ($1::boolean = FALSE OR p.user_email = $2)
+    `, [sendiri, user.email]);
+
     const { rows: profil } = await query(`
       SELECT p.*, u.fullname, u.role, u.organization, u.avatar,
              (SELECT COUNT(*) FROM course_instructors ci WHERE ci.user_email = p.user_email) AS jumlah_kursus
@@ -68,7 +78,8 @@ export async function GET(request) {
         JOIN users u ON u.email = p.user_email AND u.deleted_at IS NULL
        WHERE ($1::boolean = FALSE OR p.user_email = $2)
        ORDER BY u.fullname
-    `, [sendiri, user.email]);
+       LIMIT $3 OFFSET $4
+    `, [sendiri, user.email, limit, offset]);
 
     // Jadwal dan tugas tertunggak dilampirkan agar layar admin dan layar
     // instruktur menampilkan keadaan yang sama.
@@ -93,7 +104,13 @@ export async function GET(request) {
       });
     }
 
-    return NextResponse.json({ success: true, instructors: hasil });
+    return NextResponse.json({
+      success: true,
+      instructors: hasil,
+      total: parseInt(totalCount, 10),
+      page,
+      limit,
+    });
   } catch (err) {
     return NextResponse.json({ error: err.message }, { status: 500 });
   }
