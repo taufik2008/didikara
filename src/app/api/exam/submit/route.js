@@ -158,8 +158,8 @@ export async function POST(request) {
           } catch {}
 
           await query(
-            `INSERT INTO certificates (id, course_id, title, date, id_code, user_email, issued_at)
-             VALUES ($1, $2, $3, $4, $5, $6, NOW())
+            `INSERT INTO certificates (id, course_id, title, date, id_code, user_email, issued_at, valid_until)
+             VALUES ($1, $2, $3, $4, $5, $6, NOW(), NOW() + INTERVAL '3 years')
              ON CONFLICT (id) DO NOTHING`,
             [certId, courseId, courseTitle, dateStr, certId, user.email]
           );
@@ -173,6 +173,14 @@ export async function POST(request) {
 
     // ── Fase 4 triggers (fire-and-forget) ────────────────────────────────
     if (passed) {
+      // Tandai penyelesaian tugas pelatihan wajib jika ada (D.1, D.3)
+      query(
+        `UPDATE training_assignments
+            SET completed_at = NOW()
+          WHERE course_id = $1 AND assigned_to = $2 AND completed_at IS NULL`,
+        [courseId, user.email]
+      ).catch(() => {});
+
       // XP: lulus ujian = 50 poin, sempurna = 100 poin
       const xpPoints = percentage === 100 ? 100 : 50;
       query(

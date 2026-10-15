@@ -500,6 +500,7 @@ async function createTables(client) {
   await client.query(`ALTER TABLE users ALTER COLUMN avatar TYPE TEXT`).catch(() => {});
   await client.query(`ALTER TABLE certificates ADD COLUMN IF NOT EXISTS user_email VARCHAR(255)`);
   await client.query(`ALTER TABLE certificates ADD COLUMN IF NOT EXISTS issued_at TIMESTAMPTZ DEFAULT NOW()`);
+  await client.query(`ALTER TABLE certificates ADD COLUMN IF NOT EXISTS valid_until TIMESTAMPTZ DEFAULT NULL`);
   await client.query(`CREATE INDEX IF NOT EXISTS idx_certificates_user ON certificates(user_email)`);
 
   // Backfill: sertifikat lama diterbitkan dengan pola id

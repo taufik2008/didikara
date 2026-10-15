@@ -20,7 +20,7 @@ export async function GET(request, { params }) {
     // verifikasi publik dapat menampilkan nama orang lain pada kursus dengan
     // banyak lulusan — persis hal yang membuat verifikasi kehilangan gunanya.
     const result = await query(
-      `SELECT c.id, c.course_id, c.title, c.date, c.id_code,
+      `SELECT c.id, c.course_id, c.title, c.date, c.id_code, c.valid_until,
               u.fullname, u.organization
        FROM certificates c
        LEFT JOIN users u ON u.email = c.user_email
@@ -36,8 +36,13 @@ export async function GET(request, { params }) {
     
     // Hitung masa berlaku sertifikat (Standar 3 Tahun untuk Sertifikasi Profesi / BNSP)
     const issueDate = cert.date ? new Date(cert.date) : new Date();
-    const validUntil = new Date(issueDate);
-    validUntil.setFullYear(validUntil.getFullYear() + 3);
+    let validUntil;
+    if (cert.valid_until) {
+      validUntil = new Date(cert.valid_until);
+    } else {
+      validUntil = new Date(issueDate);
+      validUntil.setFullYear(validUntil.getFullYear() + 3);
+    }
 
     const now = new Date();
     const diffMs = validUntil.getTime() - now.getTime();
