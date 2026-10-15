@@ -4,10 +4,17 @@ import { hashPassword } from "@/lib/auth";
 
 export async function POST(request) {
   try {
-    const { email, password, fullname, role } = await request.json();
+    const { email, password, fullname, role, privacyConsent } = await request.json();
 
     if (!email || !password || !fullname) {
       return NextResponse.json({ success: false, error: "Email, password, dan nama lengkap wajib diisi" }, { status: 400 });
+    }
+
+    if (!privacyConsent) {
+      return NextResponse.json({
+        success: false,
+        error: "Persetujuan terhadap Kebijakan Privasi dan Syarat & Ketentuan wajib diberikan sesuai UU No. 27/2022 (UU PDP).",
+      }, { status: 400 });
     }
 
     if (typeof password !== "string" || password.length < 8) {
@@ -35,8 +42,11 @@ export async function POST(request) {
     const initials = fullname.split(" ").map(w => w[0]).join("").substring(0, 2).toUpperCase();
 
     await query(`
-      INSERT INTO users (email, password, fullname, role, role_label, avatar, stats, job_title, organization, status, permissions, competencies)
-      VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12)
+      INSERT INTO users (
+        email, password, fullname, role, role_label, avatar, stats, job_title, organization, status,
+        permissions, competencies, privacy_consent_at, privacy_policy_version
+      )
+      VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, NOW(), '2026-10-v1.0')
     `, [
       email, hashedPassword, fullname, userRole, roleLabels[userRole] || "Peserta", initials || "US",
       JSON.stringify({ hours: 0, courses: 0, certs: 0, competency: "A1 (Beginner)" }),
