@@ -26,14 +26,27 @@ export async function POST(request) {
       return NextResponse.json({ error: "order_id wajib" }, { status: 400 });
     }
 
-    // 1. Verifikasi tanda tangan jika MIDTRANS_SERVER_KEY terkonfigurasi
+    // 1. Verifikasi tanda tangan — WAJIB, bukan opsional.
+    //    Celah lama: verifikasi hanya berjalan kalau signature_key ikut dikirim,
+    //    sehingga request publik tanpa signature_key melewati pengecekan sama
+    //    sekali dan order bisa ditandai "paid" tanpa pernah membayar sungguhan.
     const serverKey = process.env.MIDTRANS_SERVER_KEY;
-    if (serverKey && signature_key) {
-      const expectedSignature = verifyWebhookSignature(order_id, status_code, gross_amount, serverKey);
-      if (signature_key !== expectedSignature) {
-        console.warn(`[Webhook] Invalid signature for order: ${order_id}`);
+    if (serverKey) {
+      if (!signature_key) {
+        console.warn(`[Webhook] Ditolak: signature_key tidak disertakan untuk order ${order_id}`);
         return NextResponse.json({ error: "Invalid signature" }, { status: 403 });
       }
+      const expectedSignature = verifyWebhookSignature(order_id, status_code, gross_amount, serverKey);
+      if (signature_key !== expectedSignature) {
+        console.warn(`[Webhook] Ditolak: signature_key tidak cocok untuk order ${order_id}`);
+        return NextResponse.json({ error: "Invalid signature" }, { status: 403 });
+      }
+    } else if (process.env.NODE_ENV === "production") {
+      // Di produksi tanpa MIDTRANS_SERVER_KEY tidak ada cara memverifikasi
+      // pengirim webhook — tolak daripada mempercayai body apa adanya.
+      // Dev/test lokal tanpa server key tetap bisa mensimulasikan payload mock.
+      console.warn(`[Webhook] Ditolak: MIDTRANS_SERVER_KEY belum dikonfigurasi di produksi (order ${order_id})`);
+      return NextResponse.json({ error: "Payment gateway belum terkonfigurasi" }, { status: 503 });
     }
 
     // 2. Cari order pembayaran di database

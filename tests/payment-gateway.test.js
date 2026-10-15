@@ -54,3 +54,55 @@ test("POST /api/payment mengintegrasikan createSnapToken saat paymentType === mi
   );
 });
 
+
+test("POST /api/payment/webhook MENOLAK status 'paid' tanpa signature_key saat MIDTRANS_SERVER_KEY terkonfigurasi (regresi celah pemalsuan)", async () => {
+  const prevKey = process.env.MIDTRANS_SERVER_KEY;
+  const prevEnv = process.env.NODE_ENV;
+  process.env.MIDTRANS_SERVER_KEY = "test-server-key-untuk-regresi";
+
+  try {
+    const { POST } = await import("../src/app/api/payment/webhook/route.js");
+
+    // Skenario 1: signature_key tidak disertakan sama sekali — harus ditolak 403,
+    // BUKAN diproses sebagai pembayaran sah (ini celah yang diperbaiki).
+    const reqTanpaSignature = new Request("http://localhost:3000/api/payment/webhook", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ order_id: "ORD-REGRESI-TANPA-SIGNATURE", status: "paid" }),
+    });
+    const resTanpaSignature = await POST(reqTanpaSignature);
+    assert.strictEqual(resTanpaSignature.status, 403);
+    const dataTanpaSignature = await resTanpaSignature.json();
+    assert.match(dataTanpaSignature.error, /signature/i);
+
+    // Skenario 2: signature_key disertakan tapi salah — tetap harus ditolak 403.
+    const reqSignatureSalah = new Request("http://localhost:3000/api/payment/webhook", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        order_id: "ORD-REGRESI-SIGNATURE-SALAH",
+        status_code: "200",
+        gross_amount: "100000",
+        signature_key: "tanda-tangan-palsu-bukan-hasil-sha512",
+        transaction_status: "settlement",
+      }),
+    });
+    const resSignatureSalah = await POST(reqSignatureSalah);
+    assert.strictEqual(resSignatureSalah.status, 403);
+
+    // Skenario 3: tanpa MIDTRANS_SERVER_KEY sama sekali DAN NODE_ENV production —
+    // harus ditolak (503), bukan mempercayai body apa adanya.
+    delete process.env.MIDTRANS_SERVER_KEY;
+    process.env.NODE_ENV = "production";
+    const reqProdTanpaKey = new Request("http://localhost:3000/api/payment/webhook", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ order_id: "ORD-REGRESI-PROD-TANPA-KEY", status: "paid" }),
+    });
+    const resProdTanpaKey = await POST(reqProdTanpaKey);
+    assert.strictEqual(resProdTanpaKey.status, 503);
+  } finally {
+    if (prevKey === undefined) delete process.env.MIDTRANS_SERVER_KEY; else process.env.MIDTRANS_SERVER_KEY = prevKey;
+    if (prevEnv === undefined) delete process.env.NODE_ENV; else process.env.NODE_ENV = prevEnv;
+  }
+});
