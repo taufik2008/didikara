@@ -7,7 +7,7 @@
 import { NextResponse } from "next/server";
 import { authenticateRequest } from "@/lib/auth";
 import { query } from "@/lib/db";
-import { generateInvoiceNumber } from "@/lib/payment";
+import { generateInvoiceNumber, createSnapToken } from "@/lib/payment";
 import { generateUniqueCode, getPaymentConfig } from "@/lib/bankConfig";
 import { sendEnrollmentEmail } from "@/lib/email";
 import { catatAudit } from "@/lib/audit";
@@ -163,6 +163,22 @@ export async function POST(request) {
     const isMembership = courseId.startsWith("membership-");
     const dbCourseId = isMembership ? null : courseId;
 
+    const paymentType = body.paymentType === "midtrans_snap" ? "midtrans_snap" : "manual_transfer";
+    let snapResult = null;
+    if (paymentType === "midtrans_snap") {
+      try {
+        snapResult = await createSnapToken({
+          orderId,
+          amount: totalAmount,
+          customerName: user.fullname || user.email,
+          customerEmail: user.email,
+          courseTitle: course.title,
+        });
+      } catch (snapErr) {
+        console.warn("Snap token generation failed, falling back to manual:", snapErr.message);
+      }
+    }
+
     await query(
       `INSERT INTO payment_orders
          (id, user_email, course_id, amount, status, invoice_number, expired_at, metadata)
@@ -178,7 +194,9 @@ export async function POST(request) {
           course_title: course.title,
           is_membership: isMembership,
           membership_type: isMembership ? courseId : null,
-          payment_type: "manual_transfer",
+          payment_type: paymentType,
+          snap_token: snapResult?.token || null,
+          snap_redirect_url: snapResult?.redirectUrl || null,
         }),
       ]
     );
@@ -189,12 +207,16 @@ export async function POST(request) {
       unique_code: uniqueCode,
       course_id: dbCourseId,
       invoice_number: invoiceNumber,
-      payment_type: "manual_transfer",
+      payment_type: paymentType,
+      snap_token: snapResult?.token || null,
     });
 
     return NextResponse.json({
       success: true,
       orderId, invoiceNumber, baseAmount, uniqueCode, totalAmount, expiredAt,
+      snapToken: snapResult?.token || null,
+      redirectUrl: snapResult?.redirectUrl || null,
+      paymentType,
       bankAccounts:        cfg.bankAccounts,
       qrisUrl:             cfg.qrisImageUrl,
       paymentInstructions: cfg.paymentInstructions,

@@ -2,6 +2,8 @@
  * Payment helper — Midtrans Snap + mock fallback
  * ENV: MIDTRANS_SERVER_KEY, MIDTRANS_CLIENT_KEY, MIDTRANS_IS_PRODUCTION
  */
+import crypto from "node:crypto";
+
 
 const IS_PRODUCTION = process.env.MIDTRANS_IS_PRODUCTION === "true";
 const SERVER_KEY    = process.env.MIDTRANS_SERVER_KEY || "";
@@ -50,7 +52,6 @@ export async function createSnapToken({ orderId, amount, customerName, customerE
 
 // Verify webhook signature from Midtrans
 export function verifyWebhookSignature(orderId, statusCode, grossAmount, serverKey) {
-  const crypto = require("crypto");
   const key = serverKey || SERVER_KEY;
   const input = `${orderId}${statusCode}${grossAmount}${key}`;
   return crypto.createHash("sha512").update(input).digest("hex");
