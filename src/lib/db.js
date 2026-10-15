@@ -1070,6 +1070,22 @@ async function createTables(client) {
   `);
   await client.query(`CREATE INDEX IF NOT EXISTS idx_ai_planner_user ON ai_planner_results(user_email)`);
 
+  // ─── Webhook Keluar ke HRIS Klien (D.12) ─────────────────────────────────
+  await client.query(`
+    CREATE TABLE IF NOT EXISTS webhook_subscriptions (
+      id SERIAL PRIMARY KEY,
+      organization_id VARCHAR(100) NOT NULL,
+      target_url TEXT NOT NULL,
+      secret_key VARCHAR(255) NOT NULL,
+      events JSONB NOT NULL DEFAULT '["course.completed", "certificate.issued"]',
+      is_active BOOLEAN NOT NULL DEFAULT TRUE,
+      created_by VARCHAR(255) NOT NULL REFERENCES users(email) ON DELETE CASCADE,
+      created_at TIMESTAMPTZ DEFAULT NOW(),
+      updated_at TIMESTAMPTZ DEFAULT NOW()
+    )
+  `);
+  await client.query(`CREATE INDEX IF NOT EXISTS idx_webhook_subs_org ON webhook_subscriptions(organization_id)`);
+
   await client.query(`
     CREATE TABLE IF NOT EXISTS email_queue (
       id SERIAL PRIMARY KEY,

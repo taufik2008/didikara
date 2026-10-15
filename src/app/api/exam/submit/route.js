@@ -11,6 +11,7 @@ import { NextResponse } from "next/server";
 import { authenticateRequest, verifyToken } from "@/lib/auth";
 import { query } from "@/lib/db";
 import { sendExamPassedEmail, sendCertEmail } from "@/lib/email";
+import { dispatchWebhook } from "@/lib/webhookDispatcher";
 import { z } from "zod";
 
 const DEFAULT_PASSING_SCORE = 70;
@@ -214,7 +215,27 @@ export async function POST(request) {
           "INSERT INTO user_badges (user_email, badge_id) VALUES ($1, 'cert_1') ON CONFLICT DO NOTHING",
           [user.email]
         ).catch(() => {});
+
+        // Integrasi HRIS: Notifikasi webhook penerbitan sertifikat (D.12)
+        dispatchWebhook("certificate.issued", {
+          userEmail: user.email,
+          fullname: userData?.fullname || user.email,
+          courseId,
+          courseTitle: courseTitleForEmail,
+          certificateId: certId,
+          issuedAt: new Date().toISOString(),
+        }, user.organization).catch(() => {});
       }
+
+      // Integrasi HRIS: Notifikasi webhook penyelesaian kursus (D.12)
+      dispatchWebhook("course.completed", {
+        userEmail: user.email,
+        fullname: userData?.fullname || user.email,
+        courseId,
+        courseTitle: courseTitleForEmail,
+        percentage,
+        completedAt: new Date().toISOString(),
+      }, user.organization).catch(() => {});
     }
 
     return NextResponse.json({
