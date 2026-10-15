@@ -1,159 +1,150 @@
-# NHCIE LMS — Peta Arsitektur & Temuan
+# DIDIKARA (NHCIE LMS) — Arsitektur Sistem & Spesifikasi Teknis
 
-Dokumen hasil pembacaan kode (Juli 2026). Ringkasan teknis, bukan roadmap — roadmap ada di `NHCIE_Enterprise_LMS_Roadmap.docx`.
+Dokumen arsitektur resmi platform pelatihan, sertifikasi profesional, dan analitik tenaga kerja berbasis AI **DIDIKARA** (Diperbarui: Oktober 2026).
 
-## 1. Stack & Konvensi
+---
 
-| Aspek | Implementasi |
-|---|---|
-| Framework | Next.js **16.2.7** App Router, React 19.2.4, JavaScript (bukan TS) |
-| Styling | `src/app/globals.css` — 1.113 baris vanilla CSS (design system glassmorphic oranye/biru gelap) + inline style. **Tailwind 4 terpasang tapi praktis tak dipakai** |
-| Database | PostgreSQL langsung via `pg` Pool (tanpa ORM), schema dibuat lewat `CREATE TABLE IF NOT EXISTS` di kode |
-| Auth | JWT sendiri (`jose`) + bcryptjs, token di cookie httpOnly 7 hari |
-| Middleware | `src/proxy.js` — sesuai konvensi Next 16 (Middleware → **Proxy**) |
-| Lain | Chart.js, pdfkit (sertifikat PDF), nodemailer, googleapis (Drive upload), @aws-sdk (S3/R2 presigned) |
-| PWA | `public/manifest.json` + `public/sw.js`, metadata di `layout.js` |
+## 1. Stack Teknologi & Konvensi
 
-## 2. Alur Aplikasi
+| Komponen | Spesifikasi / Pustaka | Keterangan & Rationale |
+|---|---|---|
+| **Framework** | Next.js **16.2.12** (App Router, Turbopack) | Mengikuti konvensi App Router modern: `src/proxy.js` untuk edge routing guard, metadata Open Graph dinamis, `sitemap.js`, dan `robots.js`. |
+| **UI Library** | React **19.2.4** (Client & Server Components) | Mendukung concurrent rendering, transisi state terpisah, dan hook modern. |
+| **State Management** | Modular Domain Contexts (`useMemo`) | Pemisahan context domain: `UIContext`, `AuthContext`, `CourseContext`, `AdminContext`, diorkestrasi oleh `AppContext`. |
+| **Basis Data** | PostgreSQL (driver `pg` Pool) | Relasional penuh dengan indeks performa, soft-delete (`deleted_at`), dan migrasi idempoten terotomasi. |
+| **Keamanan & Kriptografi** | Node.js `crypto` & `jose` | AES-256-GCM untuk kredensial sensitif `platform_settings`, HMAC-SHA256 untuk webhook keluar, JWT sessioning, dan SHA-256 password reset tokens. |
+| **Styling & Theme** | CSS Vanilla Glassmorphic + CSS Custom Properties | Mode Gelap/Terang tersinkronisasi `localStorage` & atribut `data-theme`. |
+| **Dokumen & PDF** | PDFKit Server-Side | Penomoran sertifikat standar ISO (`AILMS-TX-*`), verifikasi publik QR Code, dan faktur invoice billing DIDIKARA. |
+| **Testing** | Node.js Test Runner bawaan (`node:test`, `node:assert`) | 43 unit tests terverifikasi otomatis pada pipeline CI/CD (`npm test`). |
 
-Seluruh UI adalah **satu halaman client-side** (`src/app/page.js`): jika `currentUser` null → `LoginPage`, jika tidak → Sidebar + Header + satu dari 6 "page" yang diganti lewat state `activePage`. Tidak ada routing per-URL untuk fitur; satu-satunya route asli adalah `/verify/[certId]` (server component publik).
+---
+
+## 2. Struktur Navigasi & App Router
+
+Aplikasi menggunakan URL-driven routing bawaan Next.js 16 App Router dengan URL yang dapat dibagikan, mendukung browser Back/Forward, dan layouting terisolasi:
 
 ```
-page.js ──► dashboard-page  (DashboardPage — radar kompetensi Chart.js)
-        ├─► marketplace-page (katalog + filter kategori)
-        ├─► lms-page         (LmsPage, 1.031 baris — inti pembelajaran)
-        ├─► wallet-page      (daftar sertifikat + CertModal)
-        ├─► ai-planner-page  (hanya role government/corporate)
-        └─► admin-page       (AdminPage, 1.560 baris — 13 tab, hanya admin)
+src/app/
+├─ layout.js                    # Root Layout (HTML, SEO Metadata, Manifest PWA, AppProvider)
+├─ sitemap.js                   # Dynamic XML Sitemap untuk katalog & legalitas publik
+├─ robots.js                    # Robots.txt crawler directives
+├─ page.js                      # Landing Page Publik (Katalog, Hero, Testimoni, Footer Legal)
+├─ (app)/                       # Route Group untuk Peserta/Admin Terotentikasi
+│  ├─ layout.js                 # App Shell (Sidebar, Header, BottomNav, Global Modals)
+│  ├─ dashboard/page.js         # Dashboard Analitik (Radar Kompetensi, Jam Belajar, XP)
+│  ├─ kelas/page.js             # LMS Learning Player (Video, Kuis, Modul, Forum, Tugas)
+│  ├─ marketplace/page.js       # Katalog Kursus & Pendaftaran Pelatihan
+│  ├─ wallet/page.js            # Portofolio Sertifikat & Riwayat Transaksi
+│  ├─ ai-planner/page.js        # AI Competency Planner (Khusus Corporate & Government)
+│  └─ admin/page.js             # Modul Eksekutif & Administrator (13 Tab Manajemen)
+├─ legal/                       # Halaman Kepatuhan & Regulasi Publik (UU No. 27/2022)
+│  ├─ layout.js                 # Container resmi dokumen legalitas
+│  ├─ privasi/page.js           # Kebijakan Privasi & Pemrosesan Data Pribadi
+│  └─ syarat-ketentuan/page.js  # Syarat & Ketentuan Layanan Platform
+├─ verify/[certId]/page.js      # Verifikasi Publik Sertifikat Digital via QR Code
+└─ api/                         # 60+ Endpoint Backend RESTful
 ```
 
-Modal global: `PaymentModalV2`, `CertModal`, `CrudModal`, `LmsManageModal`.
+---
 
-## 3. State: satu God-Context
+## 3. Arsitektur State Management (Domain-Driven Contexts)
 
-`src/context/AppContext.js` (806 baris) memegang **±70 useState** dan mengekspor ±120 nilai lewat satu Provider. Seluruh logika login, LMS, ujian, CRUD admin, AI planner ada di sini. Data awal di-hardcode (`initialUsers`, `initialCourses`, dst.) sebagai fallback "demo mode"; saat mount ia memanggil `/api/auth/me` lalu `/api/db`, dan `dbMode` menjadi `postgresql` atau `demo`.
+Mengatasi isu bottleneck re-render monolitik pada versi sebelumnya, state aplikasi kini dipartisi menjadi 4 domain context independen yang masing-masing nilainya dibungkus dengan `useMemo`:
 
-Konsekuensi: setiap perubahan state apa pun me-render ulang seluruh pohon; nilai `value` tidak di-memo. Ada juga duplikasi key di objek `value` (`courses`, `certificates`, `currentUser` ditulis dua kali). Roadmap Fase 1 memang menargetkan pemecahan context ini + React Query — belum dikerjakan.
+```mermaid
+graph TD
+  Root[AppProvider] --> UI[UIContext]
+  Root --> Auth[AuthContext]
+  Root --> Course[CourseContext]
+  Root --> Admin[AdminContext]
+  UI --> Bridge[AppBridgeProvider / useApp]
+  Auth --> Bridge
+  Course --> Bridge
+  Admin --> Bridge
+  Bridge --> Consumers[Komponen UI & Halaman]
+```
 
-Layer service tipis sudah ada (`src/services/*.js`: auth, course, exam, progress) tapi komponen lain (LmsPage, AdminPage) masih memanggil `fetch("/api/...")` langsung.
+### Domain Contexts:
+1. **`UIContext` (`src/context/UIContext.js`):**
+   - Mengelola tema tampilan (`theme`, `toggleTheme`), status sidebar (`sidebarCollapsed`, `toggleSidebar`), dan routing halaman aktif berbasis URL (`activePage`, `setActivePage`).
+2. **`AuthContext` (`src/context/AuthContext.js`):**
+   - Mengelola sesi pengguna terotentikasi (`currentUser`, `sessionChecked`), peran aktif (`activeRole`), serta alur login/logout.
+3. **`CourseContext` (`src/context/CourseContext.js`):**
+   - Mengelola katalog pelatihan (`courses`), pendaftaran (`enrolledCourses`), kelas aktif (`activeCourse`), progres pelajaran & pemutar video (`dbLessonProgress`, `videoPlaying`, `videoProgress`), sesi ujian dan hitung mundur timer (`examSession`, `examTimeRemaining`), pengumpulan tugas, serta sertifikasi.
+4. **`AdminContext` (`src/context/AdminContext.js`):**
+   - Mengelola manajemen data master pengguna (`users`, `filteredUsers`), kategori & level kursus (`categories`, `levels`, `competencySkills`), modal CRUD, manajemen materi kurikulum LMS, serta pengaturan branding dan platform (`platformSettings`).
+5. **`AppContext` (`src/context/AppContext.js`):**
+   - Orkestrator yang menggabungkan seluruh domain context di atas dan mengekspor `useApp()` untuk kompatibilitas penuh 100% tanpa mengubah kode komponen lama.
 
-## 4. Backend — 40+ API route
+---
 
-Semua di `src/app/api/`. `src/proxy.js` mewajibkan JWT untuk **semua** `/api/*` kecuali `/api/auth/login` dan `/api/auth/register`, dan menyuntikkan header `x-user-email` / `x-user-role` / `x-user-fullname` ke route.
+## 4. Keamanan, Autentikasi & Jejak Audit
 
-Kelompok fungsional:
+1. **Proxy & Routing Guard (`src/proxy.js`):**
+   - Berjalan pada runtime Edge Next.js untuk memvalidasi token JWT (`jose`), memblokir akses tanpa izin ke endpoint internal, serta meneruskan identitas dasar (`x-user-email`, `x-user-role`).
+2. **Autentikasi Multi-Sesi & Pencabutan Sesi (`src/lib/session.js`):**
+   - Sesi pengguna dicatat pada tabel `user_sessions`. Admin dapat mencabut token sesi tertentu secara instan dari panel admin.
+3. **Customer Support Impersonation Berbatas Waktu (`POST /api/admin/impersonate`):**
+   - Memungkinkan admin menyelidiki kendala teknis pengguna dengan token sesi 15 menit bertanda `isImpersonated: true`. Dilarang melakukan impersonasi sesama admin dan setiap mutasi akses dicatat ke `audit_logs`.
+4. **Enkripsi Kredensial Sensitif (`src/lib/crypto.js`):**
+   - Kunci API pihak ketiga (SMTP, Midtrans, AWS S3) yang disimpan di tabel `platform_settings` dienkripsi menggunakan AES-256-GCM dengan secret derivasi server.
+5. **Kepatuhan UU Pelindungan Data Pribadi (UU No. 27/2022):**
+   - Setiap pendaftaran pengguna baru mewajibkan persetujuan eksplisit terhadap Kebijakan Privasi, dicatat timestamp persetujuan (`privacy_consent_at`) dan versi kebijakan yang disetujui (`privacy_policy_version = '2026-10-v1.0'`).
+6. **Reset Kata Sandi Sekali Pakai (`password_reset_tokens`):**
+   - Token kriptografis 32-byte acak dengan hash SHA-256 berbatas waktu 30 menit dan invalidasi sekali pakai.
 
-- **Auth**: login (rate limit 5/menit/IP, cek status `suspended`, award XP + badge `first_login`), logout, me, register.
-- **Data inti**: `db` (GET semua tabel + POST CRUD admin-only dengan audit log), `catalog` (didesain publik), `enrollments/bulk`, `organizations` (org → dept → user, soft delete).
-- **Ujian**: `exam/start` (ambil soal dari `question_bank` bila ada, kalau tidak dari `courses.quiz`; Fisher-Yates mengacak soal **dan** pilihan; kunci jawaban disimpan di *examToken* JWT bertanda tangan, bukan dikirim ke klien; cek `maxAttempts`), `exam/submit` (scoring di server dari token, simpan `exam_attempts`, terbitkan sertifikat, trigger XP/badge/email), `exam/history`.
-- **Pembelajaran**: `progress` (upsert per lesson, auto-resume), `forum` (threading + soft delete), `announcements`, `instructor` (progress peserta + grading tugas), `live-sessions`, `reviews`.
-- **Sertifikat**: `certificates`, `certificate/pdf` (PDFKit server-side), `cert-template` (kustomisasi admin), `verify/[certId]` (publik).
-- **Komersial**: `payment` (transfer manual + 3 digit kode unik dari `bankConfig`), `payment/confirm` (approve/reject admin), `payment/webhook` (re-export POST dari `payment`), `lib/payment.js` punya integrasi Midtrans Snap penuh tapi belum dipakai route mana pun.
-- **AI**: `ai` (rekomendasi / analisis gap / chat), `ai-planner` (perencanaan gov & korporat). `lib/ai.js` memakai Gemini `gemini-1.5-flash` dengan **mock fallback** otomatis bila `GEMINI_API_KEY` kosong.
-- **Ops & analitik**: `analytics`, `reports` (overview/org/dept/KPI), `audit-logs`, `sessions` (lihat & revoke), `settings` (platform_settings), `notifications`, `push` (web-push), `email` (queue + kirim), `gamification`, `leaderboard`, `upload/presigned` (S3/R2), `upload/drive` (Google Drive service account).
+---
 
-Pola konsisten yang bagus: `authenticateRequest()` → validasi Zod → query → `NextResponse.json({success, ...})`, dan hampir semua integrasi eksternal punya mock mode sehingga aplikasi tetap jalan tanpa kredensial.
+## 5. Inventori Endpoint API Backend
 
-## 5. Skema Database
+### Autentikasi & Akun
+- `POST /api/auth/login`: Masuk platform dengan rate-limiting IP dan pencatatan audit.
+- `POST /api/auth/register`: Pendaftaran peserta mandiri dengan persetujuan privasi UU PDP.
+- `GET /api/auth/me`: Verifikasi sesi aktif JWT saat ini.
+- `POST /api/auth/logout`: Keluar dan invalidasi sesi.
+- `POST /api/auth/forgot-password`: Permintaan tautan reset password via email.
+- `POST /api/auth/reset-password`: Penetapan kata sandi baru menggunakan token sekali pakai.
+- `POST /api/admin/impersonate`: Penerbitan sesi impersonasi CS/Admin 15 menit.
 
-`src/lib/db.js` (779 baris) = pool + schema + seed dalam satu file. Tabel dibuat/di-migrasi idempoten, dipanggil otomatis pada query pertama tiap proses (`global._dbInitialized`).
+### Pembelajaran & LMS
+- `GET /api/catalog`: Katalog kursus publik dengan filter kategori/level.
+- `GET|POST|DELETE /api/enrollments`: Manajemen pendaftaran kursus peserta.
+- `POST /api/enrollments/bulk`: Pendaftaran massal peserta untuk pelatihan korporat.
+- `GET|POST /api/progress`: Pelacakan progres belajar per lesson dan auto-resume.
+- `GET|POST|DELETE /api/assignments`: Pengumpulan berkas tugas dan penilaian instruktur.
+- `GET|POST /api/attendance`: Presensi kehadiran peserta berbasis IP dan geolokasi.
+- `GET|POST|DELETE|PATCH /api/forum`: Forum diskusi interaktif dengan pelaporan spam & moderasi status (`approved`, `flagged`, `hidden`).
+- `GET|POST|DELETE|PATCH /api/reviews`: Ulasan kursus dengan moderasi rating dan sensor konten.
 
-- Fase 1: `users`, `courses`, `transactions`, `certificates`, `categories`, `levels`, `exam_attempts`, `user_progress`, `forum_posts`, `audit_logs`, `enrollments`
-- Fase 2: `question_bank`, `cert_templates`, `courses.exam_settings`, `courses.prerequisite_course_id`
-- Fase 3: `organizations`, `departments`, `notifications`, `announcements`, `assignment_grades`, kolom `deleted_at` (soft delete)
-- Fase 4: `user_points`, `badges` (10 badge ter-seed), `user_badges`, `live_sessions`, `live_session_registrations`, `email_queue`, `ai_interactions`
-- Fase 5: `payment_orders`, `course_reviews`, `push_subscriptions`, `kpi_targets`, `kpi_records`, `platform_settings`
+### Ujian, Integritas & Sertifikasi
+- `GET /api/exam/start`: Pengambilan soal acak (Fisher-Yates) dan penerbitan examToken JWT berbatas percobaan (`maxAttempts`).
+- `POST /api/exam/submit`: Penilaian atomik server-side, penerbitan sertifikat digital 3 tahun, pemicu webhook HRIS, dan award XP/Badges.
+- `GET /api/exam/history`: Riwayat skor dan upaya ujian peserta.
+- `GET /api/certificates`: Daftar sertifikat milik pengguna.
+- `GET /api/certificate/pdf`: Generator berkas PDF sertifikat resmi dengan watermark dan stempel digital.
+- `GET /api/verify/[certId]`: Endpoint verifikasi keabsahan sertifikat publik dan pengecekan masa berlaku.
 
-Ada migrasi otomatis yang meng-hash ulang password plain-text (`WHERE password NOT LIKE '$2%'`). Seed: 4 user demo (semua `password123`), 6 kursus, 4 kategori, 4 level.
+### Integrasi Enterprise B2B/B2G & Operasional
+- `GET|POST /api/training-assignments`: Penugasan kursus wajib dan pelacakan kepatuhan (compliance rate) karyawan oleh HR/Admin.
+- `POST /api/users/bulk-import`: Impor massal pengguna via file CSV/JSON dengan validasi baris dan pelaporan galat rinci.
+- `GET|POST|DELETE /api/webhooks/outbound`: Pendaftaran dan dispatch webhook keluar bertanda tangan HMAC-SHA256 (`course.completed`, `certificate.issued`) ke HRIS korporat klien.
+- `GET|POST /api/payment`: Pembuatan pesanan pembayaran (Transfer Bank Manual dengan 3-digit kode unik & Midtrans Snap Token).
+- `POST /api/payment/confirm`: Konfirmasi pembayaran manual, penolakan, serta aksi pengembalian dana (refund) yang mencabut enrollment.
+- `GET /api/payment/invoice`: Pengunduhan invoice resmi PDF ber-branding DIDIKARA.
+- `GET|POST /api/settings`: Pengaturan konfigurasi platform dan enkripsi kredensial.
+- `GET /api/audit-logs`: Audit trail aktivitas administratif dan transaksi penting.
 
-## 6. Status vs Roadmap
+---
 
-Fase 1–3 sebagian besar sudah terpasang, plus banyak item Fase 4–5 (gamifikasi, live session, PWA, push, review, payment order, KPI). Yang **belum** ada sama sekali: MFA/TOTP, password reset, Prisma ORM, SSO, SCORM, HLS/ffmpeg transcoding, Redis, mode offline, CI/CD, Sentry.
+## 6. Verifikasi & Prosedur Pengujian
 
-## 7. Temuan
-
-Temuan 1–4 **sudah diperbaiki** (26 Juli 2026); lihat §9. Sisanya belum.
-
-1. ~~**`zod` tidak terdaftar di `package.json`** meski dipakai 14 route (hanya ada di `node_modules`, v4.4.3). `npm ci` di server bersih → build gagal.~~ **FIXED**
-2. ~~**`api/exam/submit` memanggil `sendExamPassedEmail()` dan `sendCertEmail()` tanpa meng-import-nya.** Keduanya baru dieksekusi ketika peserta **lulus** → `ReferenceError` → ditangkap catch terluar → respons 500. Jadi jalur "lulus ujian" praktis rusak di mode DB.~~ **FIXED**
-3. ~~**Route yang didokumentasikan publik justru diblokir proxy**: `/api/catalog` dan `/api/verify/[certId]` bukan bagian dari `publicPaths`, padahal halaman `/verify/[certId]` (server component) mem-fetch-nya tanpa cookie → verifikasi sertifikat publik gagal.~~ **FIXED**
-4. ~~**`api/push` memuat `web-push` lewat `eval("require")`** — bukan crash (ada fallback mock), tapi rapuh terhadap bundling dan menelan error pengiriman sebagai "web-push not installed".~~ **FIXED**
-5. **Otorisasi tidak seragam**: `api/db` mengandalkan header `x-user-role` yang disuntikkan proxy, tapi `courseService.loadAppData()` juga mengirim header `x-user-email`/`x-user-role` dari klien. Karena proxy menimpanya (`Headers` di-set setelah dicopy), ini aman saat ini — tapi rapuh; sebaiknya route selalu memakai `authenticateRequest()`.
-6. **Rate limiter in-memory** (`lib/rateLimit.js`) tidak berlaku multi-instance; sudah ditandai di komentar.
-7. **`JWT_SECRET` belum ada di `.env.local`** (hanya `GEMINI_API_KEY` dan `DATABASE_URL`). Dev memakai secret default; produksi akan `throw` saat start — perlu diisi sebelum deploy.
-8. **Kredensial ada di dalam repo**: `.env.local` berisi API key dan connection string dan tidak ada `.git` di folder ini — pastikan tidak pernah ikut ter-commit.
-9. **Komponen kembar**: `PaymentModal` vs `PaymentModalV2`, `PlatformSettingsPanel` vs `V2`, `VideoPlayer*` — hanya versi V2 yang di-import; versi lama (≈700 baris total) adalah kode mati.
-10. **Fitur klien yang masih simulasi**: absensi ("IP 192.168.1.45, GPS terverifikasi" di-hardcode), upload tugas (`setTimeout` 2 detik), `forumPosts` awal di context, `handleConfirmPayment` menandai transaksi "Berhasil" secara lokal tanpa lewat `/api/payment`.
-11. **`fix-context.sh`** di root adalah skrip tambal darurat untuk `AppContext.js` — indikasi file itu pernah rusak saat diedit; sinyal kuat bahwa context perlu dipecah.
-12. `AGENTS.md` sudah mewajibkan membaca `node_modules/next/dist/docs/` sebelum menulis kode Next.js — konvensi Next 16 (mis. `proxy.js`, bukan `middleware.js`) sudah diikuti dengan benar.
-
-## 8. Menjalankan
+Pengujian otomatis dijalankan secara terisolasi tanpa dependensi runner eksternal:
 
 ```powershell
-npm run dev      # http://localhost:3000
+# Menjalankan seluruh test suite (43 tests):
+npm test
+
+# Menjalankan build produksi Next.js (Turbopack):
+npm run build
 ```
-
-Login demo: `peserta@nhcie.go.id`, `hr@company.com`, `gov@kemenkeu.go.id`, `admin@nhcie.go.id` — semua `password123`. Tanpa PostgreSQL aplikasi masuk "demo mode" (data dari konstanta di context), tetapi login akan gagal karena `api/auth/login` mengembalikan 503 saat DB mati.
-
-## 9. Perbaikan 26 Juli 2026
-
-| # | Berkas | Perubahan |
-|---|---|---|
-| 1 | `package.json` | Tambah `"zod": "^4.4.3"` ke dependencies |
-| 1b | `api/auth/login`, `api/progress`, `api/upload/presigned` | `parsed.error.errors` → `.issues`. Di Zod 4 `.errors` sudah dihapus, jadi input tidak valid memicu `TypeError` → 500 alih-alih 400 berisi pesan validasi |
-| 2 | `api/exam/submit` | Tambah `import { sendExamPassedEmail, sendCertEmail } from "@/lib/email"` |
-| 3 | `src/proxy.js` | `publicPaths` + `/api/catalog` dan `/api/verify` |
-| 4 | `api/push` | `eval("require")("web-push")` → `await import("web-push")` dengan try/catch terpisah; cek VAPID dipindah ke depan; kegagalan pengiriman nyata kini balas 500, bukan mock |
-| 4b | `next.config.mjs` | `serverExternalPackages` + `"web-push"` agar dependensi opsional tidak di-bundle |
-
-Verifikasi: pemindaian import ulang bersih, tidak ada sisa `.error.errors`, semua berkas yang disentuh lolos `node --check`. **`npx next build` belum dijalankan** — binary SWC untuk Linux tidak tersedia di sandbox; jalankan `npm install` lalu `npm run build` di Windows untuk konfirmasi akhir.
-
-Catatan: `web-push` sengaja tetap **tidak** dimasukkan ke dependencies karena murni opsional (tanpa VAPID key, route balas mock). Jika push notification mau diaktifkan: `npm i web-push` + set `VAPID_PUBLIC_KEY`/`VAPID_PRIVATE_KEY`.
-
-### Putaran kedua — hasil `npm run build` di Windows
-
-Build pertama gagal karena dua hal yang tidak terdeteksi di sandbox:
-
-| Berkas | Masalah | Perbaikan |
-|---|---|---|
-| `src/lib/auth.js` | Guard `JWT_SECRET` melempar di **module evaluation**. `next build` mengevaluasi tiap route dengan `NODE_ENV=production` untuk mengumpulkan page data → build gagal di `/api/analytics` (dan akan gagal di CI mana pun yang tak memegang secret produksi) | Resolusi secret dibuat **lazy** via `getSecret()` — tetap fatal, tapi saat token benar-benar ditandatangani/diverifikasi. `getSecret()` dipanggil di **luar** `try` pada `verifyToken` agar misconfig gagal keras, bukan tersamar jadi "token tidak valid" |
-| `.env.local` | `JWT_SECRET` belum ada | Ditambahkan (48 byte acak, base64url) |
-| `api/push` | Turbopack tetap me-resolve `import("web-push")` → warning "Module not found" | Ditandai `/* turbopackIgnore: true */ /* webpackIgnore: true */` |
-
-Uji guard produksi (`NODE_ENV=production`, tanpa `JWT_SECRET`): module eval lolos tanpa throw, `signToken()` dan `verifyToken()` keduanya melempar `FATAL: JWT_SECRET...` — sesuai maksud semula.
-
-## 10. Triase `npm audit` — 9 kerentanan
-
-| Paket | Sev | Runtime? | Penilaian |
-|---|---|---|---|
-| **next** 16.2.7 | High | ya | **Prioritas.** 9 advisory, termasuk **CVE-2026-64642 / GHSA-6gpp-xcg3-4w24 (CVSS 8.3) — "Middleware/Proxy bypass in App Router using Turbopack"**, terdampak `>=16.0.0 <16.2.11`. Perbaikan `16.2.12` = **patch, non-breaking**. Sekaligus menutup postcss & sharp |
-| postcss | High | transitif | Ikut sembuh lewat upgrade `next` |
-| sharp 0.34.5 | High | transitif | Ikut sembuh lewat upgrade `next` (libvips CVE) |
-| js-yaml 4.2.0 | High | **dev-only** (eslint) | DoS quadratic CPU. Tidak masuk bundel produksi → risiko nyata rendah |
-| brace-expansion | High | **dev-only** (eslint) | Sama; `npm audit fix` aman |
-| googleapis 144 | Moderate | ya | Rantai via `uuid <11.1.1` (bounds check v3/v5/v6 — proyek ini tidak memakai uuid). Perbaikan `googleapis@173` = **semver-major**. Hanya dipakai `api/upload/drive` dengan permukaan sempit (`google.auth.GoogleAuth`, `drive.files.create`, `drive.permissions.create`), jadi upgrade kemungkinan mulus — tapi perlu diuji manual |
-| gaxios / googleapis-common / uuid | Moderate | transitif | Ikut `googleapis` |
-
-Rekomendasi urutan:
-
-```powershell
-npm i next@^16.2.12     # menutup 3 dari 5 high, termasuk proxy bypass
-npm audit fix           # membereskan rantai dev-only
-npm i googleapis@^173   # opsional, semver-major — uji upload materi ke Drive setelahnya
-```
-
-Catatan soal CVE-2026-64642: prasyarat advisory adalah `config.i18n.locales` berisi **satu** entri; `next.config.mjs` proyek ini tidak punya blok `i18n`, jadi kemungkinan besar **tidak** dapat dieksploitasi apa adanya. Tetap upgrade — tapi pelajaran arsitekturalnya yang lebih penting: seperti kata advisory, otorisasi jangan hanya bertumpu pada proxy.
-
-### Pengerasan menyusul triase
-
-| Berkas | Perubahan |
-|---|---|
-| `api/db` | GET & POST kini memakai `authenticateRequest()` alih-alih percaya header `x-user-role`/`x-user-email` dari proxy. Route ini mengembalikan **hash password** dan **kunci jawaban ujian**, dan POST-nya gerbang admin-only — kalau lapisan proxy terlewat, klien cukup mengirim `x-user-role: admin` sendiri |
-| `api/ai-planner` | Idem, peran dari JWT |
-| `services/courseService.js` + `AppContext` | Berhenti mengirim header `x-user-email`/`x-user-role` dari klien (`loadAppData()` tanpa argumen). Header itu tidak pernah menjadi sumber kebenaran, tapi keberadaannya menyesatkan |
-
-Tidak ada lagi route yang membaca `x-user-*`; proxy tetap menyuntikkannya (tidak apa-apa, sekadar informasi), tapi tak ada keputusan otorisasi yang bergantung padanya.
-
-### Bug tambahan yang ketemu
-
-`/api/auth/login` membalas `{ success, user }`, tetapi `handleLoginSubmit` di `AppContext` membaca `json.data` → `setCurrentUser(undefined)` → `page.js` tetap menampilkan `LoginPage`, sehingga login yang sukses tampak gagal tanpa pesan apa pun. (`/api/auth/me` memang memakai `data`, itu sumber kebingungannya.) Klien kini menerima `json.user ?? json.data` dan memunculkan pesan bila keduanya kosong.
+Semua rute, komponen, dan endpoint diverifikasi lulus tanpa error sebelum setiap penggabungan branch.
