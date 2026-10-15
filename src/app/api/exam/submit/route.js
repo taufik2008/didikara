@@ -50,6 +50,34 @@ export async function POST(request) {
     const { courseId, questionMeta, passingScore: tokenPassingScore } = tokenPayload;
     const PASSING_SCORE = tokenPassingScore || DEFAULT_PASSING_SCORE;
 
+    // 4b. Verifikasi kembali batas maxAttempts di sisi server untuk mencegah race condition (multi-tab)
+    try {
+      const { rows: [courseData] } = await query(
+        "SELECT exam_settings FROM courses WHERE id = $1",
+        [courseId]
+      );
+      if (courseData && courseData.exam_settings) {
+        const settings = typeof courseData.exam_settings === "string"
+          ? JSON.parse(courseData.exam_settings)
+          : courseData.exam_settings;
+        const maxAttempts = settings?.maxAttempts || 0;
+        if (maxAttempts > 0) {
+          const { rows: [attemptCount] } = await query(
+            "SELECT COUNT(*)::int AS count FROM exam_attempts WHERE user_email = $1 AND course_id = $2",
+            [user.email, courseId]
+          );
+          if (attemptCount && attemptCount.count >= maxAttempts) {
+            return NextResponse.json({
+              success: false,
+              error: `Batas percobaan ujian (${maxAttempts}x) telah tercapai. Submit ditolak.`,
+            }, { status: 403 });
+          }
+        }
+      }
+    } catch {
+      // Lanjut jika DB temporer tidak dapat dicek
+    }
+
     // 5. Hitung skor — bandingkan jawaban user dengan correctDisplayIdx di token
     let correct = 0;
     const totalQuestions = questionMeta.length;
