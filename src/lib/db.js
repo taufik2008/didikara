@@ -674,6 +674,20 @@ async function createTables(client) {
   await client.query(`ALTER TABLE forum_posts ADD COLUMN IF NOT EXISTS report_count INT NOT NULL DEFAULT 0`).catch(()=>{});
   await client.query(`ALTER TABLE forum_posts ADD COLUMN IF NOT EXISTS flagged_reason TEXT DEFAULT ''`).catch(()=>{});
 
+  // ─── Pencatatan pelapor forum (perbaikan: cegah satu orang melaporkan
+  // post yang sama berkali-kali untuk memicu auto-flag report_count >= 3) ──
+  await client.query(`
+    CREATE TABLE IF NOT EXISTS forum_post_reports (
+      id SERIAL PRIMARY KEY,
+      post_id        INT NOT NULL REFERENCES forum_posts(id) ON DELETE CASCADE,
+      reporter_email VARCHAR(255) NOT NULL REFERENCES users(email) ON DELETE CASCADE,
+      reason         TEXT DEFAULT '',
+      created_at     TIMESTAMPTZ DEFAULT NOW(),
+      UNIQUE(post_id, reporter_email)
+    )
+  `);
+  await client.query(`CREATE INDEX IF NOT EXISTS idx_forum_post_reports_post ON forum_post_reports(post_id)`);
+
   // Performance indexes
   await client.query(`CREATE INDEX IF NOT EXISTS idx_exam_attempts_user    ON exam_attempts(user_email)`);
   await client.query(`CREATE INDEX IF NOT EXISTS idx_exam_attempts_course  ON exam_attempts(course_id)`);
@@ -1233,6 +1247,11 @@ async function createTables(client) {
 
 // ─── query helper ────────────────────────────────────────────────────────────
 export async function query(text, params) {
+  // Seam untuk pengujian: tes otomatis (lihat tests/) bisa menimpa query
+  // sungguhan dengan global._mockDbQuery(text, params) tanpa butuh Postgres
+  // nyata, dan tanpa setiap route perlu seam-nya sendiri (lihat api/health
+  // yang sebelumnya menulis pola ini sendiri secara lokal).
+  if (global._mockDbQuery) return global._mockDbQuery(text, params);
   if (!global._dbInitialized) {
     try { await initDatabase(); } catch(e) { console.warn("DB auto-init warning:", e.message); }
   }

@@ -31,6 +31,12 @@ export async function comparePassword(password, hash) {
  * kedaluwarsa tujuh hari kemudian.
  */
 export async function authenticateRequest(request) {
+  // Seam untuk pengujian: tes otomatis bisa menimpa hasil autentikasi lewat
+  // global._mockAuthUser tanpa perlu menyusun cookie/JWT asli, supaya tes
+  // route bisa memeriksa PERILAKU nyata (otorisasi, respons) dan bukan
+  // sekadar mencocokkan string di berkas sumbernya.
+  if (global._mockAuthUser !== undefined) return global._mockAuthUser;
+
   const token = getTokenFromRequest(request);
   if (!token) return null;
 

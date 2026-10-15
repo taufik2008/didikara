@@ -7,6 +7,13 @@ import { NextResponse } from "next/server";
 import { authenticateRequest } from "@/lib/auth";
 import { query } from "@/lib/db";
 import { z } from "zod";
+import { isEnrolled, canManageCourse } from "@/lib/courseAccess";
+
+/** Peserta terdaftar aktif, atau pengelola kursus (pengajar/admin) boleh akses forum. */
+async function bolehAksesForum(user, courseId) {
+  if (await canManageCourse(user, courseId)) return true;
+  return isEnrolled(user.email, courseId);
+}
 
 const postSchema = z.object({
   courseId: z.string().min(1),
@@ -25,6 +32,12 @@ export async function GET(request) {
   const offset   = (page - 1) * limit;
 
   if (!courseId) return NextResponse.json({ error: "courseId wajib" }, { status: 400 });
+
+  // Forum kursus hanya untuk peserta yang benar-benar terdaftar, atau
+  // pengelola kursus (pengajar/admin) — bukan siapa saja yang login.
+  if (!(await bolehAksesForum(user, courseId))) {
+    return NextResponse.json({ error: "Anda tidak terdaftar di kursus ini" }, { status: 403 });
+  }
 
   try {
     const [posts, total] = await Promise.all([
@@ -64,6 +77,10 @@ export async function POST(request) {
   }
 
   const { courseId, content, replyTo } = parsed.data;
+
+  if (!(await bolehAksesForum(user, courseId))) {
+    return NextResponse.json({ error: "Anda tidak terdaftar di kursus ini" }, { status: 403 });
+  }
 
   try {
     const r = await query(
@@ -112,20 +129,36 @@ export async function PATCH(request) {
 
   try {
     if (action === "report") {
-      // Pelaporan oleh pengguna (auto-flag jika report_count >= 3)
-      const res = await query(
-        `UPDATE forum_posts
-         SET report_count = report_count + 1,
-             flagged_reason = CASE WHEN $2::text <> '' THEN $2::text ELSE flagged_reason END,
-             status = CASE WHEN report_count + 1 >= 3 THEN 'flagged' ELSE status END
-         WHERE id = $1
-         RETURNING id, report_count, status`,
-        [id, reason || "Dilaporkan oleh pengguna"]
-      );
-
-      if (res.rows.length === 0) {
+      // Pelaporan oleh pengguna. Sebelumnya report_count dinaikkan tanpa
+      // mencatat siapa pelapornya, sehingga SATU orang bisa memanggil aksi
+      // ini tiga kali sendiri dan memicu auto-flag — bukan tiga orang
+      // berbeda. forum_post_reports (UNIQUE post_id+reporter_email) menutup
+      // celah itu: pelaporan ganda dari orang yang sama diabaikan.
+      const post = await query("SELECT id FROM forum_posts WHERE id = $1", [id]);
+      if (post.rows.length === 0) {
         return NextResponse.json({ error: "Post tidak ditemukan" }, { status: 404 });
       }
+
+      await query(
+        `INSERT INTO forum_post_reports (post_id, reporter_email, reason)
+         VALUES ($1, $2, $3)
+         ON CONFLICT (post_id, reporter_email) DO NOTHING`,
+        [id, user.email, reason || "Dilaporkan oleh pengguna"]
+      );
+
+      const { rows: [{ count: jumlahPelaporUnik }] } = await query(
+        "SELECT COUNT(*) AS count FROM forum_post_reports WHERE post_id = $1", [id]
+      );
+
+      const res = await query(
+        `UPDATE forum_posts
+         SET report_count   = $2,
+             flagged_reason = CASE WHEN $3::text <> '' THEN $3::text ELSE flagged_reason END,
+             status         = CASE WHEN $2 >= 3 THEN 'flagged' ELSE status END
+         WHERE id = $1
+         RETURNING id, report_count, status`,
+        [id, parseInt(jumlahPelaporUnik, 10), reason || ""]
+      );
 
       return NextResponse.json({
         success: true,
