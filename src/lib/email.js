@@ -16,6 +16,7 @@
  *   platform_settings.support_email → env SUPPORT_EMAIL  (dipakai sebagai Reply-To)
  */
 import { query } from "@/lib/db";
+import { decryptValue } from "@/lib/crypto";
 
 // Konfigurasi di-cache singkat agar setiap email tidak memicu kueri baru,
 // tetapi perubahan di panel admin tetap terasa tanpa perlu restart.
@@ -45,7 +46,7 @@ export async function getEmailConfig() {
     host,
     port: parseInt(s.smtp_port || process.env.EMAIL_PORT || "587", 10),
     user: s.smtp_user || process.env.EMAIL_USER || "",
-    pass: s.smtp_pass || process.env.EMAIL_PASS || "",
+    pass: decryptValue(s.smtp_pass) || process.env.EMAIL_PASS || "",
     from: s.smtp_from || process.env.EMAIL_FROM || '"AI LMS" <no-reply@ailms.id>',
     replyTo: s.support_email || process.env.SUPPORT_EMAIL || "",
     sumber: s.smtp_host ? "platform_settings" : (process.env.EMAIL_HOST ? "env" : "belum diatur"),

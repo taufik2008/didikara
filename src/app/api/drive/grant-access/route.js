@@ -37,7 +37,8 @@ export async function POST(request) {
         "SELECT key, value FROM platform_settings WHERE key = 'google_service_account_json'"
       );
       if (rows.length > 0 && rows[0].value) {
-        saJson = rows[0].value;
+        const { decryptValue } = await import("@/lib/crypto");
+        saJson = decryptValue(rows[0].value);
       }
     } catch {
       // Gunakan env

@@ -7,6 +7,7 @@ import { authenticateRequest } from "@/lib/auth";
 import { query } from "@/lib/db";
 import { catatAudit } from "@/lib/audit";
 import { resetEmailConfigCache } from "@/lib/email";
+import { encryptValue, maskSensitiveValue, SENSITIVE_SETTING_KEYS } from "@/lib/crypto";
 
 // Nilai default jika belum diset di DB
 const DEFAULTS = {
@@ -102,9 +103,18 @@ export async function GET(request) {
   }
 
   const isAdmin = user?.role === "admin";
+  let finalSettings = isAdmin ? { ...settings } : hanyaPublik(settings);
+  if (isAdmin) {
+    for (const key of SENSITIVE_SETTING_KEYS) {
+      if (finalSettings[key]) {
+        finalSettings[key] = maskSensitiveValue(finalSettings[key]);
+      }
+    }
+  }
+
   return NextResponse.json({
     success: true,
-    settings: isAdmin ? settings : hanyaPublik(settings),
+    settings: finalSettings,
     partial: !isAdmin,
   });
 }
@@ -121,13 +131,23 @@ export async function POST(request) {
   try {
     for (const [key, value] of Object.entries(body)) {
       if (!allowed.includes(key)) continue;
+      let valStr = String(value ?? "");
+
+      // Enkripsi nilai sensitif jika diisi dan bukan placeholder mask
+      if (SENSITIVE_SETTING_KEYS.includes(key)) {
+        if (valStr === "••••••••") continue; // Jangan timpa jika user tidak mengubah
+        if (valStr && !valStr.startsWith("enc:")) {
+          valStr = encryptValue(valStr);
+        }
+      }
+
       berubah.push(key);
       await query(
         `INSERT INTO platform_settings (key, value, updated_at, updated_by)
          VALUES ($1, $2, NOW(), $3)
          ON CONFLICT (key) DO UPDATE
            SET value=$2, updated_at=NOW(), updated_by=$3`,
-        [key, String(value ?? ""), user.email]
+        [key, valStr, user.email]
       );
     }
     // Yang dicatat adalah nama kuncinya saja. Nilainya sengaja tidak ikut:
