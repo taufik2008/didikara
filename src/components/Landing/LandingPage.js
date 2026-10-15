@@ -1368,11 +1368,12 @@ export default function LandingPage({ initialCourses, initialCategories, initial
                         {course.title}
                       </h3>
 
-                      {/* Venue or Schedule Pill */}
+                      {/* Venue or Schedule Pill & Quota Badge */}
                       <div
                         style={{
                           display: "flex",
                           alignItems: "center",
+                          justifyContent: "space-between",
                           gap: 6,
                           fontSize: "0.78rem",
                           color: course.learningType === "offline" ? "#c084fc" : course.learningType === "online" ? "#60a5fa" : "#34d399",
@@ -1380,14 +1381,29 @@ export default function LandingPage({ initialCourses, initialCategories, initial
                           fontWeight: 600
                         }}
                       >
-                        {course.learningType === "offline" ? <MapPin size={13} /> : course.learningType === "online" ? <Calendar size={13} /> : <Zap size={13} />}
-                        <span style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
-                          {course.learningType === "offline"
-                            ? (course.venue || "Hotel / Venue Pelatihan")
-                            : course.learningType === "online"
-                            ? (course.schedule || "Live Webinar Terjadwal")
-                            : "Fleksibel Kapan Saja (Tanpa Jadwal)"}
-                        </span>
+                        <div style={{ display: "flex", alignItems: "center", gap: 6, overflow: "hidden" }}>
+                          {course.learningType === "offline" ? <MapPin size={13} /> : course.learningType === "online" ? <Calendar size={13} /> : <Zap size={13} />}
+                          <span style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                            {course.learningType === "offline"
+                              ? (course.venue || "Hotel / Venue Pelatihan")
+                              : course.learningType === "online"
+                              ? (course.schedule || "Live Webinar Terjadwal")
+                              : "Fleksibel Kapan Saja (Tanpa Jadwal)"}
+                          </span>
+                        </div>
+                        {course.quota && (course.learningType === "online" || course.learningType === "offline") && (
+                          <span style={{
+                            flexShrink: 0,
+                            fontSize: "0.7rem",
+                            padding: "2px 8px",
+                            borderRadius: 6,
+                            background: course.quota.toLowerCase().includes("sisa") ? "rgba(239,68,68,0.15)" : "rgba(16,185,129,0.15)",
+                            color: course.quota.toLowerCase().includes("sisa") ? "#f87171" : "#34d399",
+                            border: `1px solid ${course.quota.toLowerCase().includes("sisa") ? "rgba(239,68,68,0.3)" : "rgba(16,185,129,0.3)"}`
+                          }}>
+                            {course.quota}
+                          </span>
+                        )}
                       </div>
 
                       {/* Short description */}

@@ -22,6 +22,10 @@ const publicPaths = [
   "/api/settings",
   // Pemberian izin akses materi Google Drive
   "/api/drive/grant-access",
+  // Health check monitoring endpoint untuk uptime check
+  "/api/health",
+  // Webhook notifikasi pembayaran masuk dari payment gateway
+  "/api/payment/webhook",
 ];
 
 export async function proxy(request) {

@@ -66,7 +66,9 @@ function GovPlanner() {
             </div>
             <div className="glass-card" style={{ padding: 12 }}>
               <div style={{ fontSize: "0.75rem", color: "var(--text-secondary)" }}>Jadwal Pelaksanaan</div>
-              <div style={{ fontSize: "1.15rem", fontWeight: 700, color: "var(--success)", marginTop: 4 }}>Juli - September 2026</div>
+              <div style={{ fontSize: "1.15rem", fontWeight: 700, color: "var(--success)", marginTop: 4 }}>
+                {govResult.schedule || `Kuartal ${Math.floor(new Date().getMonth() / 3) + 1} (${["Jan - Mar", "Apr - Jun", "Jul - Sep", "Okt - Des"][Math.floor(new Date().getMonth() / 3)]} ${new Date().getFullYear()})`}
+              </div>
             </div>
           </div>
           <h5 style={{ marginBottom: 12 }}>Learning & Certification Path:</h5>

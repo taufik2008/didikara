@@ -9,31 +9,7 @@ import InstructorManager from "./InstructorPanel";
 import SupportTicketsPanel from "./SupportTicketsPanel";
 import OrganizationManager from "./OrganizationPanel";
 
-function RevenueChart({ revenueCanvasRef }) {
-  useEffect(() => {
-    let revenueInstance = null;
-    if (revenueCanvasRef.current) {
-      revenueInstance = new Chart(revenueCanvasRef.current, {
-        type: 'line',
-        data: {
-          labels: ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun'],
-          datasets: [
-            { label: 'Pendapatan Bersih (Juta Rp)', data: [15, 28, 42, 59, 78, 92], borderColor: 'rgb(99, 102, 241)', backgroundColor: 'rgba(249, 115, 22, 0.1)', tension: 0.4, fill: true },
-            { label: 'Target Pendapatan', data: [10, 20, 35, 50, 70, 90], borderColor: 'rgba(16, 185, 129, 0.5)', borderDash: [5, 5], fill: false }
-          ]
-        },
-        options: {
-          responsive: true, maintainAspectRatio: false,
-          scales: { x: { grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { color: '#94a3b8' } }, y: { grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { color: '#94a3b8' } } },
-          plugins: { legend: { labels: { color: '#94a3b8' } } }
-        }
-      });
-    }
-    return () => { if (revenueInstance) revenueInstance.destroy(); };
-  }, []);
 
-  return <canvas ref={revenueCanvasRef} id="revenueChart"></canvas>;
-}
 
 function CourseManager() {
   const { courses, handleOpenCrudModal, handleDeleteCrud, handleOpenLmsManageModal } = useApp();

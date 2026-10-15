@@ -77,6 +77,14 @@ export function AppProvider({ children }) {
 
       const savedSidebar = localStorage.getItem("lms_sidebar_collapsed");
       if (savedSidebar !== null) setSidebarCollapsed(savedSidebar === "true");
+
+      const savedSkills = localStorage.getItem("ailms_competency_skills");
+      if (savedSkills) {
+        try {
+          const parsed = JSON.parse(savedSkills);
+          if (Array.isArray(parsed) && parsed.length > 0) setCompetencySkills(parsed);
+        } catch {}
+      }
     }
   }, []);
 
@@ -127,6 +135,7 @@ export function AppProvider({ children }) {
   // Fase 2 — progress per lesson dari DB
   const [dbLessonProgress, setDbLessonProgress] = useState({}); // { lessonIdx: { pct, completed } }
   const examTimerRef = useRef(null);
+  const handleQuizSubmitRef = useRef(null);
   const [uploadStatus, setUploadStatus] = useState("");
   const [attendanceLog, setAttendanceLog] = useState([]);
   const [checkedIn, setCheckedIn] = useState(false);
@@ -276,9 +285,9 @@ export function AppProvider({ children }) {
   useEffect(() => {
     if (examTimerActive && examTimeRemaining === 0 && examSession && !quizResultMessage) {
       setExamTimerActive(false);
-      handleQuizSubmit();
+      handleQuizSubmitRef.current?.();
     }
-  }, [examTimeRemaining, examTimerActive]);
+  }, [examTimeRemaining, examTimerActive, examSession, quizResultMessage]);
 
   // Fase 2 — load riwayat ujian saat tab riwayat dibuka
   const handleLoadExamHistory = useCallback(async () => {
@@ -743,6 +752,7 @@ export function AppProvider({ children }) {
       });
     }
   }, [activeCourse, examSession, selectedAnswers, certificates]);
+  handleQuizSubmitRef.current = handleQuizSubmit;
 
   const handleViewCert = (cert) => {
     setActiveCert(cert);

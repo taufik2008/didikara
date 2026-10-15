@@ -1,6 +1,6 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  serverExternalPackages: ["nodemailer", "web-push"],
+  serverExternalPackages: ["nodemailer", "web-push", "pdfkit"],
   experimental: {
     serverActions: {
       bodySizeLimit: "1000mb",

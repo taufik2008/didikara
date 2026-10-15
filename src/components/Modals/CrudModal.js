@@ -702,7 +702,7 @@ export default function CrudModal() {
               </div>
               <div style={{ marginTop: 12 }}>
                 <label style={{ fontSize: "0.8rem", color: "var(--primary)", fontWeight: 600, display: "block", marginBottom: 10 }}>Otoritas & Hak Akses (Permissions)</label>
-                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }} className="glass-card" style={{ padding: 16, marginBottom: 16 }}>
+                <div className="glass-card" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12, padding: 16, marginBottom: 16 }}>
                   {[
                     { key: "view_dashboard", label: "Melihat Dashboard & Radar" },
                     { key: "access_lms", label: "Mengakses Modul LMS & Kelas" },

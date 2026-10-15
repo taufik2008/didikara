@@ -1,15 +1,9 @@
 "use client";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { X, Copy, Check, Upload, AlertCircle, Clock, ChevronRight, Loader, Tag, Calendar, Sparkles, Zap } from "lucide-react";
 import { useApp } from "@/context/AppContext";
 
 const STEPS = ["info", "transfer", "bukti", "menunggu"];
-
-const BATCH_OPTIONS = [
-  { id: "batch-1", label: "Batch 1 (15 - 25 September 2026)", quota: "Sisa 4 Kuota", active: true },
-  { id: "batch-2", label: "Batch 2 (01 - 10 Oktober 2026)", quota: "Sisa 12 Kuota", active: true },
-  { id: "batch-self", label: "Akses Fleksibel (Self-Paced / Langsung Mulai)", quota: "Tersedia", active: true },
-];
 
 function ExpiryCountdown({ expiredAt }) {
   const [timeLeft, setTimeLeft] = useState("");
@@ -79,8 +73,32 @@ export default function PaymentModal() {
   const [proofPreview, setProofPreview] = useState("");
   const [submitting, setSubmitting] = useState(false);
 
-  // ── Fitur Bisnis: Pilihan Batch & Kupon Diskon ──────────────────────────────
-  const [selectedBatch, setSelectedBatch] = useState(BATCH_OPTIONS[0].label);
+  // ── Fitur Bisnis: Pilihan Batch Dinamis dari Database & Kupon Diskon ──────────────────────────────
+  const courseBatches = useMemo(() => {
+    if (!selectedPayCourse) return [];
+    if (selectedPayCourse.schedule) {
+      return [
+        {
+          id: "batch-course-main",
+          label: `Batch Terjadwal (${selectedPayCourse.schedule})`,
+          quota: selectedPayCourse.quota || "Tersedia",
+          active: true
+        },
+        {
+          id: "batch-course-next",
+          label: "Batch Berikutnya (Jadwal Menyusul / Waitlist)",
+          quota: "Pendaftaran Dibuka",
+          active: true
+        }
+      ];
+    }
+    return [
+      { id: "batch-1", label: "Batch Terdekat (Jadwal Dikonfirmasi Admin)", quota: selectedPayCourse?.quota || "Tersedia", active: true },
+      { id: "batch-2", label: "Batch Reguler Berikutnya", quota: "Tersedia", active: true },
+    ];
+  }, [selectedPayCourse]);
+
+  const [selectedBatch, setSelectedBatch] = useState("");
   const [promoInput, setPromoInput]       = useState("");
   const [appliedPromo, setAppliedPromo]   = useState(null);
   const [promoError, setPromoError]       = useState("");
@@ -92,9 +110,9 @@ export default function PaymentModal() {
       setSenderBank(""); setSenderName(""); setReferenceNo("");
       setProofFile(null); setProofPreview("");
       setPromoInput(""); setAppliedPromo(null); setPromoError(""); setPromoSaving(0);
-      setSelectedBatch(BATCH_OPTIONS[0].label);
+      setSelectedBatch(courseBatches[0]?.label || "Akses Standar");
     }
-  }, [paymentModalActive]);
+  }, [paymentModalActive, courseBatches]);
 
   if (!paymentModalActive || !selectedPayCourse) return null;
 
@@ -326,7 +344,7 @@ export default function PaymentModal() {
               <Calendar size={14} style={{ color: "var(--primary)" }} /> Pilihan Jadwal / Batch Pelatihan
             </label>
             <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
-              {BATCH_OPTIONS.map(b => (
+              {courseBatches.map(b => (
                 <label
                   key={b.id}
                   style={{

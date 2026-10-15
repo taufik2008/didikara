@@ -697,11 +697,31 @@ export default function MarketplacePage() {
                     </div>
                     <h4 className="course-title" style={{ marginTop: 2 }}>{course.title}</h4>
 
-                    {/* Venue / Lokasi atau Media Belajar */}
-                    {course.venue && (
-                      <div style={{ display: "flex", alignItems: "center", gap: 5, fontSize: "0.72rem", color: "var(--text-muted)", marginTop: 4, marginBottom: 8, background: "rgba(255,255,255,0.03)", padding: "3px 6px", borderRadius: 4, border: "1px solid var(--border-color)" }}>
-                        <MapPin size={12} style={{ color: typeMeta.color, flexShrink: 0 }} />
-                        <span style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{course.venue}</span>
+                    {/* Venue / Lokasi, Jadwal, & Kuota */}
+                    {(course.venue || course.schedule || course.quota) && (
+                      <div style={{ display: "flex", flexWrap: "wrap", alignItems: "center", gap: 6, fontSize: "0.72rem", color: "var(--text-muted)", marginTop: 4, marginBottom: 8 }}>
+                        {course.venue && (
+                          <div style={{ display: "flex", alignItems: "center", gap: 4, background: "rgba(255,255,255,0.03)", padding: "3px 6px", borderRadius: 4, border: "1px solid var(--border-color)" }}>
+                            <MapPin size={11} style={{ color: typeMeta.color, flexShrink: 0 }} />
+                            <span style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{course.venue}</span>
+                          </div>
+                        )}
+                        {course.schedule && (
+                          <div style={{ display: "flex", alignItems: "center", gap: 4, background: "rgba(255,255,255,0.03)", padding: "3px 6px", borderRadius: 4, border: "1px solid var(--border-color)" }}>
+                            <Calendar size={11} style={{ color: "#60a5fa", flexShrink: 0 }} />
+                            <span style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{course.schedule}</span>
+                          </div>
+                        )}
+                        {course.quota && (
+                          <span style={{
+                            padding: "2px 7px", borderRadius: 4, fontSize: "0.68rem", fontWeight: 700,
+                            background: course.quota.toLowerCase().includes("sisa") ? "rgba(239,68,68,0.15)" : "rgba(16,185,129,0.15)",
+                            color: course.quota.toLowerCase().includes("sisa") ? "#f87171" : "#34d399",
+                            border: `1px solid ${course.quota.toLowerCase().includes("sisa") ? "rgba(239,68,68,0.3)" : "rgba(16,185,129,0.3)"}`
+                          }}>
+                            {course.quota}
+                          </span>
+                        )}
                       </div>
                     )}
 
