@@ -167,6 +167,15 @@ export async function POST(request) {
       ]
     );
 
+    await catatAudit(user.email, "create_payment_order", "payment_order", orderId, {
+      amount: totalAmount,
+      base_amount: baseAmount,
+      unique_code: uniqueCode,
+      course_id: dbCourseId,
+      invoice_number: invoiceNumber,
+      payment_type: "manual_transfer",
+    });
+
     return NextResponse.json({
       success: true,
       orderId, invoiceNumber, baseAmount, uniqueCode, totalAmount, expiredAt,
@@ -216,6 +225,13 @@ export async function PATCH(request) {
         orderId,
       ]
     );
+
+    await catatAudit(user.email, "submit_payment_proof", "payment_order", orderId, {
+      sender_bank: senderBank || "",
+      sender_name: senderName || "",
+      transfer_date: transferDate || "",
+      reference_no: referenceNo || "",
+    });
 
     // Notifikasi ke admin
     await query(
