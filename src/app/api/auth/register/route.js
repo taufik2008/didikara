@@ -17,9 +17,12 @@ export async function POST(request) {
       }, { status: 400 });
     }
 
-    if (typeof password !== "string" || password.length < 8) {
+    const hasLetter = /[a-zA-Z]/.test(password);
+    const hasNumber = /[0-9]/.test(password);
+    if (typeof password !== "string" || password.length < 8 || !hasLetter || !hasNumber) {
       return NextResponse.json(
-        { success: false, error: "Kata sandi minimal 8 karakter" }, { status: 400 }
+        { success: false, error: "Kata sandi minimal 8 karakter dan harus mengandung kombinasi huruf serta angka" },
+        { status: 400 }
       );
     }
 
