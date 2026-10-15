@@ -1,10 +1,25 @@
 "use client";
 import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import { Cpu, User, Briefcase, Landmark, ShieldCheck, Mail, Lock, ArrowRight, Award, CheckCircle2, KeyRound, X, AlertCircle } from "lucide-react";
 import { useApp } from "@/context/AppContext";
 
 export default function LoginPage() {
+  const router = useRouter();
   const { activeRole, loginEmail, loginPassword, setLoginEmail, setLoginPassword, handleRoleTabChange, handlePrefill, handleLoginSubmit, platformSettings } = useApp();
+
+  const handleCustomLoginSubmit = async (e) => {
+    e.preventDefault();
+    await handleLoginSubmit(e, () => {
+      if (typeof window !== "undefined") {
+        const params = new URLSearchParams(window.location.search);
+        const redirect = params.get("redirect");
+        if (redirect) {
+          router.push(redirect);
+        }
+      }
+    });
+  };
 
   const brandName = (platformSettings?.platform_name && !platformSettings.platform_name.includes("SDI") && platformSettings.platform_name !== "AI LMS")
     ? platformSettings.platform_name
@@ -450,7 +465,7 @@ export default function LoginPage() {
                 })}
               </div>
 
-              <form onSubmit={handleLoginSubmit}>
+              <form onSubmit={handleCustomLoginSubmit}>
                 <div className="form-group">
                   <label htmlFor="login-email">Alamat Email</label>
                   <div className="input-wrapper">

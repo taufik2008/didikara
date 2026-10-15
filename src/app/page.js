@@ -1,5 +1,7 @@
-export const dynamic = "force-dynamic";
-export const revalidate = 0;
+// Aktifkan Incremental Static Regeneration (ISR) 60 detik di Vercel Edge CDN:
+// Halaman tersaji instan (<100ms) dari Edge Cache terdekat (Jakarta/Singapura),
+// sambil tetap diperbarui otomatis di latar belakang setiap 60 detik bila ada perubahan data.
+export const revalidate = 60;
 
 import LandingPage from "@/components/Landing/LandingPage";
 import { query } from "@/lib/db";

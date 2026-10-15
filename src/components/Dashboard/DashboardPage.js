@@ -5,7 +5,7 @@ import Chart from "chart.js/auto";
 import { useApp } from "@/context/AppContext";
 
 export default function DashboardPage() {
-  const { currentUser, courses, enrolledCourses, certificates, setActivePage, setActiveCourse, setActiveLessonIndex, radarCanvasRef, competencySkills = [] } = useApp();
+  const { currentUser, courses, enrolledCourses, certificates, setActivePage, setActiveCourse, setActiveLessonIndex, radarCanvasRef, competencySkills = [], handleOpenClass } = useApp();
   const radarCanvasRefLocal = useRef(null);
   const radarRef = radarCanvasRef || radarCanvasRefLocal;
 
@@ -150,7 +150,7 @@ export default function DashboardPage() {
                 {isEnrolled ? (
                   <>
                     <span style={{ fontSize: "0.75rem", color: "#34d399", fontWeight: 600 }}>Sudah Terdaftar</span>
-                    <button className="btn btn-primary" style={{ width: "auto", padding: "6px 12px", fontSize: "0.75rem", height: "auto" }} onClick={() => { setActiveCourse(recommendedCourse); setActiveLessonIndex(0); setActivePage("lms-page"); }}>
+                    <button className="btn btn-primary" style={{ width: "auto", padding: "6px 12px", fontSize: "0.75rem", height: "auto" }} onClick={() => handleOpenClass(recommendedCourse.id)}>
                       Mulai Belajar
                     </button>
                   </>

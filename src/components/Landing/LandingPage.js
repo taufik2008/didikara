@@ -43,7 +43,7 @@ import {
 
 export default function LandingPage({ initialCourses, initialCategories, initialLevels }) {
   const router = useRouter();
-  const { courses: appCourses, categories: appCategories, levels: appLevels, currentUser, theme, toggleTheme, platformSettings } = useApp();
+  const { courses: appCourses, categories: appCategories, levels: appLevels, currentUser, theme, toggleTheme, platformSettings, enrolledCourses = [] } = useApp();
 
   const [courses, setCourses] = useState(() => {
     if (initialCourses && initialCourses.length > 0) return initialCourses;
@@ -1519,11 +1519,17 @@ export default function LandingPage({ initialCourses, initialCategories, initial
                             <span>Silabus</span>
                           </button>
                           <button
-                            onClick={() => router.push("/dashboard")}
+                            onClick={() => {
+                              if (currentUser) {
+                                router.push(`/kelas?courseId=${course.id}`);
+                              } else {
+                                router.push(`/dashboard?redirect=${encodeURIComponent(`/kelas?courseId=${course.id}`)}`);
+                              }
+                            }}
                             style={{
                               padding: "8px 14px",
                               borderRadius: 8,
-                              background: isFree ? "linear-gradient(135deg, #10b981 0%, #059669 100%)" : "var(--primary-gradient)",
+                              background: (isFree || (enrolledCourses && enrolledCourses.includes(course.id))) ? "linear-gradient(135deg, #10b981 0%, #059669 100%)" : "var(--primary-gradient)",
                               color: "#fff",
                               fontSize: "0.82rem",
                               fontWeight: 700,
@@ -1535,7 +1541,7 @@ export default function LandingPage({ initialCourses, initialCategories, initial
                               boxShadow: "var(--shadow-sm)"
                             }}
                           >
-                            <span>{isFree ? "Mulai Gratis" : "Daftar"}</span>
+                            <span>{(enrolledCourses && enrolledCourses.includes(course.id)) ? "Buka Kelas" : isFree ? "Mulai Gratis" : "Daftar"}</span>
                             <ChevronRight size={14} />
                           </button>
                         </div>
@@ -2671,8 +2677,14 @@ export default function LandingPage({ initialCourses, initialCategories, initial
                 </button>
                 <button
                   onClick={() => {
+                    const targetId = selectedCourseModal?.id;
                     setSelectedCourseModal(null);
-                    router.push("/dashboard");
+                    if (currentUser) {
+                      router.push(targetId ? `/kelas?courseId=${targetId}` : "/kelas");
+                    } else {
+                      const dest = targetId ? `/kelas?courseId=${targetId}` : "/kelas";
+                      router.push(`/dashboard?redirect=${encodeURIComponent(dest)}`);
+                    }
                   }}
                   style={{
                     padding: "10px 22px",
@@ -2690,7 +2702,9 @@ export default function LandingPage({ initialCourses, initialCategories, initial
                   }}
                 >
                   <span>
-                    {selectedModalTier === "self_learning"
+                    {selectedCourseModal && enrolledCourses && enrolledCourses.includes(selectedCourseModal.id)
+                      ? "Buka Ruang Kelas"
+                      : selectedModalTier === "self_learning"
                       ? (Number(selectedCourseModal.price) === 0 ? "Mulai Belajar Gratis (Instan)" : "Daftar Kursus Mandiri")
                       : selectedModalTier === "online"
                       ? "Daftar Kelas Online Live"

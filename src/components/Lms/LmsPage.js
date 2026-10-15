@@ -967,7 +967,7 @@ Didikara - Platform Pelatihan & Sertifikasi Profesional
     );
   }
 
-  if (enrolledCourses.length === 0 || !activeCourse) {
+  if (!activeCourse) {
     return (
       <main className="page-view active">
         <div style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", height: "100%", padding: 40, textAlign: "center" }}>

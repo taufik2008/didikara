@@ -1379,6 +1379,17 @@ export async function initDatabase() {
   initPromise = (async () => {
     const client = await pool.connect();
     try {
+      // ⚡ Fast Check (3ms): Jika skema sudah pernah diinisialisasi, bypass migrasi & seeder
+      const tableCheck = await client.query(`
+        SELECT 1 FROM information_schema.tables 
+         WHERE table_schema = 'public' AND table_name = 'users' LIMIT 1
+      `).catch(() => ({ rows: [] }));
+
+      if (tableCheck.rows && tableCheck.rows.length > 0) {
+        global._dbInitialized = true;
+        return;
+      }
+
       await client.query('BEGIN');
       await createTables(client);
       await seedUsers(client);

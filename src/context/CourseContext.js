@@ -1,5 +1,6 @@
 "use client";
 import { createContext, useContext, useState, useEffect, useRef, useCallback, useMemo } from "react";
+import { useRouter } from "next/navigation";
 import { useAuth } from "./AuthContext";
 import { useUI } from "./UIContext";
 import { loadAppData, loadEnrollments } from "@/services/courseService";
@@ -9,6 +10,7 @@ import { loadProgress, saveProgress } from "@/services/progressService";
 export const CourseContext = createContext(null);
 
 export function CourseProvider({ children }) {
+  const router = useRouter();
   const { currentUser } = useAuth();
   const { setActivePage } = useUI();
 
@@ -93,13 +95,6 @@ export function CourseProvider({ children }) {
     return () => { isMounted = false; };
   }, [currentUser]);
 
-  // Set default active course jika belum dipilih
-  useEffect(() => {
-    if (!activeCourse && enrolledCourses.length > 0 && courses.length > 0) {
-      const c = courses.find(item => item.id === enrolledCourses[0]);
-      if (c) setActiveCourse(c);
-    }
-  }, [courses, enrolledCourses, activeCourse]);
 
   // Countdown timer ujian
   useEffect(() => {
@@ -179,7 +174,15 @@ export function CourseProvider({ children }) {
     setUploadStatus("");
     setDbLessonProgress({});
     muatKehadiran(courseId);
-    setActivePage("lms-page");
+    if (typeof window !== "undefined") {
+      const currentUrl = window.location.pathname + window.location.search;
+      const targetUrl = `/kelas?courseId=${courseId}`;
+      if (currentUrl !== targetUrl) {
+        router.push(targetUrl);
+      }
+    } else {
+      setActivePage("lms-page");
+    }
 
     try {
       const progJson = await loadProgress(courseId);
@@ -199,7 +202,29 @@ export function CourseProvider({ children }) {
     } catch {
       setActiveLessonIndex(0);
     }
-  }, [courses, checkPrerequisite, muatKehadiran, setActivePage]);
+  }, [courses, checkPrerequisite, muatKehadiran, setActivePage, router]);
+
+  // Sinkronisasi kursus aktif dari URL query ?courseId=... atau fallback default
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const urlParams = new URLSearchParams(window.location.search);
+      const urlCourseId = urlParams.get("courseId");
+      if (urlCourseId && courses.length > 0) {
+        if (!activeCourse || activeCourse.id !== urlCourseId) {
+          const matched = courses.find(c => c.id === urlCourseId);
+          if (matched) {
+            handleOpenClass(urlCourseId);
+            return;
+          }
+        }
+      }
+    }
+
+    if (!activeCourse && enrolledCourses.length > 0 && courses.length > 0) {
+      const c = courses.find(item => item.id === enrolledCourses[0]);
+      if (c) setActiveCourse(c);
+    }
+  }, [courses, enrolledCourses, activeCourse, handleOpenClass]);
 
   const handleSelectLesson = useCallback((idx) => {
     setActiveLessonIndex(idx);
