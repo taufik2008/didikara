@@ -958,6 +958,8 @@ async function createTables(client) {
 
   // Tanggal bergabung pengguna — dipakai laporan "pengguna baru per periode".
   await client.query(`ALTER TABLE users ADD COLUMN IF NOT EXISTS created_at TIMESTAMPTZ DEFAULT NOW()`);
+  await client.query(`ALTER TABLE users ADD COLUMN IF NOT EXISTS privacy_consent_at TIMESTAMPTZ DEFAULT NULL`);
+  await client.query(`ALTER TABLE users ADD COLUMN IF NOT EXISTS privacy_policy_version VARCHAR(50) DEFAULT NULL`);
 
   // Waktu penyelesaian pelajaran — dipakai laporan penyelesaian dan tren harian.
   await client.query(`ALTER TABLE user_progress ADD COLUMN IF NOT EXISTS completed_at TIMESTAMPTZ DEFAULT NULL`);
@@ -985,6 +987,20 @@ async function createTables(client) {
   `);
   await client.query(`CREATE INDEX IF NOT EXISTS idx_user_sessions_user   ON user_sessions(user_email, revoked_at)`);
   await client.query(`CREATE INDEX IF NOT EXISTS idx_user_sessions_token  ON user_sessions(session_token)`);
+
+  // ─── Reset Password Token (Sekali Pakai & Kedaluwarsa 30 Menit) ──────────
+  await client.query(`
+    CREATE TABLE IF NOT EXISTS password_reset_tokens (
+      id SERIAL PRIMARY KEY,
+      user_email VARCHAR(255) NOT NULL REFERENCES users(email) ON DELETE CASCADE,
+      token_hash VARCHAR(128) NOT NULL,
+      expires_at TIMESTAMPTZ NOT NULL,
+      used_at    TIMESTAMPTZ DEFAULT NULL,
+      created_at TIMESTAMPTZ DEFAULT NOW()
+    )
+  `);
+  await client.query(`CREATE INDEX IF NOT EXISTS idx_reset_token_hash  ON password_reset_tokens(token_hash)`);
+  await client.query(`CREATE INDEX IF NOT EXISTS idx_reset_token_email ON password_reset_tokens(user_email)`);
 
   // ─── Live class: kapasitas, kehadiran, rekaman, pengingat ────────────────
   // Kolom-kolom ini menyusul setelah tabel live_sessions dipakai, jadi

@@ -1,8 +1,8 @@
 import { NextResponse } from "next/server";
 import { query } from "@/lib/db";
-import { signToken } from "@/lib/jwt";
 import { sendPasswordResetEmail } from "@/lib/email";
 import { z } from "zod";
+import crypto from "node:crypto";
 
 const schema = z.object({
   email: z.string().email(),
@@ -28,19 +28,25 @@ export async function POST(request) {
     }
 
     const user = rows[0];
-    const resetToken = await signToken(
-      { email: user.email, isPasswordReset: true },
-      { expiresIn: "1h" }
+
+    // Generate token acak 32-byte & simpan hash SHA-256 (kedaluwarsa 30 menit)
+    const rawToken = crypto.randomBytes(32).toString("hex");
+    const tokenHash = crypto.createHash("sha256").update(rawToken).digest("hex");
+
+    await query(
+      `INSERT INTO password_reset_tokens (user_email, token_hash, expires_at)
+       VALUES ($1, $2, NOW() + INTERVAL '30 minutes')`,
+      [user.email, tokenHash]
     );
 
     const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000";
-    const resetUrl = `${baseUrl}/login?resetToken=${encodeURIComponent(resetToken)}`;
+    const resetUrl = `${baseUrl}/login?resetToken=${encodeURIComponent(rawToken)}`;
 
     await sendPasswordResetEmail(user.email, user.fullname || user.email, resetUrl).catch(() => {});
 
     return NextResponse.json({
       success: true,
-      message: "Tautan reset password telah dikirim ke email Anda (berlaku 1 jam).",
+      message: "Tautan reset password telah dikirim ke email Anda (berlaku 30 menit).",
     });
   } catch (error) {
     console.error("Forgot password error:", error);
