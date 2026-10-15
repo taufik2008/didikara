@@ -13,6 +13,19 @@ export const metadata = {
   description: "Platform digital nasional terintegrasi untuk pelatihan profesional, sertifikasi, pendidikan lanjutan, dan analitik angkatan kerja berbasis AI.",
   manifest: "/manifest.json",
   appleWebApp: { capable: true, statusBarStyle: "black-translucent", title: "DIDIKARA" },
+  openGraph: {
+    title: "DIDIKARA — Platform Pelatihan & Sertifikasi Profesional",
+    description: "Platform digital nasional terintegrasi untuk pelatihan profesional, sertifikasi, pendidikan lanjutan, dan analitik angkatan kerja berbasis AI.",
+    url: "https://didikara.id",
+    siteName: "DIDIKARA",
+    locale: "id_ID",
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "DIDIKARA — Platform Pelatihan & Sertifikasi Profesional",
+    description: "Platform digital nasional terintegrasi untuk pelatihan profesional, sertifikasi, pendidikan lanjutan, dan analitik angkatan kerja berbasis AI.",
+  },
 };
 
 export default function RootLayout({ children }) {
