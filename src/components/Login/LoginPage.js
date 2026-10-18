@@ -36,6 +36,7 @@ export default function LoginPage() {
   const [regError, setRegError] = useState("");
   const [regSuccess, setRegSuccess] = useState("");
   const [privacyConsent, setPrivacyConsent] = useState(false);
+  const [regHoneypot, setRegHoneypot] = useState("");
 
 
   const [showForgotModal, setShowForgotModal] = useState(false);
@@ -95,6 +96,7 @@ export default function LoginPage() {
           password: regPassword,
           role: "student",
           privacyConsent: true,
+          website_url: regHoneypot,
         }),
       });
       const data = await res.json();
@@ -337,6 +339,18 @@ export default function LoginPage() {
           ) : authMode === "register" ? (
             /* Formulir Registrasi Peserta Baru */
             <form onSubmit={handleRegisterSubmit}>
+              {/* Anti-bot Honeypot field - Tersembunyi dari pengguna manusia */}
+              <div style={{ display: "none", opacity: 0, position: "absolute", left: "-9999px" }} aria-hidden="true">
+                <input
+                  type="text"
+                  name="website_url"
+                  tabIndex="-1"
+                  autoComplete="off"
+                  value={regHoneypot}
+                  onChange={(e) => setRegHoneypot(e.target.value)}
+                />
+              </div>
+
               <div className="form-group">
                 <label htmlFor="reg-fullname">Nama Lengkap Peserta</label>
                 <div className="input-wrapper">

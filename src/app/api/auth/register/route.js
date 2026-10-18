@@ -4,7 +4,13 @@ import { hashPassword } from "@/lib/auth";
 
 export async function POST(request) {
   try {
-    const { email, password, fullname, role, privacyConsent } = await request.json();
+    const body = await request.json();
+    const { email, password, fullname, role, privacyConsent, honeypot, website_url, _hp } = body || {};
+
+    // Proteksi Spam & Bot: Jika field honeypot terisi, tolak langsung tanpa proses bcrypt
+    if (honeypot || website_url || _hp) {
+      return NextResponse.json({ success: false, error: "Spam bot request terdeteksi" }, { status: 400 });
+    }
 
     if (!email || !password || !fullname) {
       return NextResponse.json({ success: false, error: "Email, password, dan nama lengkap wajib diisi" }, { status: 400 });

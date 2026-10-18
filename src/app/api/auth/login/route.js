@@ -30,6 +30,11 @@ export async function POST(request) {
     return NextResponse.json({ success: false, error: "Request body tidak valid" }, { status: 400 });
   }
 
+  // Proteksi Spam & Bot: Jika field honeypot terisi, tolak langsung
+  if (body?.honeypot || body?.website_url || body?._hp) {
+    return NextResponse.json({ success: false, error: "Spam bot request terdeteksi" }, { status: 400 });
+  }
+
   const parsed = loginSchema.safeParse(body);
   if (!parsed.success) {
     const messages = parsed.error.issues.map((e) => e.message).join("; ");

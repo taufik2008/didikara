@@ -17,6 +17,7 @@ import {
   Video as VideoIcon
 } from "lucide-react";
 import { useApp } from "@/context/AppContext";
+import { createScorm12Adapter } from "@/lib/scormRuntime";
 
 function getYouTubeId(url) {
   if (!url || typeof url !== "string") return null;
@@ -143,6 +144,27 @@ export default function VideoPlayerV2({
       setViewMode("video");
     }
   }, [activeLessonIndex, activeCourse?.id, lessonType, rawUrl]);
+
+  // SCORM 1.2 Runtime API adapter integration
+  useEffect(() => {
+    if (typeof window !== "undefined" && lessonType === "scorm") {
+      window.API = createScorm12Adapter({
+        userId: currentUser?.email,
+        userName: currentUser?.fullname,
+        lessonId: (typeof activeLesson === "object" && activeLesson?.id) || `lesson-${activeLessonIndex}`,
+        onCommit: (cmi) => {
+          if (cmi["cmi.core.lesson_status"] === "completed" || cmi["cmi.core.lesson_status"] === "passed") {
+            setVideoProgress(100);
+          }
+        },
+      });
+      return () => {
+        try {
+          if (window.API && window.API.LMSFinish) window.API.LMSFinish("");
+        } catch {}
+      };
+    }
+  }, [lessonType, currentUser, activeLesson, activeLessonIndex, setVideoProgress]);
 
   // Sync video play/pause with external state
   useEffect(() => {
@@ -581,6 +603,15 @@ export default function VideoPlayerV2({
           <source src={lessonUrl} type="video/ogg" />
           Browser Anda tidak mendukung tag video HTML5.
         </video>
+      ) : lessonType === "scorm" ? (
+        /* Case SCORM: Paket SCORM 1.2 Interaktif */
+        <iframe
+          src={lessonUrl}
+          title={lessonTitle}
+          style={iframeStyle}
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; fullscreen"
+          allowFullScreen
+        />
       ) : isWebUrl ? (
         /* Case G: Generic Web URL / External Video Embed */
         <iframe

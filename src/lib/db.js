@@ -1,7 +1,7 @@
 import { Pool } from 'pg';
 import bcrypt from 'bcryptjs';
 
-function getDbConfig() {
+export function getDbConfig() {
   const connectionString =
     process.env.DATABASE_URL ||
     process.env.POSTGRES_URL ||
@@ -11,13 +11,19 @@ function getDbConfig() {
     process.env.didikara_db_POSTGRES_URL ||
     process.env.didikara_db_POSTGRES_PRISMA_URL;
 
+  const isServerless = !!(process.env.VERCEL || process.env.AWS_LAMBDA_FUNCTION_NAME);
+  const defaultMax = isServerless ? 3 : 10;
+  const maxPool = process.env.DB_POOL_MAX ? parseInt(process.env.DB_POOL_MAX, 10) : defaultMax;
+  const idleTimeout = isServerless ? 10000 : 30000;
+  const connectionTimeout = 10000;
+
   if (connectionString) {
     const isLocal = connectionString.includes('localhost') || connectionString.includes('127.0.0.1');
     return {
       connectionString,
-      max: process.env.DB_POOL_MAX ? parseInt(process.env.DB_POOL_MAX, 10) : 10,
-      idleTimeoutMillis: 30000,
-      connectionTimeoutMillis: 10000,
+      max: maxPool,
+      idleTimeoutMillis: idleTimeout,
+      connectionTimeoutMillis: connectionTimeout,
       ssl: isLocal ? false : { rejectUnauthorized: false },
     };
   }
@@ -31,16 +37,16 @@ function getDbConfig() {
       user: process.env.POSTGRES_USER,
       password: process.env.POSTGRES_PASSWORD,
       ssl: { rejectUnauthorized: false },
-      max: 10,
-      idleTimeoutMillis: 30000,
-      connectionTimeoutMillis: 10000,
+      max: maxPool,
+      idleTimeoutMillis: idleTimeout,
+      connectionTimeoutMillis: connectionTimeout,
     };
   }
 
   return {
     connectionString: 'postgresql://postgres:postgres@localhost:5432/ailms_db',
-    max: 10,
-    idleTimeoutMillis: 10000,
+    max: maxPool,
+    idleTimeoutMillis: idleTimeout,
     ssl: false,
   };
 }
@@ -1379,29 +1385,56 @@ export async function initDatabase() {
   initPromise = (async () => {
     const client = await pool.connect();
     try {
-      // ⚡ Fast Check (3ms): Jika skema sudah pernah diinisialisasi, bypass migrasi & seeder
-      const tableCheck = await client.query(`
-        SELECT 1 FROM information_schema.tables 
-         WHERE table_schema = 'public' AND table_name = 'users' LIMIT 1
-      `).catch(() => ({ rows: [] }));
+      await client.query('SELECT pg_advisory_lock(987654321)').catch(() => {});
+      try {
+        // 1. Pastikan tabel schema_migrations ada untuk melacak versi migrasi
+        await client.query(`
+          CREATE TABLE IF NOT EXISTS schema_migrations (
+            version VARCHAR(100) PRIMARY KEY,
+            applied_at TIMESTAMPTZ DEFAULT NOW()
+          )
+        `).catch(() => {});
 
-      if (tableCheck.rows && tableCheck.rows.length > 0) {
+        // 2. Ambil daftar migrasi yang sudah pernah diaplikasikan
+        const { rows: migrationRows } = await client.query(
+          "SELECT version FROM schema_migrations"
+        ).catch(() => ({ rows: [] }));
+        const appliedMigrations = new Set((migrationRows || []).map(r => r.version));
+
+        // 3. Eksekusi DDL jika skema base belum tercatat
+        if (!appliedMigrations.has('20261019_base_schema_v2')) {
+          await client.query('BEGIN');
+          await createTables(client);
+          await client.query(
+            "INSERT INTO schema_migrations (version) VALUES ($1) ON CONFLICT (version) DO NOTHING",
+            ['20261019_base_schema_v2']
+          );
+          await client.query('COMMIT');
+          console.log('✅ Base schema v2 migration applied successfully');
+        }
+
+        // 4. Eksekusi Seeders hanya jika belum pernah dijalankan
+        if (!appliedMigrations.has('20261019_initial_seeds')) {
+          await client.query('BEGIN');
+          await seedUsers(client);
+          await seedCourses(client);
+          await seedTransactions(client);
+          await seedCertificates(client);
+          await seedCategories(client);
+          await seedLevels(client);
+          await seedBadges(client);
+          await client.query(
+            "INSERT INTO schema_migrations (version) VALUES ($1) ON CONFLICT (version) DO NOTHING",
+            ['20261019_initial_seeds']
+          );
+          await client.query('COMMIT');
+          console.log('✅ Initial seeds applied successfully');
+        }
+
         global._dbInitialized = true;
-        return;
+      } finally {
+        await client.query('SELECT pg_advisory_unlock(987654321)').catch(() => {});
       }
-
-      await client.query('BEGIN');
-      await createTables(client);
-      await seedUsers(client);
-      await seedCourses(client);
-      await seedTransactions(client);
-      await seedCertificates(client);
-      await seedCategories(client);
-      await seedLevels(client);
-      await seedBadges(client);
-      await client.query('COMMIT');
-      global._dbInitialized = true;
-      console.log('✅ Database schema and seeds initialized successfully');
     } catch (err) {
       await client.query('ROLLBACK').catch(() => {});
       console.error('Database init/seed error:', err);
