@@ -1,6 +1,6 @@
 "use client";
 import { useState, useRef, useMemo, useEffect } from "react";
-import { Check, CheckSquare, Square, Upload, Image as ImageIcon, Link as LinkIcon, X, Award, UserCheck } from "lucide-react";
+import { Check, CheckSquare, Square, Upload, Image as ImageIcon, Link as LinkIcon, X, Award, UserCheck, Eye, EyeOff } from "lucide-react";
 import { useApp } from "@/context/AppContext";
 
 export default function CrudModal() {
@@ -15,6 +15,7 @@ export default function CrudModal() {
   const [isDragging, setIsDragging] = useState(false);
   const [courseStep, setCourseStep] = useState(1); // 1: Info Dasar & Media, 2: Instruktur & Detail, 3: Biaya & Deskripsi
   const [apiInstructors, setApiInstructors] = useState([]);
+  const [showUserPassword, setShowUserPassword] = useState(false);
   const fileInputRef = useRef(null);
 
   useEffect(() => {
@@ -652,15 +653,42 @@ export default function CrudModal() {
                       <span style={{ color: "var(--text-muted)", fontWeight: 400 }}> — kosongkan bila tidak diubah</span>
                     )}
                   </label>
-                  <input
-                    type="password"
-                    autoComplete="new-password"
-                    placeholder={crudAction === "edit" ? "(tidak diubah)" : ""}
-                    value={userForm.password}
-                    onChange={(e) => setUserForm({ ...userForm, password: e.target.value })}
-                    required={crudAction === "add"}
-                    style={{ paddingLeft: 16, fontFamily: "monospace" }}
-                  />
+                  <div style={{ position: "relative" }}>
+                    <input
+                      type={showUserPassword ? "text" : "password"}
+                      autoComplete="new-password"
+                      placeholder={crudAction === "edit" ? "(tidak diubah)" : ""}
+                      value={userForm.password}
+                      onChange={(e) => setUserForm({ ...userForm, password: e.target.value })}
+                      required={crudAction === "add"}
+                      style={{ paddingLeft: 16, paddingRight: 40, fontFamily: "monospace" }}
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowUserPassword((prev) => !prev)}
+                      aria-label={showUserPassword ? "Sembunyikan kata sandi" : "Tampilkan kata sandi"}
+                      tabIndex={-1}
+                      style={{
+                        position: "absolute",
+                        right: 12,
+                        top: "50%",
+                        transform: "translateY(-50%)",
+                        background: "none",
+                        border: "none",
+                        padding: 4,
+                        cursor: "pointer",
+                        color: "var(--text-muted)",
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        transition: "color 0.15s ease",
+                      }}
+                      onMouseEnter={(e) => { e.currentTarget.style.color = "var(--text-primary)"; }}
+                      onMouseLeave={(e) => { e.currentTarget.style.color = "var(--text-muted)"; }}
+                    >
+                      {showUserPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+                    </button>
+                  </div>
                 </div>
                 <div className="form-group">
                   <label>Status Akun</label>

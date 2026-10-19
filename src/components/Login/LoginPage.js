@@ -1,7 +1,7 @@
 "use client";
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { Cpu, User, Briefcase, Landmark, ShieldCheck, Mail, Lock, ArrowRight, Award, CheckCircle2, KeyRound, X, AlertCircle } from "lucide-react";
+import { Cpu, User, Briefcase, Landmark, ShieldCheck, Mail, Lock, ArrowRight, Award, CheckCircle2, KeyRound, X, AlertCircle, Eye, EyeOff } from "lucide-react";
 import { useApp } from "@/context/AppContext";
 
 export default function LoginPage() {
@@ -40,6 +40,12 @@ export default function LoginPage() {
 
   const [googleLoading, setGoogleLoading] = useState(false);
   const [oauthNotice, setOauthNotice] = useState({ type: "", message: "" });
+
+  const [showLoginPassword, setShowLoginPassword] = useState(false);
+  const [showRegPassword, setShowRegPassword] = useState(false);
+  const [showRegConfirmPassword, setShowRegConfirmPassword] = useState(false);
+  const [showResetNewPassword, setShowResetNewPassword] = useState(false);
+  const [showResetConfirmPassword, setShowResetConfirmPassword] = useState(false);
 
   const [showForgotModal, setShowForgotModal] = useState(false);
   const [forgotEmail, setForgotEmail] = useState("");
@@ -265,6 +271,34 @@ export default function LoginPage() {
     </div>
   );
 
+  const renderPasswordToggle = (show, toggleFn) => (
+    <button
+      type="button"
+      onClick={toggleFn}
+      aria-label={show ? "Sembunyikan kata sandi" : "Tampilkan kata sandi"}
+      tabIndex={-1}
+      style={{
+        position: "absolute",
+        right: 12,
+        top: "50%",
+        transform: "translateY(-50%)",
+        background: "none",
+        border: "none",
+        padding: 4,
+        cursor: "pointer",
+        color: "var(--text-muted)",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        transition: "color 0.15s ease",
+      }}
+      onMouseEnter={(e) => { e.currentTarget.style.color = "var(--text-primary)"; }}
+      onMouseLeave={(e) => { e.currentTarget.style.color = "var(--text-muted)"; }}
+    >
+      {show ? <EyeOff size={16} /> : <Eye size={16} />}
+    </button>
+  );
+
   return (
     <div className="login-container">
       <div className="login-card glass-panel">
@@ -390,14 +424,16 @@ export default function LoginPage() {
                 <div className="input-wrapper">
                   <Lock size={16} className="input-icon" />
                   <input
-                    type="password"
+                    type={showResetNewPassword ? "text" : "password"}
                     id="new-password"
                     required
                     minLength={6}
                     placeholder="Minimal 6 karakter"
+                    style={{ paddingRight: 40 }}
                     value={newPassword}
                     onChange={(e) => setNewPassword(e.target.value)}
                   />
+                  {renderPasswordToggle(showResetNewPassword, () => setShowResetNewPassword(prev => !prev))}
                 </div>
               </div>
 
@@ -406,14 +442,16 @@ export default function LoginPage() {
                 <div className="input-wrapper">
                   <Lock size={16} className="input-icon" />
                   <input
-                    type="password"
+                    type={showResetConfirmPassword ? "text" : "password"}
                     id="confirm-password"
                     required
                     minLength={6}
                     placeholder="Ulangi kata sandi baru"
+                    style={{ paddingRight: 40 }}
                     value={confirmPassword}
                     onChange={(e) => setConfirmPassword(e.target.value)}
                   />
+                  {renderPasswordToggle(showResetConfirmPassword, () => setShowResetConfirmPassword(prev => !prev))}
                 </div>
               </div>
 
@@ -503,14 +541,16 @@ export default function LoginPage() {
                 <div className="input-wrapper">
                   <Lock size={16} className="input-icon" />
                   <input
-                    type="password"
+                    type={showRegPassword ? "text" : "password"}
                     id="reg-password"
                     required
                     minLength={8}
                     placeholder="Minimal 8 karakter"
+                    style={{ paddingRight: 40 }}
                     value={regPassword}
                     onChange={(e) => setRegPassword(e.target.value)}
                   />
+                  {renderPasswordToggle(showRegPassword, () => setShowRegPassword(prev => !prev))}
                 </div>
               </div>
 
@@ -519,14 +559,16 @@ export default function LoginPage() {
                 <div className="input-wrapper">
                   <Lock size={16} className="input-icon" />
                   <input
-                    type="password"
+                    type={showRegConfirmPassword ? "text" : "password"}
                     id="reg-confirm"
                     required
                     minLength={8}
                     placeholder="Ketik ulang kata sandi"
+                    style={{ paddingRight: 40 }}
                     value={regConfirmPassword}
                     onChange={(e) => setRegConfirmPassword(e.target.value)}
                   />
+                  {renderPasswordToggle(showRegConfirmPassword, () => setShowRegConfirmPassword(prev => !prev))}
                 </div>
               </div>
 
@@ -632,13 +674,15 @@ export default function LoginPage() {
                   <div className="input-wrapper">
                     <Lock size={16} className="input-icon" />
                     <input
-                      type="password"
+                      type={showLoginPassword ? "text" : "password"}
                       id="login-password"
                       required
                       autoComplete="current-password"
+                      style={{ paddingRight: 40 }}
                       value={loginPassword}
                       onChange={(e) => setLoginPassword(e.target.value)}
                     />
+                    {renderPasswordToggle(showLoginPassword, () => setShowLoginPassword(prev => !prev))}
                   </div>
                 </div>
 

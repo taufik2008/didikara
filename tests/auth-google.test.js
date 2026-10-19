@@ -151,4 +151,20 @@ test("LoginPage menampilkan opsi 'Daftar dengan Google' dan 'Masuk dengan Google
     true,
     "LoginPage harus memanggil endpoint /api/auth/google"
   );
+
+  assert.strictEqual(
+    loginCode.includes("renderPasswordToggle"),
+    true,
+    "LoginPage harus memiliki toggle lihat/sembunyikan password (show password)"
+  );
+  assert.strictEqual(
+    loginCode.includes("showLoginPassword"),
+    true,
+    "LoginPage harus mendukung toggle visibilitas kata sandi pada login"
+  );
+  assert.strictEqual(
+    loginCode.includes("showRegPassword"),
+    true,
+    "LoginPage harus mendukung toggle visibilitas kata sandi pada registrasi"
+  );
 });
