@@ -507,6 +507,8 @@ async function createTables(client) {
   // berdasarkan course_id saja — yang bisa menautkan sertifikat ke peserta lain
   // yang kebetulan lulus kursus sama.
   await client.query(`ALTER TABLE users ALTER COLUMN avatar TYPE TEXT`).catch(() => {});
+  await client.query(`ALTER TABLE users ADD COLUMN IF NOT EXISTS google_id VARCHAR(255)`).catch(() => {});
+  await client.query(`CREATE INDEX IF NOT EXISTS idx_users_google_id ON users(google_id)`).catch(() => {});
   await client.query(`ALTER TABLE certificates ADD COLUMN IF NOT EXISTS user_email VARCHAR(255)`);
   await client.query(`ALTER TABLE certificates ADD COLUMN IF NOT EXISTS issued_at TIMESTAMPTZ DEFAULT NOW()`);
   await client.query(`ALTER TABLE certificates ADD COLUMN IF NOT EXISTS valid_until TIMESTAMPTZ DEFAULT NULL`);

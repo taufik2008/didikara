@@ -8,6 +8,7 @@ const publicPaths = [
   "/api/auth/register",
   "/api/auth/forgot-password",
   "/api/auth/reset-password",
+  "/api/auth/google",
   // Katalog kursus & verifikasi sertifikat memang dirancang publik.
   // /verify/[certId] adalah server component yang mem-fetch tanpa cookie.
   "/api/catalog",
