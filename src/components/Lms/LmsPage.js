@@ -1064,23 +1064,30 @@ Didikara - Platform Pelatihan & Sertifikasi Profesional
                 Materi {activeLessonIndex + 1} dari {flatLessons.length}
               </span>
 
+              <button type="button" className="btn btn-secondary"
+                style={{ width:"auto", padding:"6px 12px", fontSize:"0.75rem", display:"flex", alignItems:"center", gap:4, opacity: activeLessonIndex <= 0 ? 0.4 : 1 }}
+                disabled={activeLessonIndex <= 0}
+                onClick={() => handleSelectLesson(activeLessonIndex - 1)}>
+                <ArrowLeft size={14} /> Materi Sebelumnya
+              </button>
+
               {sudahSelesai ? (
-                <span style={{ fontSize:"0.75rem", color:"var(--success)", display:"flex", alignItems:"center", gap:6 }}>
+                <span style={{ fontSize:"0.75rem", color:"var(--success)", display:"flex", alignItems:"center", gap:6, fontWeight: 600 }}>
                   <CheckCircle size={14}/> Selesai
                 </span>
               ) : (
                 <button type="button" className="btn btn-secondary"
-                  style={{ width:"auto", padding:"6px 12px", fontSize:"0.75rem" }}
+                  style={{ width:"auto", padding:"6px 12px", fontSize:"0.75rem", display:"flex", alignItems:"center", gap:4 }}
                   onClick={() => handleSaveLessonProgress(activeLessonIndex, 100, true)}>
                   <CheckCircle size={14}/> Tandai Selesai
                 </button>
               )}
 
               <button type="button" className="btn btn-primary"
-                style={{ width:"auto", padding:"6px 12px", fontSize:"0.75rem" }}
+                style={{ width:"auto", padding:"6px 12px", fontSize:"0.75rem", display:"flex", alignItems:"center", gap:4, opacity: activeLessonIndex >= flatLessons.length - 1 ? 0.4 : 1 }}
                 disabled={activeLessonIndex >= flatLessons.length - 1}
                 onClick={() => handleSelectLesson(activeLessonIndex + 1)}>
-                Materi Berikutnya →
+                Materi Selanjutnya <ArrowRight size={14} />
               </button>
             </div>
           )}
@@ -2525,48 +2532,6 @@ Didikara - Platform Pelatihan & Sertifikasi Profesional
             ))}
           </div>
 
-          {/* ── Sticky Bottom Navigation Bar ── */}
-          {activeLesson && (
-            <div style={{
-              marginTop: 20, padding: "12px 16px", borderRadius: 10,
-              background: "var(--glass-bg)", backdropFilter: "blur(12px)", border: "1px solid var(--border-color)",
-              display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: 10
-            }}>
-              <button
-                type="button"
-                className="btn btn-secondary"
-                disabled={activeLessonIndex <= 0}
-                onClick={() => handleSelectLesson(activeLessonIndex - 1)}
-                style={{ width: "auto", padding: "8px 14px", fontSize: "0.8rem", opacity: activeLessonIndex <= 0 ? 0.4 : 1, display: "flex", alignItems: "center", gap: 4 }}>
-                <ArrowLeft size={14} /> Materi Sebelumnya
-              </button>
-
-              <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                {sudahSelesai ? (
-                  <span style={{ fontSize: "0.78rem", color: "var(--success)", fontWeight: 600, display: "flex", alignItems: "center", gap: 4 }}>
-                    <CheckCircle size={14} /> Materi Selesai
-                  </span>
-                ) : (
-                  <button
-                    type="button"
-                    className="btn btn-secondary"
-                    onClick={() => handleSaveLessonProgress(activeLessonIndex, 100, true)}
-                    style={{ width: "auto", padding: "8px 14px", fontSize: "0.8rem", display: "flex", alignItems: "center", gap: 4 }}>
-                    <CheckCircle size={14} /> Tandai Selesai
-                  </button>
-                )}
-              </div>
-
-              <button
-                type="button"
-                className="btn btn-primary"
-                disabled={activeLessonIndex >= flatLessons.length - 1}
-                onClick={() => handleSelectLesson(activeLessonIndex + 1)}
-                style={{ width: "auto", padding: "8px 14px", fontSize: "0.8rem", opacity: activeLessonIndex >= flatLessons.length - 1 ? 0.4 : 1, display: "flex", alignItems: "center", gap: 4 }}>
-                Materi Selanjutnya <ArrowRight size={14} />
-              </button>
-            </div>
-          )}
 
         </div>
 
