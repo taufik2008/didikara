@@ -65,3 +65,89 @@ export function mapMidtransStatus(transactionStatus, fraudStatus) {
   if (["deny","cancel","expire","failure"].includes(transactionStatus)) return "failed";
   return "pending";
 }
+
+// ─────────────────────────────────────────────────────────────────────────────
+// MAYAR PAYMENT GATEWAY INTEGRATION (mayar.id)
+// ─────────────────────────────────────────────────────────────────────────────
+const MAYAR_IS_PRODUCTION = process.env.MAYAR_IS_PRODUCTION === "true";
+const MAYAR_API_KEY       = process.env.MAYAR_API_KEY || "";
+const MAYAR_MOCK_MODE     = !MAYAR_API_KEY;
+
+const MAYAR_BASE = MAYAR_IS_PRODUCTION
+  ? "https://api.mayar.id"
+  : "https://api.mayar.io";
+
+export const MAYAR_WEBHOOK_TOKEN = process.env.MAYAR_WEBHOOK_TOKEN || "";
+
+/**
+ * Buat payment link / invoice Mayar untuk pembayaran instan
+ * (QRIS, VA Bank BCA/Mandiri/BRI/BNI/Permata, GoPay, OVO, ShopeePay, Kartu Kredit)
+ */
+export async function createMayarPaymentLink({
+  orderId,
+  amount,
+  customerName,
+  customerEmail,
+  customerPhone,
+  courseTitle,
+  redirectUrl,
+}) {
+  if (MAYAR_MOCK_MODE) {
+    return {
+      id: `mock-mayar-${orderId}`,
+      transactionId: `mock-tx-${orderId}`,
+      paymentUrl: `https://sandbox.mayar.id/invoices/mock-${orderId}`,
+      mock: true,
+    };
+  }
+
+  const res = await fetch(`${MAYAR_BASE}/hl/v1/invoice/create`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${MAYAR_API_KEY}`,
+    },
+    body: JSON.stringify({
+      name: customerName || "Pelanggan",
+      email: customerEmail,
+      amount: Math.round(Number(amount)),
+      mobile: customerPhone || "081234567890",
+      description: (courseTitle || `Pembayaran Pelatihan DIDIKARA (${orderId})`).substring(0, 100),
+      redirectUrl: redirectUrl || `${process.env.NEXT_PUBLIC_APP_URL || "https://didikara.vercel.app"}/kelas`,
+      expiredAt: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString(),
+    }),
+  });
+
+  if (!res.ok) {
+    const errorText = await res.text();
+    throw new Error(`Mayar error (${res.status}): ${errorText}`);
+  }
+
+  const json = await res.json();
+  const data = json.data || json;
+  return {
+    id: data.id || data.invoice_id || `mayar-${orderId}`,
+    transactionId: data.transaction_id || data.transactionId || data.id,
+    paymentUrl: data.link || data.paymentUrl || data.url || `https://pub.mayar.id/invoices/${data.id}`,
+    mock: false,
+  };
+}
+
+/**
+ * Pemetaan status Mayar ke status sistem kita (paid | pending | failed)
+ */
+export function mapMayarStatus(status, event) {
+  const s = String(status || "").toUpperCase();
+  const e = String(event || "").toLowerCase();
+
+  if (e === "payment.received" || s === "PAID" || s === "SUCCESS" || s === "SETTLED") {
+    return "paid";
+  }
+  if (s === "PENDING" || s === "UNPAID" || e === "payment.reminder") {
+    return "pending";
+  }
+  if (s === "EXPIRED" || s === "FAILED" || s === "CANCELLED" || s === "CANCELED") {
+    return "failed";
+  }
+  return "pending";
+}

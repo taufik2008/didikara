@@ -6,64 +6,114 @@
 
 import { NextResponse } from "next/server";
 import { query } from "@/lib/db";
-import { verifyWebhookSignature, mapMidtransStatus } from "@/lib/payment";
+import { verifyWebhookSignature, mapMidtransStatus, mapMayarStatus } from "@/lib/payment";
 import { sendEnrollmentEmail } from "@/lib/email";
 import { catatAudit } from "@/lib/audit";
 
 export async function POST(request) {
   try {
     const body = await request.json().catch(() => ({}));
-    const {
-      order_id,
-      status_code,
-      gross_amount,
-      signature_key,
-      transaction_status,
-      fraud_status,
-    } = body;
-
-    if (!order_id) {
-      return NextResponse.json({ error: "order_id wajib" }, { status: 400 });
-    }
-
-    // 1. Verifikasi tanda tangan — WAJIB, bukan opsional.
-    //    Celah lama: verifikasi hanya berjalan kalau signature_key ikut dikirim,
-    //    sehingga request publik tanpa signature_key melewati pengecekan sama
-    //    sekali dan order bisa ditandai "paid" tanpa pernah membayar sungguhan.
-    const serverKey = process.env.MIDTRANS_SERVER_KEY;
-    if (serverKey) {
-      if (!signature_key) {
-        console.warn(`[Webhook] Ditolak: signature_key tidak disertakan untuk order ${order_id}`);
-        return NextResponse.json({ error: "Invalid signature" }, { status: 403 });
-      }
-      const expectedSignature = verifyWebhookSignature(order_id, status_code, gross_amount, serverKey);
-      if (signature_key !== expectedSignature) {
-        console.warn(`[Webhook] Ditolak: signature_key tidak cocok untuk order ${order_id}`);
-        return NextResponse.json({ error: "Invalid signature" }, { status: 403 });
-      }
-    } else if (process.env.NODE_ENV === "production") {
-      // Di produksi tanpa MIDTRANS_SERVER_KEY tidak ada cara memverifikasi
-      // pengirim webhook — tolak daripada mempercayai body apa adanya.
-      // Dev/test lokal tanpa server key tetap bisa mensimulasikan payload mock.
-      console.warn(`[Webhook] Ditolak: MIDTRANS_SERVER_KEY belum dikonfigurasi di produksi (order ${order_id})`);
-      return NextResponse.json({ error: "Payment gateway belum terkonfigurasi" }, { status: 503 });
-    }
-
-    // 2. Cari order pembayaran di database
-    const { rows: [order] } = await query(
-      "SELECT * FROM payment_orders WHERE id = $1 OR invoice_number = $1",
-      [order_id]
+    
+    // Deteksi apakah notifikasi berasal dari Mayar atau Midtrans
+    const isMayar = Boolean(
+      body.event ||
+      body.data?.transaction_id ||
+      body.data?.transactionId ||
+      body.data?.invoice_id ||
+      request.headers.get("x-mayar-token")
     );
 
-    if (!order) {
-      console.warn(`[Webhook] Order tidak ditemukan: ${order_id}`);
-      return NextResponse.json({ error: "Order tidak ditemukan" }, { status: 404 });
-    }
+    let order = null;
+    let newStatus = "pending";
 
-    // 3. Tentukan status baru dari status Midtrans
-    const newStatus = transaction_status
-      ? mapMidtransStatus(transaction_status, fraud_status)
-      : (body.status === "paid" ? "paid" : "pending");
+    if (isMayar) {
+      // ── ALUR WEBHOOK MAYAR ──
+      const orderLookupId = body.data?.order_id
+        || body.data?.extraData?.orderId
+        || body.order_id
+        || body.data?.id
+        || body.data?.transaction_id
+        || body.id;
+
+      if (!orderLookupId) {
+        return NextResponse.json({ error: "Mayar order identifier tidak ditemukan" }, { status: 400 });
+      }
+
+      // Verifikasi token Mayar jika MAYAR_WEBHOOK_TOKEN dikonfigurasi
+      const mayarToken = request.headers.get("x-mayar-token") || request.headers.get("authorization")?.replace(/^Bearer\s+/i, "");
+      if (process.env.MAYAR_WEBHOOK_TOKEN) {
+        if (!mayarToken || mayarToken !== process.env.MAYAR_WEBHOOK_TOKEN) {
+          console.warn(`[Mayar Webhook] Ditolak: token webhook tidak valid untuk order ${orderLookupId}`);
+          return NextResponse.json({ error: "Invalid Mayar webhook token" }, { status: 403 });
+        }
+      }
+
+      // Cari order berdasarkan id, invoice_number, atau ID invoice Mayar
+      const { rows } = await query(
+        `SELECT * FROM payment_orders
+          WHERE id = $1
+             OR invoice_number = $1
+             OR metadata->>'mayar_invoice_id' = $1
+             OR metadata->>'mayar_transaction_id' = $1`,
+        [orderLookupId]
+      );
+      order = rows[0];
+
+      if (!order) {
+        console.warn(`[Mayar Webhook] Order tidak ditemukan: ${orderLookupId}`);
+        return NextResponse.json({ error: "Order tidak ditemukan" }, { status: 404 });
+      }
+
+      newStatus = mapMayarStatus(body.data?.status || body.status, body.event);
+    } else {
+      // ── ALUR WEBHOOK MIDTRANS ──
+      const {
+        order_id,
+        status_code,
+        gross_amount,
+        signature_key,
+        transaction_status,
+        fraud_status,
+      } = body;
+
+      if (!order_id) {
+        return NextResponse.json({ error: "order_id wajib" }, { status: 400 });
+      }
+
+      // 1. Verifikasi tanda tangan Midtrans
+      const serverKey = process.env.MIDTRANS_SERVER_KEY;
+      if (serverKey) {
+        if (!signature_key) {
+          console.warn(`[Webhook] Ditolak: signature_key tidak disertakan untuk order ${order_id}`);
+          return NextResponse.json({ error: "Invalid signature" }, { status: 403 });
+        }
+        const expectedSignature = verifyWebhookSignature(order_id, status_code, gross_amount, serverKey);
+        if (signature_key !== expectedSignature) {
+          console.warn(`[Webhook] Ditolak: signature_key tidak cocok untuk order ${order_id}`);
+          return NextResponse.json({ error: "Invalid signature" }, { status: 403 });
+        }
+      } else if (process.env.NODE_ENV === "production") {
+        console.warn(`[Webhook] Ditolak: MIDTRANS_SERVER_KEY belum dikonfigurasi di produksi (order ${order_id})`);
+        return NextResponse.json({ error: "Payment gateway belum terkonfigurasi" }, { status: 503 });
+      }
+
+      // 2. Cari order pembayaran di database
+      const { rows: [foundOrder] } = await query(
+        "SELECT * FROM payment_orders WHERE id = $1 OR invoice_number = $1",
+        [order_id]
+      );
+      order = foundOrder;
+
+      if (!order) {
+        console.warn(`[Webhook] Order tidak ditemukan: ${order_id}`);
+        return NextResponse.json({ error: "Order tidak ditemukan" }, { status: 404 });
+      }
+
+      // 3. Tentukan status baru dari status Midtrans
+      newStatus = transaction_status
+        ? mapMidtransStatus(transaction_status, fraud_status)
+        : (body.status === "paid" ? "paid" : "pending");
+    }
 
     // Jangan downgrade order yang sudah berstatus 'paid'
     if (order.status === "paid" && newStatus !== "paid") {

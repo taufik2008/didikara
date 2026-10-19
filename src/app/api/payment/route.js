@@ -7,7 +7,7 @@
 import { NextResponse } from "next/server";
 import { authenticateRequest } from "@/lib/auth";
 import { query } from "@/lib/db";
-import { generateInvoiceNumber, createSnapToken } from "@/lib/payment";
+import { generateInvoiceNumber, createSnapToken, createMayarPaymentLink } from "@/lib/payment";
 import { generateUniqueCode, getPaymentConfig } from "@/lib/bankConfig";
 import { sendEnrollmentEmail } from "@/lib/email";
 import { catatAudit } from "@/lib/audit";
@@ -163,9 +163,30 @@ export async function POST(request) {
     const isMembership = courseId.startsWith("membership-");
     const dbCourseId = isMembership ? null : courseId;
 
-    const paymentType = body.paymentType === "midtrans_snap" ? "midtrans_snap" : "manual_transfer";
+    const paymentType = body.paymentType === "midtrans_snap"
+      ? "midtrans_snap"
+      : body.paymentType === "manual_transfer"
+      ? "manual_transfer"
+      : "mayar";
+
     let snapResult = null;
-    if (paymentType === "midtrans_snap") {
+    let mayarResult = null;
+
+    if (paymentType === "mayar") {
+      try {
+        mayarResult = await createMayarPaymentLink({
+          orderId,
+          amount: totalAmount,
+          customerName: user.fullname || user.email,
+          customerEmail: user.email,
+          customerPhone: body.phone || user.phone,
+          courseTitle: course.title,
+          redirectUrl: `${process.env.NEXT_PUBLIC_APP_URL || "https://didikara.vercel.app"}/kelas?courseId=${dbCourseId || ""}`,
+        });
+      } catch (mayarErr) {
+        console.warn("Mayar payment link generation failed, falling back to manual:", mayarErr.message);
+      }
+    } else if (paymentType === "midtrans_snap") {
       try {
         snapResult = await createSnapToken({
           orderId,
@@ -195,6 +216,9 @@ export async function POST(request) {
           is_membership: isMembership,
           membership_type: isMembership ? courseId : null,
           payment_type: paymentType,
+          mayar_invoice_id: mayarResult?.id || null,
+          mayar_payment_url: mayarResult?.paymentUrl || null,
+          mayar_transaction_id: mayarResult?.transactionId || null,
           snap_token: snapResult?.token || null,
           snap_redirect_url: snapResult?.redirectUrl || null,
         }),
@@ -208,15 +232,21 @@ export async function POST(request) {
       course_id: dbCourseId,
       invoice_number: invoiceNumber,
       payment_type: paymentType,
+      mayar_invoice_id: mayarResult?.id || null,
       snap_token: snapResult?.token || null,
     });
+
+    const paymentUrl = mayarResult?.paymentUrl || snapResult?.redirectUrl || null;
 
     return NextResponse.json({
       success: true,
       orderId, invoiceNumber, baseAmount, uniqueCode, totalAmount, expiredAt,
-      snapToken: snapResult?.token || null,
-      redirectUrl: snapResult?.redirectUrl || null,
       paymentType,
+      paymentUrl,
+      redirectUrl: paymentUrl,
+      mayarPaymentUrl: mayarResult?.paymentUrl || null,
+      mayarInvoiceId: mayarResult?.id || null,
+      snapToken: snapResult?.token || null,
       bankAccounts:        cfg.bankAccounts,
       qrisUrl:             cfg.qrisImageUrl,
       paymentInstructions: cfg.paymentInstructions,

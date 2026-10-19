@@ -213,6 +213,7 @@ export default function PaymentModal() {
           courseId: selectedPayCourse.id,
           promoCode: appliedPromo?.code || null,
           batch: isSelfLearning ? "Self-Learning (Tanpa Jadwal)" : isMembership ? "All-Access Instant" : selectedBatch,
+          paymentType: "mayar",
         }),
       });
       const data = await res.json();
@@ -517,6 +518,36 @@ export default function PaymentModal() {
             </div>
             <ExpiryCountdown expiredAt={expiredAt} />
           </div>
+
+          {/* ⚡ Mayar Payment Gateway Integration */}
+          {(orderData.paymentUrl || orderData.mayarPaymentUrl) && (
+            <div style={{
+              background: "linear-gradient(135deg, rgba(37,99,235,0.12), rgba(16,185,129,0.12))",
+              border: "1px solid rgba(59,130,246,0.35)",
+              borderRadius: 10, padding: 14, marginBottom: 16, textAlign: "center"
+            }}>
+              <div style={{ fontSize: "0.85rem", color: "var(--text-primary)", fontWeight: 700, marginBottom: 4, display: "flex", alignItems: "center", justifyContent: "center", gap: 6 }}>
+                <span>⚡ Bayar Instan via Mayar</span>
+              </div>
+              <div style={{ fontSize: "0.72rem", color: "var(--text-secondary)", marginBottom: 12 }}>
+                Tersedia QRIS Semua Bank/E-Wallet, Virtual Account (BCA, Mandiri, BRI, BNI), OVO, GoPay, ShopeePay &amp; Kartu Kredit.
+              </div>
+              <a
+                href={orderData.paymentUrl || orderData.mayarPaymentUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="btn btn-primary"
+                style={{
+                  width: "100%", padding: "10px 16px", fontSize: "0.85rem", fontWeight: 700,
+                  display: "inline-flex", alignItems: "center", justifyContent: "center", gap: 8,
+                  textDecoration: "none",
+                  background: "linear-gradient(135deg, #2563eb, #059669)", borderColor: "transparent",
+                  boxShadow: "0 4px 12px rgba(37, 99, 235, 0.3)"
+                }}>
+                <span>Buka Checkout Mayar Sekarang →</span>
+              </a>
+            </div>
+          )}
 
           <div style={{ display:"flex", gap:10, justifyContent:"center", marginBottom:16 }}>
             <a href={`/api/payment/invoice?orderId=${encodeURIComponent(orderData.orderId)}`}

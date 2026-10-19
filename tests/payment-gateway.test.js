@@ -106,3 +106,50 @@ test("POST /api/payment/webhook MENOLAK status 'paid' tanpa signature_key saat M
     if (prevEnv === undefined) delete process.env.NODE_ENV; else process.env.NODE_ENV = prevEnv;
   }
 });
+
+test("Mayar helper createMayarPaymentLink dan mapMayarStatus bekerja dengan mock dan mapping akurat", async () => {
+  const { createMayarPaymentLink, mapMayarStatus } = await import("../src/lib/payment.js");
+
+  // Mock payment link generator
+  const mayarResult = await createMayarPaymentLink({
+    orderId: "ORD-MAYAR-TEST-001",
+    amount: 250000,
+    customerName: "Ahmad",
+    customerEmail: "ahmad@example.com",
+    customerPhone: "081234567890",
+    courseTitle: "Pelatihan Pengadaan Barang Jasa",
+  });
+
+  assert.strictEqual(mayarResult.mock, true);
+  assert.strictEqual(mayarResult.id, "mock-mayar-ORD-MAYAR-TEST-001");
+  assert.strictEqual(mayarResult.paymentUrl.includes("mock-ORD-MAYAR-TEST-001"), true);
+
+  // Status mapping
+  assert.strictEqual(mapMayarStatus("PAID"), "paid");
+  assert.strictEqual(mapMayarStatus("SUCCESS"), "paid");
+  assert.strictEqual(mapMayarStatus(null, "payment.received"), "paid");
+  assert.strictEqual(mapMayarStatus("PENDING"), "pending");
+  assert.strictEqual(mapMayarStatus("FAILED"), "failed");
+  assert.strictEqual(mapMayarStatus("EXPIRED"), "failed");
+});
+
+test("POST /api/payment mengintegrasikan createMayarPaymentLink dan mengembalikan paymentUrl", async () => {
+  const fs = await import("node:fs");
+  const code = fs.readFileSync("src/app/api/payment/route.js", "utf8");
+
+  assert.strictEqual(
+    code.includes("createMayarPaymentLink"),
+    true,
+    "payment/route.js harus mengimpor dan memanggil createMayarPaymentLink"
+  );
+  assert.strictEqual(
+    code.includes('paymentType === "mayar"'),
+    true,
+    "payment/route.js harus memeriksa paymentType mayar"
+  );
+  assert.strictEqual(
+    code.includes("mayarPaymentUrl: mayarResult?.paymentUrl"),
+    true,
+    "payment/route.js harus mengembalikan mayarPaymentUrl"
+  );
+});
