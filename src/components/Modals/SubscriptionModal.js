@@ -199,7 +199,7 @@ export default function SubscriptionModal() {
               "Sertifikat Digital resmi ber-QR Code untuk setiap kelas yang diselesaikan",
               "Akses latihan soal, kuis interaktif, & ujian sertifikasi",
               "Forum diskusi komunitas dan tanya jawab langsung dengan instruktur ahli",
-              "Dukungan beragam metode pembayaran aman (Mayar, QRIS, Transfer Bank, E-Wallet)",
+              "Dukungan beragam metode pembayaran aman (QRIS, Virtual Account, Transfer Bank, E-Wallet)",
             ].map((item, idx) => (
               <div key={idx} style={{ display: "flex", alignItems: "flex-start", gap: 10, fontSize: "0.82rem", color: "var(--text-secondary)" }}>
                 <Check size={16} style={{ color: "#34d399", flexShrink: 0, marginTop: 2 }} />

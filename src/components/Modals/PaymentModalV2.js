@@ -520,7 +520,7 @@ export default function PaymentModal() {
             <ExpiryCountdown expiredAt={expiredAt} />
           </div>
 
-          {/* ⚡ Mayar Payment Gateway Integration */}
+          {/* ⚡ Instant Payment Gateway Integration */}
           {(orderData.paymentUrl || orderData.mayarPaymentUrl) && (
             <div style={{
               background: "linear-gradient(135deg, rgba(37,99,235,0.12), rgba(16,185,129,0.12))",
@@ -528,7 +528,7 @@ export default function PaymentModal() {
               borderRadius: 10, padding: 14, marginBottom: 16, textAlign: "center"
             }}>
               <div style={{ fontSize: "0.85rem", color: "var(--text-primary)", fontWeight: 700, marginBottom: 4, display: "flex", alignItems: "center", justifyContent: "center", gap: 6 }}>
-                <span>⚡ Bayar Instan via Mayar</span>
+                <span>⚡ Bayar Instan Online</span>
               </div>
               <div style={{ fontSize: "0.72rem", color: "var(--text-secondary)", marginBottom: 12 }}>
                 Tersedia QRIS Semua Bank/E-Wallet, Virtual Account (BCA, Mandiri, BRI, BNI), OVO, GoPay, ShopeePay &amp; Kartu Kredit.
@@ -545,7 +545,7 @@ export default function PaymentModal() {
                   background: "linear-gradient(135deg, #2563eb, #059669)", borderColor: "transparent",
                   boxShadow: "0 4px 12px rgba(37, 99, 235, 0.3)"
                 }}>
-                <span>Buka Checkout Mayar Sekarang →</span>
+                <span>Buka Halaman Pembayaran (QRIS / VA / E-Wallet) →</span>
               </a>
             </div>
           )}
