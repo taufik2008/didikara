@@ -108,11 +108,6 @@ export default function LoginPage() {
       return;
     }
 
-    if (!privacyConsent) {
-      setRegError("Anda wajib menyetujui Kebijakan Privasi dan Syarat & Ketentuan");
-      return;
-    }
-
     setRegLoading(true);
     try {
       const res = await fetch("/api/auth/register", {
@@ -576,27 +571,6 @@ export default function LoginPage() {
                   <CheckCircle2 size={14} /> {regSuccess}
                 </div>
               )}
-
-              <label style={{ display: "flex", alignItems: "flex-start", gap: 10, fontSize: "0.82rem", color: "var(--text-secondary)", cursor: "pointer", margin: "14px 0" }}>
-                <input
-                  type="checkbox"
-                  required
-                  checked={privacyConsent}
-                  onChange={(e) => setPrivacyConsent(e.target.checked)}
-                  style={{ marginTop: 3, cursor: "pointer" }}
-                />
-                <span style={{ lineHeight: 1.4 }}>
-                  Saya telah membaca dan menyetujui{" "}
-                  <a href="/legal/privasi" target="_blank" rel="noopener noreferrer" style={{ color: "#38bdf8", textDecoration: "underline" }}>
-                    Kebijakan Privasi
-                  </a>{" "}
-                  dan{" "}
-                  <a href="/legal/syarat-ketentuan" target="_blank" rel="noopener noreferrer" style={{ color: "#38bdf8", textDecoration: "underline" }}>
-                    Syarat & Ketentuan
-                  </a>{" "}
-                  DIDIKARA sesuai UU No. 27/2022 (UU PDP).
-                </span>
-              </label>
 
               <button type="submit" className="btn btn-primary" disabled={regLoading}>
                 <span>{regLoading ? "Mendaftarkan..." : "Daftar Akun Sekarang"}</span>

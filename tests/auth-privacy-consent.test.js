@@ -22,22 +22,12 @@ test("API register mewajibkan privacyConsent dan mencatat timestamp serta versi"
   );
 });
 
-test("LoginPage memiliki checkbox persetujuan kebijakan privasi pada form registrasi", () => {
+test("LoginPage: Checkbox persetujuan UU PDP telah dihapus dari form pendaftaran", () => {
   const loginCode = fs.readFileSync("src/components/Login/LoginPage.js", "utf8");
 
   assert.strictEqual(
-    loginCode.includes("privacyConsent"),
-    true,
-    "LoginPage.js harus memiliki state dan validasi privacyConsent"
-  );
-  assert.strictEqual(
-    loginCode.includes("/legal/privasi"),
-    true,
-    "LoginPage.js form registrasi harus menautkan ke /legal/privasi"
-  );
-  assert.strictEqual(
-    loginCode.includes("/legal/syarat-ketentuan"),
-    true,
-    "LoginPage.js form registrasi harus menautkan ke /legal/syarat-ketentuan"
+    loginCode.includes("DIDIKARA sesuai UU No. 27/2022 (UU PDP)"),
+    false,
+    "Checkbox UU PDP harus sudah dihapus dari form pendaftaran LoginPage"
   );
 });
