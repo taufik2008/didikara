@@ -663,7 +663,7 @@ export default function LandingPage({ initialCourses, initialCategories, initial
               margin: "0 auto 36px auto"
             }}
           >
-            Sesuaikan metode belajar Anda: mulai dari <strong>Self-Learning On-Demand (Belajar Mandiri)</strong>, <strong>Kelas Online Live Webinar Interaktif</strong>, hingga <strong>Workshop Tatap Muka (Offline)</strong> dengan sertifikasi resmi BNSP, LKPP & Kemenkeu.
+            Sesuaikan metode belajar Anda: mulai dari <strong>Self-Learning On-Demand (Belajar Mandiri)</strong>, <strong>Kelas Online Live Webinar Interaktif</strong>, hingga <strong>Workshop Tatap Muka (Offline)</strong>.
           </p>
 
           {/* Quick Selection Hero Badges */}
@@ -820,7 +820,7 @@ export default function LandingPage({ initialCourses, initialCategories, initial
           </div>
           <h2 style={{ fontSize: "2.2rem", fontWeight: 800, marginBottom: 12 }}>3 Model Pembelajaran di DIDIKARA</h2>
           <p style={{ color: "var(--text-secondary)", fontSize: "0.96rem", maxWidth: 700, margin: "0 auto" }}>
-            Pelajari bagaimana masing-masing alur proses bekerja agar Anda dapat memilih metode yang paling sesuai dengan kebutuhan kompetensi dan anggaran Anda.
+            Pilih metode belajar yang paling sesuai dengan kebutuhan kompetensi, preferensi, dan anggaran Anda.
           </p>
         </div>
 
@@ -871,16 +871,6 @@ export default function LandingPage({ initialCourses, initialCategories, initial
                     <span>{feat}</span>
                   </div>
                 ))}
-              </div>
-
-              {/* Alur Proses */}
-              <div style={{ padding: "14px 16px", borderRadius: 12, background: "var(--bg-tertiary)", marginBottom: 20 }}>
-                <div style={{ fontSize: "0.78rem", fontWeight: 700, color: "#10b981", textTransform: "uppercase", marginBottom: 8 }}>
-                  📌 Alur Pendaftaran:
-                </div>
-                <div style={{ fontSize: "0.8rem", color: "var(--text-secondary)", lineHeight: 1.5 }}>
-                  <strong>1. Pilih Kursus</strong> ➔ <strong>2. Klik "Mulai Belajar" / Daftar</strong> ➔ <strong>3. Langsung Tonton Video Tanpa Perlu Pilih Jadwal</strong> (Akses Fleksibel On-Demand 24/7).
-                </div>
               </div>
             </div>
 
@@ -959,16 +949,6 @@ export default function LandingPage({ initialCourses, initialCategories, initial
                   </div>
                 ))}
               </div>
-
-              {/* Alur Proses */}
-              <div style={{ padding: "14px 16px", borderRadius: 12, background: "var(--bg-tertiary)", marginBottom: 20 }}>
-                <div style={{ fontSize: "0.78rem", fontWeight: 700, color: "#3b82f6", textTransform: "uppercase", marginBottom: 8 }}>
-                  📌 Alur Pendaftaran:
-                </div>
-                <div style={{ fontSize: "0.8rem", color: "var(--text-secondary)", lineHeight: 1.5 }}>
-                  <strong>1. Pilih Batch Jadwal</strong> ➔ <strong>2. Checkout & Bayar (QRIS / VA)</strong> ➔ <strong>3. Dapatkan Link Zoom & Masuk Kelas Interaktif</strong>.
-                </div>
-              </div>
             </div>
 
             <button
@@ -1046,16 +1026,6 @@ export default function LandingPage({ initialCourses, initialCategories, initial
                     <span>{feat}</span>
                   </div>
                 ))}
-              </div>
-
-              {/* Alur Proses */}
-              <div style={{ padding: "14px 16px", borderRadius: 12, background: "var(--bg-tertiary)", marginBottom: 20 }}>
-                <div style={{ fontSize: "0.78rem", fontWeight: 700, color: "#a855f7", textTransform: "uppercase", marginBottom: 8 }}>
-                  📌 Alur Pendaftaran:
-                </div>
-                <div style={{ fontSize: "0.8rem", color: "var(--text-secondary)", lineHeight: 1.5 }}>
-                  <strong>1. Pilih Lokasi & Tanggal</strong> ➔ <strong>2. Registrasi / Terbitkan Invoice Instansi</strong> ➔ <strong>3. Terima E-Tiket & Hadir di Venue Workshop</strong>.
-                </div>
               </div>
             </div>
 
