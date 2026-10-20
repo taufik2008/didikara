@@ -160,31 +160,42 @@ export default function DashboardPage() {
               selisih <strong>{primaryGap.gap}%</strong> dari target jabatan.
             </div>
 
-            <div className="glass-card" style={{ padding: 16, border: "1px solid rgba(249, 115, 22, 0.25)", backgroundColor: "rgba(249, 115, 22, 0.05)", borderRadius: 8 }}>
-              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 6 }}>
-                <span style={{ fontSize: "0.65rem", padding: "2px 6px", borderRadius: 4, backgroundColor: "rgba(249, 115, 22, 0.2)", color: "#fed7aa", fontWeight: 600 }}>REKOMENDASI AI: {primaryGap.name}</span>
-                <span style={{ fontSize: "0.7rem", color: "var(--text-muted)" }}>{recommendedCourse.duration}</span>
+            {recommendedCourse ? (
+              <div className="glass-card" style={{ padding: 16, border: "1px solid rgba(249, 115, 22, 0.25)", backgroundColor: "rgba(249, 115, 22, 0.05)", borderRadius: 8 }}>
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 6 }}>
+                  <span style={{ fontSize: "0.65rem", padding: "2px 6px", borderRadius: 4, backgroundColor: "rgba(249, 115, 22, 0.2)", color: "#fed7aa", fontWeight: 600 }}>REKOMENDASI AI: {primaryGap.name}</span>
+                  <span style={{ fontSize: "0.7rem", color: "var(--text-muted)" }}>{recommendedCourse.duration || "-"}</span>
+                </div>
+                <h4 style={{ fontSize: "0.85rem", fontWeight: 600, color: "var(--text-primary)", margin: "4px 0" }}>{recommendedCourse.title}</h4>
+                <p style={{ fontSize: "0.75rem", color: "var(--text-secondary)", margin: "4px 0 12px 0", lineHeight: 1.4 }}>{recommendedCourse.desc}</p>
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                  {isEnrolled ? (
+                    <>
+                      <span style={{ fontSize: "0.75rem", color: "#34d399", fontWeight: 600 }}>Sudah Terdaftar</span>
+                      <button className="btn btn-primary" style={{ width: "auto", padding: "6px 12px", fontSize: "0.75rem", height: "auto" }} onClick={() => recommendedCourse?.id && handleOpenClass(recommendedCourse.id)}>
+                        Mulai Belajar
+                      </button>
+                    </>
+                  ) : (
+                    <>
+                      <span style={{ fontSize: "0.85rem", color: "var(--text-primary)", fontWeight: 700 }}>{recommendedCourse.priceLabel || "Akses Gratis/Berbayar"}</span>
+                      <button className="btn btn-primary" style={{ width: "auto", padding: "6px 12px", fontSize: "0.75rem", height: "auto" }} onClick={() => setActivePage("marketplace-page")}>
+                        Daftar Kelas
+                      </button>
+                    </>
+                  )}
+                </div>
               </div>
-              <h4 style={{ fontSize: "0.85rem", fontWeight: 600, color: "var(--text-primary)", margin: "4px 0" }}>{recommendedCourse.title}</h4>
-              <p style={{ fontSize: "0.75rem", color: "var(--text-secondary)", margin: "4px 0 12px 0", lineHeight: 1.4 }}>{recommendedCourse.desc}</p>
-              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                {isEnrolled ? (
-                  <>
-                    <span style={{ fontSize: "0.75rem", color: "#34d399", fontWeight: 600 }}>Sudah Terdaftar</span>
-                    <button className="btn btn-primary" style={{ width: "auto", padding: "6px 12px", fontSize: "0.75rem", height: "auto" }} onClick={() => handleOpenClass(recommendedCourse.id)}>
-                      Mulai Belajar
-                    </button>
-                  </>
-                ) : (
-                  <>
-                    <span style={{ fontSize: "0.85rem", color: "var(--text-primary)", fontWeight: 700 }}>{recommendedCourse.priceLabel}</span>
-                    <button className="btn btn-primary" style={{ width: "auto", padding: "6px 12px", fontSize: "0.75rem", height: "auto" }} onClick={() => setActivePage("marketplace-page")}>
-                      Daftar Kelas
-                    </button>
-                  </>
-                )}
+            ) : (
+              <div className="glass-card" style={{ padding: 16, border: "1px dashed var(--border-color)", borderRadius: 8, textAlign: "center" }}>
+                <p style={{ fontSize: "0.8rem", color: "var(--text-secondary)", margin: "8px 0" }}>
+                  Jelajahi berbagai program pelatihan untuk meningkatkan kompetensi Anda.
+                </p>
+                <button className="btn btn-primary" style={{ width: "auto", padding: "6px 14px", fontSize: "0.75rem", margin: "4px auto" }} onClick={() => setActivePage("marketplace-page")}>
+                  Buka Marketplace Pelatihan
+                </button>
               </div>
-            </div>
+            )}
 
             <div style={{ marginTop: 16 }}>
               <div style={{ fontSize: "0.75rem", fontWeight: 600, color: "var(--text-secondary)", marginBottom: 8 }}>Prioritas Pengembangan Karir:</div>

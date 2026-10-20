@@ -57,3 +57,9 @@ test('Subscription Modal & Course Gate: Modal langganan One-Time Charge dan gati
   assert.ok(courseCtxSrc.includes('if (!isSubscribed)'), 'CourseContext harus memblokir akses kelas jika belum langganan');
   assert.ok(courseCtxSrc.includes('setShowSubscriptionModal(true)'), 'CourseContext harus membuka modal langganan');
 });
+
+test('DashboardPage: Safe guarding recommendedCourse against null/undefined', () => {
+  const dashSrc = fs.readFileSync(path.resolve('src/components/Dashboard/DashboardPage.js'), 'utf8');
+  assert.ok(dashSrc.includes('{recommendedCourse ? ('), 'DashboardPage harus memeriksa apakah recommendedCourse ada sebelum render');
+  assert.equal(dashSrc.includes('{recommendedCourse.duration}'), false, 'Tidak boleh mengakses recommendedCourse.duration langsung tanpa guard/fallback');
+});
