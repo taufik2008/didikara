@@ -801,8 +801,8 @@ export default function MarketplacePage() {
                       <span style={{ color: "var(--warning)" }}><Star size={12} style={{ marginRight: 4, verticalAlign: "middle", fill: "var(--warning)" }} />{course.rating}</span>
                     </div>
                     <div className="course-footer">
-                      <span className="course-price">{course.price === 0 ? "Akses Member" : course.priceLabel}</span>
-                      <div style={{ display: "flex", gap: 6, alignItems: "center" }}>
+                      <span className="course-price" style={{ fontSize: "0.95rem" }}>{course.price === 0 ? "Akses Member" : course.priceLabel}</span>
+                      <div style={{ display: "flex", gap: 6, alignItems: "center", flexWrap: "wrap", justifyContent: "flex-end" }}>
                         {(getLearningType(course) === "online" || getLearningType(course) === "offline") && (
                           <div style={{ display: "flex", gap: 4 }}>
                             <a
@@ -835,7 +835,7 @@ export default function MarketplacePage() {
                             <button
                               className="btn btn-secondary"
                               onClick={() => handleOpenClass(course.id)}
-                              style={{ width: "auto" }}
+                              style={{ width: "auto", padding: "6px 12px", fontSize: "0.78rem", height: "auto", minHeight: "unset", lineHeight: 1.25, whiteSpace: "nowrap" }}
                               disabled={isLocked}
                             >
                               {isLocked ? <><Lock size={12} style={{ marginRight: 4 }} />Terkunci</> : "Buka Kelas"}
@@ -844,7 +844,7 @@ export default function MarketplacePage() {
                             <button
                               className="btn btn-primary"
                               onClick={() => setShowSubscriptionModal(true)}
-                              style={{ width: "auto", display: "flex", alignItems: "center", gap: 6 }}
+                              style={{ width: "auto", padding: "6px 12px", fontSize: "0.78rem", height: "auto", minHeight: "unset", lineHeight: 1.25, whiteSpace: "nowrap", display: "inline-flex", alignItems: "center", gap: 5 }}
                             >
                               <Zap size={13} /> Akses Member
                             </button>
@@ -854,7 +854,7 @@ export default function MarketplacePage() {
                             <button
                               className="btn btn-secondary"
                               onClick={() => handleOpenClass(course.id)}
-                              style={{ width: "auto" }}
+                              style={{ width: "auto", padding: "6px 12px", fontSize: "0.78rem", height: "auto", minHeight: "unset", lineHeight: 1.25, whiteSpace: "nowrap" }}
                               disabled={isLocked}
                             >
                               {isLocked ? <><Lock size={12} style={{ marginRight: 4 }} />Terkunci</> : "Buka Kelas"}
@@ -863,7 +863,7 @@ export default function MarketplacePage() {
                             <button
                               className="btn btn-primary"
                               onClick={() => isLocked ? null : handleEnrollCourse(course)}
-                              style={{ width: "auto", opacity: isLocked ? 0.5 : 1, cursor: isLocked ? "not-allowed" : "pointer" }}
+                              style={{ width: "auto", padding: "6px 12px", fontSize: "0.78rem", height: "auto", minHeight: "unset", lineHeight: 1.25, whiteSpace: "nowrap", opacity: isLocked ? 0.5 : 1, cursor: isLocked ? "not-allowed" : "pointer" }}
                               disabled={isLocked}
                             >
                               {isLocked ? <><Lock size={12} style={{ marginRight: 4 }} />Terkunci</> : "Beli Kelas"}

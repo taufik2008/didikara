@@ -1328,14 +1328,27 @@ header {
     display: flex;
     align-items: center;
     justify-content: space-between;
+    gap: 8px;
+    flex-wrap: wrap;
     padding-top: 12px;
     border-top: 1px solid var(--border-color);
 }
 
+.course-footer .btn {
+    padding: 6px 12px;
+    font-size: 0.78rem;
+    height: auto;
+    min-height: unset;
+    line-height: 1.25;
+    border-radius: 8px;
+    white-space: nowrap;
+}
+
 .course-price {
-    font-size: 1.15rem;
+    font-size: 0.95rem;
     font-weight: 700;
     color: var(--text-accent);
+    white-space: nowrap;
 }
 
 /* LMS Layout */

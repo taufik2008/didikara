@@ -1455,8 +1455,9 @@ export default function LandingPage({ initialCourses, initialCategories, initial
                           <div style={{ fontSize: "0.7rem", color: "var(--text-muted)", textTransform: "uppercase" }}>Biaya Belajar</div>
                           <div
                             style={{
-                              fontSize: "1.1rem",
+                              fontSize: "0.95rem",
                               fontWeight: 800,
+                              whiteSpace: "nowrap",
                               color: isFree ? "#10b981" : "var(--primary)"
                             }}
                           >
@@ -1472,12 +1473,12 @@ export default function LandingPage({ initialCourses, initialCategories, initial
                               setSelectedModalTier(course.learningType || "self_learning");
                             }}
                             style={{
-                              padding: "8px 14px",
+                              padding: "6px 10px",
                               borderRadius: 8,
                               border: "1px solid var(--border-color)",
                               background: "var(--bg-tertiary)",
                               color: "var(--text-primary)",
-                              fontSize: "0.82rem",
+                              fontSize: "0.76rem",
                               fontWeight: 600,
                               cursor: "pointer",
                               display: "flex",
@@ -1497,11 +1498,11 @@ export default function LandingPage({ initialCourses, initialCategories, initial
                               }
                             }}
                             style={{
-                              padding: "8px 14px",
+                              padding: "6px 11px",
                               borderRadius: 8,
                               background: (isFree || (enrolledCourses && enrolledCourses.includes(course.id))) ? "linear-gradient(135deg, #10b981 0%, #059669 100%)" : "var(--primary-gradient)",
                               color: "#fff",
-                              fontSize: "0.82rem",
+                              fontSize: "0.76rem",
                               fontWeight: 700,
                               border: "none",
                               cursor: "pointer",
@@ -1737,7 +1738,7 @@ export default function LandingPage({ initialCourses, initialCategories, initial
                 )}
               </div>
 
-              <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", paddingTop: 16, borderTop: "1px solid var(--border-color)" }}>
+              <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", paddingTop: 16, borderTop: "1px solid var(--border-color)", flexWrap: "wrap", gap: 10 }}>
                 {demoQuizSubmitted ? (
                   <button
                     onClick={handleResetQuiz}
