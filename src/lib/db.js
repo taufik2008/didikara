@@ -509,6 +509,12 @@ async function createTables(client) {
   await client.query(`ALTER TABLE users ALTER COLUMN avatar TYPE TEXT`).catch(() => {});
   await client.query(`ALTER TABLE users ADD COLUMN IF NOT EXISTS google_id VARCHAR(255)`).catch(() => {});
   await client.query(`CREATE INDEX IF NOT EXISTS idx_users_google_id ON users(google_id)`).catch(() => {});
+  await client.query(`ALTER TABLE users ADD COLUMN IF NOT EXISTS subscription_status VARCHAR(50) DEFAULT 'inactive'`).catch(() => {});
+  await client.query(`ALTER TABLE users ADD COLUMN IF NOT EXISTS subscription_plan VARCHAR(50) DEFAULT NULL`).catch(() => {});
+  await client.query(`ALTER TABLE users ADD COLUMN IF NOT EXISTS subscription_expires_at TIMESTAMPTZ DEFAULT NULL`).catch(() => {});
+  await client.query(`CREATE INDEX IF NOT EXISTS idx_users_subscription ON users(subscription_status)`).catch(() => {});
+  await client.query(`CREATE TABLE IF NOT EXISTS user_subscriptions (id SERIAL PRIMARY KEY, user_email VARCHAR(255) NOT NULL, plan VARCHAR(50) NOT NULL DEFAULT 'monthly', status VARCHAR(50) NOT NULL DEFAULT 'active', starts_at TIMESTAMPTZ DEFAULT NOW(), expires_at TIMESTAMPTZ NOT NULL, order_id VARCHAR(100), created_at TIMESTAMPTZ DEFAULT NOW())`).catch(() => {});
+  await client.query(`CREATE INDEX IF NOT EXISTS idx_user_subs_email ON user_subscriptions(user_email)`).catch(() => {});
   await client.query(`ALTER TABLE certificates ADD COLUMN IF NOT EXISTS user_email VARCHAR(255)`);
   await client.query(`ALTER TABLE certificates ADD COLUMN IF NOT EXISTS issued_at TIMESTAMPTZ DEFAULT NOW()`);
   await client.query(`ALTER TABLE certificates ADD COLUMN IF NOT EXISTS valid_until TIMESTAMPTZ DEFAULT NULL`);

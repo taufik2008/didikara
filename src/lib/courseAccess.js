@@ -55,6 +55,69 @@ export async function isEnrolled(email, courseId) {
 }
 
 /**
+ * Memeriksa apakah pengguna memiliki paket langganan aktif.
+ * Admin selalu diizinkan (bypass).
+ */
+export async function hasActiveSubscription(userOrEmail) {
+  if (!userOrEmail) return false;
+  if (typeof userOrEmail === "object") {
+    const role = userOrEmail.role;
+    if (role === "admin" || role === "superadmin" || role === "instructor") return true;
+    if (userOrEmail.subscription_status === "active") {
+      if (!userOrEmail.subscription_expires_at || new Date(userOrEmail.subscription_expires_at) > new Date()) {
+        return true;
+      }
+      return false;
+    }
+    if (userOrEmail.subscription_status && userOrEmail.subscription_status !== "active") {
+      return false;
+    }
+  }
+
+  const email = typeof userOrEmail === "string" ? userOrEmail : userOrEmail.email;
+  if (!email) return false;
+
+  try {
+    const { rows: [u] } = await query(
+      "SELECT role, subscription_status, subscription_expires_at FROM users WHERE email = $1",
+      [email]
+    ).catch(() => ({ rows: [] }));
+    if (u?.role === "admin") return true;
+    if (u?.subscription_status === "active" && (!u.subscription_expires_at || new Date(u.subscription_expires_at) > new Date())) {
+      return true;
+    }
+
+    const { rows: subs } = await query(
+      `SELECT 1 FROM user_subscriptions
+       WHERE user_email = $1 AND status = 'active' AND (expires_at IS NULL OR expires_at > NOW())
+       LIMIT 1`,
+      [email]
+    ).catch(() => ({ rows: [] }));
+    if (subs && subs.length > 0) return true;
+
+    const { rows: orders } = await query(
+      `SELECT created_at, metadata FROM payment_orders
+       WHERE user_email = $1 AND status = 'paid'
+         AND (course_id LIKE 'membership-%' OR metadata->>'is_membership' = 'true')
+       ORDER BY created_at DESC LIMIT 1`,
+      [email]
+    ).catch(() => ({ rows: [] }));
+
+    if (orders && orders.length > 0) {
+      const order = orders[0];
+      const isAnnual = order.metadata?.membership_type?.includes("annual") || order.metadata?.course_title?.toLowerCase().includes("tahun");
+      const durationDays = isAnnual ? 366 : 31;
+      const expiry = new Date(new Date(order.created_at).getTime() + durationDays * 24 * 60 * 60 * 1000);
+      if (expiry > new Date()) return true;
+    }
+
+    return false;
+  } catch {
+    return false;
+  }
+}
+
+/**
  * Wewenang atas satu sesi live: admin, pengajar kursusnya, atau pembuat sesi.
  * Sesi tanpa kursus (sesi umum) hanya boleh dikelola admin dan pembuatnya.
  */

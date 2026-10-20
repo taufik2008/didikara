@@ -57,7 +57,7 @@ function copyToClipboard(text) {
 export default function PaymentModal() {
   const {
     paymentModalActive, selectedPayCourse,
-    setPaymentModalActive, refreshEnrollments,
+    setPaymentModalActive, refreshEnrollments, refreshUser,
   } = useApp();
 
   const [step, setStep]             = useState("info");
@@ -220,6 +220,7 @@ export default function PaymentModal() {
       if (!res.ok) throw new Error(data.error || "Gagal membuat order");
       if (data.free) {
         await refreshEnrollments();
+        if (typeof refreshUser === "function") await refreshUser();
         setPaymentModalActive(false);
         alert("Pendaftaran berhasil! Kursus telah aktif di menu Kelas Saya.");
         return;

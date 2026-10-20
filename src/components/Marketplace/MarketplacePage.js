@@ -6,7 +6,7 @@ import { useApp } from "@/context/AppContext";
 export default function MarketplacePage() {
   const {
     courses, categories, levels, enrolledCourses, filterCategory, setFilterCategory,
-    handleOpenClass, handleEnrollCourse, checkPrerequisite,
+    handleOpenClass, handleEnrollCourse, checkPrerequisite, isSubscribed, setShowSubscriptionModal,
   } = useApp();
 
   const distinctLevels = useMemo(() => {
@@ -391,7 +391,7 @@ export default function MarketplacePage() {
           <button
             type="button"
             className="btn btn-primary"
-            onClick={() => setShowMembershipModal(true)}
+            onClick={() => setShowSubscriptionModal(true)}
             style={{ width: "auto", padding: "6px 12px", fontSize: "0.72rem", whiteSpace: "nowrap" }}>
             Mulai Langganan →
           </button>
@@ -829,9 +829,9 @@ export default function MarketplacePage() {
                             </button>
                           </div>
                         )}
-                        {isEnrolled ? (
+                        {isSubscribed ? (
                           <button
-                            className="btn btn-secondary"
+                            className="btn btn-primary"
                             onClick={() => handleOpenClass(course.id)}
                             style={{ width: "auto" }}
                             disabled={isLocked}
@@ -841,11 +841,10 @@ export default function MarketplacePage() {
                         ) : (
                           <button
                             className="btn btn-primary"
-                            onClick={() => isLocked ? null : handleEnrollCourse(course)}
-                            style={{ width: "auto", opacity: isLocked ? 0.5 : 1, cursor: isLocked ? "not-allowed" : "pointer" }}
-                            disabled={isLocked}
+                            onClick={() => setShowSubscriptionModal(true)}
+                            style={{ width: "auto", display: "flex", alignItems: "center", gap: 6 }}
                           >
-                            {isLocked ? <><Lock size={12} style={{ marginRight: 4 }} />Terkunci</> : "Beli Kelas"}
+                            <Zap size={13} /> Berlangganan
                           </button>
                         )}
                       </div>
@@ -901,21 +900,21 @@ export default function MarketplacePage() {
                       <div style={{ fontSize: "0.85rem", fontWeight: 600, color: "var(--text-primary)" }}>{c.title}</div>
                       <div style={{ fontSize: "0.72rem", color: "var(--text-secondary)", marginTop: 2 }}>{c.category} · {c.duration} · {c.level}</div>
                     </div>
-                    {isEnrolled ? (
+                    {isSubscribed ? (
                       <button
                         className="btn btn-secondary"
                         style={{ width: "auto", padding: "4px 10px", fontSize: "0.75rem", height: "auto" }}
                         onClick={() => { setInstructorModal(null); handleOpenClass(c.id); }}
                       >
-                        Buka
+                        Buka Kelas
                       </button>
                     ) : (
                       <button
                         className="btn btn-primary"
-                        style={{ width: "auto", padding: "4px 10px", fontSize: "0.75rem", height: "auto" }}
-                        onClick={() => { setInstructorModal(null); handleEnrollCourse(c); }}
+                        style={{ width: "auto", padding: "4px 10px", fontSize: "0.75rem", height: "auto", display: "flex", alignItems: "center", gap: 4 }}
+                        onClick={() => { setInstructorModal(null); setShowSubscriptionModal(true); }}
                       >
-                        {c.priceLabel}
+                        <Zap size={11} /> Berlangganan
                       </button>
                     )}
                   </div>

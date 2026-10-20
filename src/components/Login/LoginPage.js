@@ -1,12 +1,12 @@
 "use client";
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { Cpu, User, Briefcase, Landmark, ShieldCheck, Mail, Lock, ArrowRight, Award, CheckCircle2, KeyRound, X, AlertCircle, Eye, EyeOff } from "lucide-react";
+import { Cpu, User, Mail, Lock, ArrowRight, Award, CheckCircle2, KeyRound, X, AlertCircle, Eye, EyeOff } from "lucide-react";
 import { useApp } from "@/context/AppContext";
 
 export default function LoginPage() {
   const router = useRouter();
-  const { activeRole, loginEmail, loginPassword, setLoginEmail, setLoginPassword, handleRoleTabChange, handlePrefill, handleLoginSubmit, platformSettings } = useApp();
+  const { loginEmail, loginPassword, setLoginEmail, setLoginPassword, handlePrefill, handleLoginSubmit, platformSettings } = useApp();
 
   const handleCustomLoginSubmit = async (e) => {
     e.preventDefault();
@@ -202,12 +202,6 @@ export default function LoginPage() {
     }
   };
 
-  const roles = [
-    { key: "student", label: "Peserta", icon: User },
-    { key: "corporate", label: "Korporat", icon: Briefcase },
-    { key: "government", label: "Pemerintah", icon: Landmark },
-    { key: "admin", label: "Admin", icon: ShieldCheck },
-  ];
 
   const features = [
     "Sertifikasi Kompetensi Nasional",
@@ -629,20 +623,6 @@ export default function LoginPage() {
 
               {renderDivider("atau masuk dengan akun email")}
 
-              <div className="role-selector">
-                {roles.map(r => {
-                  const Icon = r.icon;
-                  return (
-                    <button type="button"
-                      key={r.key}
-                      className={`role-tab ${activeRole === r.key ? "active" : ""}`}
-                      onClick={() => handleRoleTabChange(r.key)}
-                    >
-                      <Icon size={16} /><span>{r.label}</span>
-                    </button>
-                  );
-                })}
-              </div>
 
               <form onSubmit={handleCustomLoginSubmit}>
                 <div className="form-group">

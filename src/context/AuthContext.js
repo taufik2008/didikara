@@ -19,6 +19,7 @@ export function AuthProvider({ children }) {
         const res = await getSessionApi();
         if (isMounted && res.success && res.data) {
           setCurrentUser(res.data);
+          if (res.data.role) setActiveRole(res.data.role);
         }
       } catch {
         // Fallback jika network error / unauthenticated
@@ -64,6 +65,7 @@ export function AuthProvider({ children }) {
           return;
         }
         setCurrentUser(loggedIn);
+        if (loggedIn.role) setActiveRole(loggedIn.role);
         if (onSuccess) await onSuccess(loggedIn);
       } else {
         alert(json.error || "Gagal masuk.");
@@ -83,6 +85,33 @@ export function AuthProvider({ children }) {
     if (onLogout) await onLogout();
   }, []);
 
+  const refreshUser = useCallback(async () => {
+    try {
+      const res = await getSessionApi();
+      if (res && res.success && res.data) {
+        setCurrentUser(res.data);
+        if (res.data.role) setActiveRole(res.data.role);
+        return res.data;
+      }
+    } catch {
+      // Best-effort
+    }
+    return null;
+  }, []);
+
+  const isSubscribed = useMemo(() => {
+    if (!currentUser) return false;
+    if (["admin", "superadmin", "instructor"].includes(currentUser.role)) return true;
+    if (currentUser.is_subscribed === true) return true;
+    if (currentUser.subscription_status === "active") {
+      if (currentUser.subscription_expires_at) {
+        return new Date(currentUser.subscription_expires_at) > new Date();
+      }
+      return true;
+    }
+    return false;
+  }, [currentUser]);
+
   const value = useMemo(() => ({
     currentUser,
     setCurrentUser,
@@ -98,6 +127,8 @@ export function AuthProvider({ children }) {
     handlePrefill,
     handleLoginSubmit,
     handleLogout,
+    refreshUser,
+    isSubscribed,
   }), [
     currentUser,
     sessionChecked,

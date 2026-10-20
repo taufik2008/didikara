@@ -11,7 +11,8 @@ export const CourseContext = createContext(null);
 
 export function CourseProvider({ children }) {
   const router = useRouter();
-  const { currentUser } = useAuth();
+  const { currentUser, isSubscribed } = useAuth();
+  const [showSubscriptionModal, setShowSubscriptionModal] = useState(false);
   const { setActivePage } = useUI();
 
   const [courses, setCourses] = useState([]);
@@ -157,6 +158,11 @@ export function CourseProvider({ children }) {
     const c = courses.find(item => item.id === courseId);
     if (!c) return;
 
+    if (!isSubscribed) {
+      setShowSubscriptionModal(true);
+      return;
+    }
+
     const prereqCheck = checkPrerequisite(courseId);
     if (prereqCheck.locked) {
       alert(`Kursus ini dikunci. Selesaikan dan lulus terlebih dahulu:\n"${prereqCheck.prerequisiteTitle}"`);
@@ -202,7 +208,7 @@ export function CourseProvider({ children }) {
     } catch {
       setActiveLessonIndex(0);
     }
-  }, [courses, checkPrerequisite, muatKehadiran, setActivePage, router]);
+  }, [courses, checkPrerequisite, muatKehadiran, setActivePage, router, isSubscribed]);
 
   // Sinkronisasi kursus aktif dari URL query ?courseId=... atau fallback default
   useEffect(() => {
@@ -233,9 +239,19 @@ export function CourseProvider({ children }) {
   }, []);
 
   const handleEnrollCourse = useCallback((course) => {
-    setSelectedPayCourse(course);
-    setPaymentModalActive(true);
-  }, []);
+    if (course?.id?.startsWith("membership-") || course?.badge === "ALL-ACCESS MEMBERSHIP") {
+      setSelectedPayCourse(course);
+      setPaymentModalActive(true);
+      return;
+    }
+
+    if (!isSubscribed) {
+      setShowSubscriptionModal(true);
+      return;
+    }
+
+    handleOpenClass(course.id);
+  }, [isSubscribed, handleOpenClass]);
 
   const refreshEnrollments = useCallback(async () => {
     const milik = await loadEnrollments();
@@ -572,6 +588,8 @@ export function CourseProvider({ children }) {
     govForm, setGovForm, govLoading, setGovLoading, govResult, setGovResult,
     corpForm, setCorpForm, corpLoading, setCorpLoading, corpResult, setCorpResult,
     dbMode, setDbMode,
+    showSubscriptionModal,
+    setShowSubscriptionModal,
     flatLessons,
     checkPrerequisite,
     muatKehadiran,
@@ -598,7 +616,7 @@ export function CourseProvider({ children }) {
     forumInput, certificates, transactions, paymentModalActive, selectedPayCourse,
     paymentMethod, certModalActive, activeCert, filterCategory,
     govForm, govLoading, govResult, corpForm, corpLoading, corpResult, dbMode,
-    flatLessons, checkPrerequisite, muatKehadiran, handleOpenClass,
+    showSubscriptionModal, flatLessons, checkPrerequisite, muatKehadiran, handleOpenClass,
     handleSelectLesson, handleEnrollCourse, refreshEnrollments,
     handleAssignmentUpload, handleAttendance, handleForumSubmit,
     handleStartExam, handleQuizSubmit, handleLoadExamHistory,

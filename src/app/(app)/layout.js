@@ -12,6 +12,7 @@ import LoginPage from "@/components/Login/LoginPage";
 import Sidebar from "@/components/Sidebar";
 import Header from "@/components/Header";
 import PaymentModal from "@/components/Modals/PaymentModalV2";
+import SubscriptionModal from "@/components/Modals/SubscriptionModal";
 import CertModal from "@/components/Modals/CertModal";
 import CrudModal from "@/components/Modals/CrudModal";
 import LmsManageModal from "@/components/Modals/LmsManageModal";
@@ -55,6 +56,7 @@ export default function AppLayout({ children }) {
       </div>
       <MobileBottomNav />
       <PaymentModal />
+      <SubscriptionModal />
       <CertModal />
       <CrudModal />
       <LmsManageModal />

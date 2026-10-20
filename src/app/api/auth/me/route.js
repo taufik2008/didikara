@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { query } from "@/lib/db";
 import { authenticateRequest } from "@/lib/auth";
+import { hasActiveSubscription } from "@/lib/courseAccess";
 
 export async function GET(request) {
   try {
@@ -15,6 +16,7 @@ export async function GET(request) {
     }
 
     const user = result.rows[0];
+    const isSubscribed = await hasActiveSubscription(user);
 
     return NextResponse.json({
       success: true,
@@ -30,6 +32,10 @@ export async function GET(request) {
         status: user.status,
         permissions: typeof user.permissions === 'string' ? JSON.parse(user.permissions) : user.permissions,
         competencies: typeof user.competencies === 'string' ? JSON.parse(user.competencies) : user.competencies,
+        is_subscribed: isSubscribed,
+        subscription_status: isSubscribed ? "active" : (user.subscription_status || "inactive"),
+        subscription_plan: user.subscription_plan || (user.role === "admin" ? "admin_pass" : null),
+        subscription_expires_at: user.subscription_expires_at || null,
       }
     });
   } catch (error) {

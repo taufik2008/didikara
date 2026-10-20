@@ -143,6 +143,17 @@ export async function POST(request) {
       const isMembership = !order.course_id || order.course_id.startsWith("membership-") || Boolean(order.metadata?.is_membership);
       
       if (isMembership) {
+        const isAnnual = order.course_id?.includes("annual") || Boolean(order.metadata?.is_annual);
+        const plan = isAnnual ? "annual" : "monthly";
+        const days = isAnnual ? 365 : 30;
+        await query(
+          `UPDATE users SET subscription_status = 'active', subscription_plan = $1, subscription_expires_at = NOW() + (${days} * INTERVAL '1 day') WHERE email = $2`,
+          [plan, order.user_email]
+        ).catch(() => {});
+        await query(
+          `INSERT INTO user_subscriptions (user_email, plan, status, starts_at, expires_at, order_id) VALUES ($1, $2, 'active', NOW(), NOW() + (${days} * INTERVAL '1 day'), $3)`,
+          [order.user_email, plan, order.order_id]
+        ).catch(() => {});
         const { rows: allCourses } = await query("SELECT id FROM courses").catch(() => ({ rows: [] }));
         for (const c of allCourses) {
           await query(

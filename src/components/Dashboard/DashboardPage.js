@@ -5,7 +5,7 @@ import Chart from "chart.js/auto";
 import { useApp } from "@/context/AppContext";
 
 export default function DashboardPage() {
-  const { currentUser, courses, enrolledCourses, certificates, setActivePage, setActiveCourse, setActiveLessonIndex, radarCanvasRef, competencySkills = [], handleOpenClass } = useApp();
+  const { currentUser, courses, enrolledCourses, certificates, setActivePage, setActiveCourse, setActiveLessonIndex, radarCanvasRef, competencySkills = [], handleOpenClass, isSubscribed, setShowSubscriptionModal } = useApp();
   const radarCanvasRefLocal = useRef(null);
   const radarRef = radarCanvasRef || radarCanvasRefLocal;
 
@@ -87,7 +87,28 @@ export default function DashboardPage() {
     <main className="page-view active">
       <div className="welcome-banner">
         <div className="welcome-text">
-          <h2>Selamat Datang, {currentUser.fullname}!</h2>
+          <div style={{ display: "flex", alignItems: "center", gap: 10, flexWrap: "wrap", marginBottom: 4 }}>
+            <h2 style={{ margin: 0 }}>Selamat Datang, {currentUser.fullname}!</h2>
+            {isSubscribed ? (
+              <span style={{
+                background: "rgba(52, 211, 153, 0.15)", border: "1px solid rgba(52, 211, 153, 0.3)",
+                color: "#34d399", padding: "3px 10px", borderRadius: 20, fontSize: "0.75rem", fontWeight: 700
+              }}>
+                ✓ Langganan Aktif
+              </span>
+            ) : (
+              <button
+                type="button"
+                onClick={() => setShowSubscriptionModal(true)}
+                style={{
+                  background: "rgba(249, 115, 22, 0.15)", border: "1px solid rgba(249, 115, 22, 0.4)",
+                  color: "var(--primary)", padding: "3px 10px", borderRadius: 20, fontSize: "0.75rem",
+                  fontWeight: 700, cursor: "pointer", transition: "all 0.2s ease"
+                }}>
+                ★ Beli Paket Langganan
+              </button>
+            )}
+          </div>
           <p style={{ color: "var(--text-secondary)", fontSize: "0.9rem" }}>Siap meningkatkan kompetensi nasional Anda hari ini? Mari jelajahi program baru.</p>
         </div>
         <button className="btn btn-primary" onClick={() => setActivePage("marketplace-page")} style={{ width: "auto" }}>

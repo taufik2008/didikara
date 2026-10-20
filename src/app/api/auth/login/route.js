@@ -5,6 +5,7 @@ import { recordSession } from "@/lib/session";
 import { query } from "@/lib/db";
 import { checkRateLimit } from "@/lib/rateLimit";
 import { sendWelcomeEmail } from "@/lib/email";
+import { hasActiveSubscription } from "@/lib/courseAccess";
 
 const loginSchema = z.object({
   email: z.string().email({ message: "Format email tidak valid" }),
@@ -101,6 +102,8 @@ export async function POST(request) {
     ip,
   });
 
+  const isSubscribed = await hasActiveSubscription(user);
+
   const response = NextResponse.json({
     success: true,
     user: {
@@ -115,6 +118,10 @@ export async function POST(request) {
       status: user.status,
       permissions: user.permissions,
       competencies: user.competencies,
+      is_subscribed: isSubscribed,
+      subscription_status: isSubscribed ? "active" : (user.subscription_status || "inactive"),
+      subscription_plan: user.subscription_plan || (user.role === "admin" ? "admin_pass" : null),
+      subscription_expires_at: user.subscription_expires_at || null,
     },
   });
 

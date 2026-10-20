@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { getGoogleAuthUrl, getBaseUrl, verifyGoogleCredentialToken, upsertGoogleUser } from "@/lib/googleAuth";
 import { signToken } from "@/lib/jwt";
 import { recordSession } from "@/lib/session";
+import { hasActiveSubscription } from "@/lib/courseAccess";
 
 /**
  * GET /api/auth/google
@@ -90,6 +91,8 @@ export async function POST(request) {
       ip,
     });
 
+    const isSubscribed = await hasActiveSubscription(user);
+
     const response = NextResponse.json({
       success: true,
       isNewUser: isNew,
@@ -105,6 +108,10 @@ export async function POST(request) {
         status: user.status,
         permissions: typeof user.permissions === "string" ? JSON.parse(user.permissions) : user.permissions,
         competencies: typeof user.competencies === "string" ? JSON.parse(user.competencies) : user.competencies,
+        is_subscribed: isSubscribed,
+        subscription_status: isSubscribed ? "active" : (user.subscription_status || "inactive"),
+        subscription_plan: user.subscription_plan || (user.role === "admin" ? "admin_pass" : null),
+        subscription_expires_at: user.subscription_expires_at || null,
       },
     });
 
