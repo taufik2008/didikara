@@ -2468,7 +2468,7 @@ Didikara - Platform Pelatihan & Sertifikasi Profesional
 
                   <button
                     type="button"
-                    onClick={() => sendAiMessage(`Berikan contoh studi kasus nyata implementasi materi "${activeLesson?.title || activeCourse?.title}" di dunia kerja/pemerintahan.`)}
+                    onClick={() => sendAiMessage(`Berikan contoh studi kasus nyata implementasi materi "${activeLesson?.title || activeCourse?.title}" di dunia kerja nyata dan profesional.`)}
                     disabled={aiLoading}
                     style={{
                       background: "var(--accent-badge-bg)", border: "1px solid var(--accent-badge-border)",

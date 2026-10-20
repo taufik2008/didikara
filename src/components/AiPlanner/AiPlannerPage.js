@@ -12,7 +12,7 @@ function GovPlanner() {
       </h3>
       <form className="ai-planner-form" onSubmit={handleGovGenerate}>
         <div className="form-group">
-          <label>Nama Instansi / Kementerian</label>
+          <label>Lembaga / Organisasi / Komunitas (Opsional)</label>
           <div className="input-wrapper">
             <Landmark size={16} className="input-icon" />
             <input type="text" value={govForm.instansi} onChange={(e) => setGovForm({ ...govForm, instansi: e.target.value })} required />
@@ -156,7 +156,7 @@ export default function AiPlannerPage() {
     <main className="page-view active">
       <div style={{ marginBottom: 28 }}>
         <h2 style={{ fontSize: "1.8rem", marginBottom: 6 }}>{currentUser?.role === 'government' ? 'Government AI Competency Planning Portal' : 'Corporate AI Competency Planning Portal'}</h2>
-        <p style={{ color: "var(--text-secondary)", fontSize: "0.85rem" }}>Gunakan kecerdasan buatan untuk merencanakan pengembangan kompetensi SDM instansi secara otomatis.</p>
+        <p style={{ color: "var(--text-secondary)", fontSize: "0.85rem" }}>Gunakan kecerdasan buatan untuk merencanakan jalur pembelajaran dan pengembangan kompetensi Anda secara otomatis.</p>
       </div>
       {currentUser?.role === 'government' && <GovPlanner />}
       <CorpPlanner />

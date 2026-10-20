@@ -504,6 +504,18 @@ export default function LandingPage({ initialCourses, initialCategories, initial
               Instruktur
             </a>
             <a
+              href="#kontak"
+              onClick={(e) => {
+                e.preventDefault();
+                const el = document.getElementById("kontak");
+                if (el) el.scrollIntoView({ behavior: "smooth" });
+              }}
+              style={{ color: "inherit", textDecoration: "none", transition: "color 0.2s" }}
+              className="nav-link"
+            >
+              Kontak Kami
+            </a>
+            <a
               href="#faq"
               onClick={(e) => {
                 e.preventDefault();
@@ -756,7 +768,7 @@ export default function LandingPage({ initialCourses, initialCategories, initial
               </div>
               <div>
                 <div style={{ fontSize: "0.95rem", fontWeight: 700, color: "#a855f7" }}>3. Offline Workshop</div>
-                <div style={{ fontSize: "0.78rem", color: "var(--text-secondary)" }}>Tatap Muka di Hotel • Uji Asesor BNSP</div>
+                <div style={{ fontSize: "0.78rem", color: "var(--text-secondary)" }}>Tatap Muka Interaktif • Request via Contact Us</div>
               </div>
             </div>
           </div>
@@ -1000,12 +1012,12 @@ export default function LandingPage({ initialCourses, initialCategories, initial
                   <MapPin size={13} />
                   <span>WORKSHOP TATAP MUKA</span>
                 </span>
-                <span style={{ fontSize: "1.2rem", fontWeight: 800, color: "#a855f7" }}>Berbayar / SPK</span>
+                <span style={{ fontSize: "1.05rem", fontWeight: 800, color: "#a855f7" }}>Via Contact Us</span>
               </div>
 
               <h3 style={{ fontSize: "1.3rem", fontWeight: 800, marginBottom: 10 }}>Offline (Tatap Muka)</h3>
               <p style={{ fontSize: "0.86rem", color: "var(--text-secondary)", lineHeight: 1.55, marginBottom: 20 }}>
-                Pelatihan tatap muka intensif di hotel bintang 5 / venue instansi dengan simulasi langsung, konsumsi lengkap, modul cetak, dan uji sertifikasi BNSP/LKPP di lokasi.
+                Pelatihan tatap muka intensif dengan simulasi langsung, konsumsi lengkap, modul materi komprehensif, dan pendampingan pengajar ahli. Khusus kebutuhan pelatihan offline, silakan ajukan melalui Contact Us.
               </p>
 
               {/* Fasilitas */}
@@ -1018,7 +1030,7 @@ export default function LandingPage({ initialCourses, initialCategories, initial
                   "Seminar kit eksklusif, binder materi cetak & flashdisk",
                   "Makan siang prasmanan & 2x coffee break setiap hari",
                   "Bimbingan one-on-one & simulasi kasus kerja nyata",
-                  "Uji kompetensi asesor BNSP / LKPP langsung di tempat",
+                  "Sesi evaluasi dan uji pemahaman langsung bersama instruktur",
                   "Sertifikat Fisik Berlisensi & Sertifikat Digital Nasional"
                 ].map((feat, idx) => (
                   <div key={idx} style={{ display: "flex", alignItems: "flex-start", gap: 8, fontSize: "0.83rem", color: "var(--text-secondary)" }}>
@@ -1800,7 +1812,7 @@ export default function LandingPage({ initialCourses, initialCategories, initial
             </div>
             <h2 style={{ fontSize: "2.1rem", fontWeight: 800 }}>Mengapa Belajar di Platform DIDIKARA?</h2>
             <p style={{ color: "var(--text-secondary)", fontSize: "0.95rem", maxWidth: 640, margin: "0 auto" }}>
-              Dirancang dengan standar instansi pemerintah dan perusahaan modern untuk memaksimalkan efektivitas pembelajaran digital.
+              Dirancang untuk masyarakat umum, mahasiswa, dan profesional yang ingin meningkatkan keahlian serta daya saing secara fleksibel.
             </p>
           </div>
 
@@ -1814,7 +1826,7 @@ export default function LandingPage({ initialCourses, initialCategories, initial
               {
                 icon: <ShieldCheck size={28} color="var(--success)" />,
                 title: "Sertifikat Terverifikasi QR",
-                desc: "Sertifikat kelulusan digital dilengkapi cryptographic hash dan QR code publik yang dapat diverifikasi oleh instansi."
+                desc: "Sertifikat kelulusan digital dilengkapi cryptographic hash dan QR code publik yang dapat diverifikasi secara online kapan saja."
               },
               {
                 icon: <Laptop size={28} color="var(--info)" />,
@@ -1828,8 +1840,8 @@ export default function LandingPage({ initialCourses, initialCategories, initial
               },
               {
                 icon: <Building size={28} color="#a855f7" />,
-                title: "Enterprise & Government Ready",
-                desc: "Mendukung manajemen kelas korporat, dashboard HR/Biro SDM, analitik angkatan kerja, dan pemesanan multi-peserta."
+                title: "Pelatihan Offline via Contact Us",
+                desc: "Membutuhkan pelatihan tatap muka atau workshop khusus? Hubungi tim kami untuk konsultasi jadwal, materi, dan lokasi."
               },
               {
                 icon: <Clock size={28} color="#ec4899" />,
@@ -2004,6 +2016,129 @@ export default function LandingPage({ initialCourses, initialCategories, initial
       </section>
       )}
 
+      {/* ── CONTACT US & OFFLINE TRAINING REQUEST SECTION (#kontak) ── */}
+      <section id="kontak" style={{ padding: "80px 24px", maxWidth: 1100, margin: "0 auto" }}>
+        <div style={{ textAlign: "center", marginBottom: 44 }}>
+          <div style={{ fontSize: "0.8rem", fontWeight: 700, color: "#a855f7", textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: 6 }}>
+            Layanan Terbuka untuk Umum
+          </div>
+          <h2 style={{ fontSize: "2.1rem", fontWeight: 800, marginBottom: 10 }}>Hubungi Kami &amp; Permintaan Pelatihan Offline</h2>
+          <p style={{ color: "var(--text-secondary)", fontSize: "0.95rem", maxWidth: 680, margin: "0 auto" }}>
+            Platform LMS DIDIKARA terbuka untuk seluruh masyarakat dan pembelajar umum. Apabila Anda atau komunitas Anda memerlukan pelatihan tatap muka (offline workshop) atau pendampingan materi khusus, silakan hubungi tim representatif kami.
+          </p>
+        </div>
+
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(320px, 1fr))", gap: 24, alignItems: "stretch" }}>
+          {/* Card Info Kontak Langsung */}
+          <div className="glass-card" style={{ padding: 28, borderRadius: 16, display: "flex", flexDirection: "column", justifyContent: "space-between" }}>
+            <div>
+              <h3 style={{ fontSize: "1.2rem", fontWeight: 800, marginBottom: 16, display: "flex", alignItems: "center", gap: 10 }}>
+                <span style={{ width: 36, height: 36, borderRadius: 10, background: "rgba(168, 85, 247, 0.15)", display: "flex", alignItems: "center", justifyContent: "center", color: "#a855f7" }}>
+                  <MapPin size={20} />
+                </span>
+                <span>Konsultasi Pelatihan</span>
+              </h3>
+              <p style={{ fontSize: "0.86rem", color: "var(--text-secondary)", lineHeight: 1.6, marginBottom: 20 }}>
+                Pelatihan tatap muka dapat diselenggarakan secara fleksibel sesuai kota, jadwal, dan kurikulum yang Anda butuhkan dengan pengajar ahli berpengalaman.
+              </p>
+
+              <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
+                <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+                  <div style={{ width: 36, height: 36, borderRadius: 8, background: "rgba(37, 211, 102, 0.15)", display: "flex", alignItems: "center", justifyContent: "center", color: "#25D366" }}>
+                    💬
+                  </div>
+                  <div>
+                    <div style={{ fontSize: "0.72rem", color: "var(--text-muted)", textTransform: "uppercase" }}>WhatsApp Resmi</div>
+                    <div style={{ fontSize: "0.9rem", fontWeight: 700, color: "var(--text-primary)" }}>+62 812-3456-7890</div>
+                  </div>
+                </div>
+
+                <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+                  <div style={{ width: 36, height: 36, borderRadius: 8, background: "rgba(59, 130, 246, 0.15)", display: "flex", alignItems: "center", justifyContent: "center", color: "#60a5fa" }}>
+                    ✉️
+                  </div>
+                  <div>
+                    <div style={{ fontSize: "0.72rem", color: "var(--text-muted)", textTransform: "uppercase" }}>Email Layanan</div>
+                    <div style={{ fontSize: "0.9rem", fontWeight: 700, color: "var(--text-primary)" }}>kontak@didikara.com</div>
+                  </div>
+                </div>
+
+                <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+                  <div style={{ width: 36, height: 36, borderRadius: 8, background: "rgba(249, 115, 22, 0.15)", display: "flex", alignItems: "center", justifyContent: "center", color: "#fb923c" }}>
+                    🕒
+                  </div>
+                  <div>
+                    <div style={{ fontSize: "0.72rem", color: "var(--text-muted)", textTransform: "uppercase" }}>Jam Operasional</div>
+                    <div style={{ fontSize: "0.85rem", color: "var(--text-secondary)" }}>Senin – Jumat (09:00 – 17:00 WIB)</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div style={{ marginTop: 24, paddingTop: 18, borderTop: "1px solid var(--border-color)" }}>
+              <a
+                href="https://wa.me/6281234567890?text=Halo%20DIDIKARA,%20saya%20ingin%20konsultasi%20mengenai%20permintaan%20pelatihan%20offline%20tatap%20muka"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="btn btn-primary"
+                style={{ width: "100%", padding: "12px", background: "#25D366", borderColor: "#25D366", color: "#fff", fontWeight: 700, textDecoration: "none", display: "inline-flex", alignItems: "center", justifyContent: "center", gap: 8, borderRadius: 10 }}
+              >
+                <span>💬 Chat WhatsApp Sekarang</span>
+              </a>
+            </div>
+          </div>
+
+          {/* Form Permintaan Offline */}
+          <div className="glass-card" style={{ padding: 28, borderRadius: 16 }}>
+            <h3 style={{ fontSize: "1.15rem", fontWeight: 800, marginBottom: 8 }}>Formulir Permintaan Offline</h3>
+            <p style={{ fontSize: "0.8rem", color: "var(--text-secondary)", marginBottom: 18 }}>
+              Kirimkan rincian kebutuhan pelatihan Anda, tim kami akan segera merespons dengan jadwal dan proposal silabus.
+            </p>
+
+            <form onSubmit={(e) => {
+              e.preventDefault();
+              alert("Terima kasih! Permintaan pelatihan offline Anda telah kami terima. Tim kami akan segera menghubungi Anda.");
+            }}>
+              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12, marginBottom: 12 }}>
+                <div className="form-group" style={{ margin: 0 }}>
+                  <label style={{ fontSize: "0.78rem" }}>Nama Lengkap *</label>
+                  <input type="text" required placeholder="Nama Anda" style={{ padding: "8px 12px", fontSize: "0.82rem", borderRadius: 8 }} />
+                </div>
+                <div className="form-group" style={{ margin: 0 }}>
+                  <label style={{ fontSize: "0.78rem" }}>Nomor WhatsApp *</label>
+                  <input type="tel" required placeholder="0812xxxxxxxx" style={{ padding: "8px 12px", fontSize: "0.82rem", borderRadius: 8 }} />
+                </div>
+              </div>
+
+              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12, marginBottom: 12 }}>
+                <div className="form-group" style={{ margin: 0 }}>
+                  <label style={{ fontSize: "0.78rem" }}>Email *</label>
+                  <input type="email" required placeholder="email@domain.com" style={{ padding: "8px 12px", fontSize: "0.82rem", borderRadius: 8 }} />
+                </div>
+                <div className="form-group" style={{ margin: 0 }}>
+                  <label style={{ fontSize: "0.78rem" }}>Rencana Kota / Lokasi *</label>
+                  <input type="text" required placeholder="Contoh: Jakarta / Bandung" style={{ padding: "8px 12px", fontSize: "0.82rem", borderRadius: 8 }} />
+                </div>
+              </div>
+
+              <div className="form-group" style={{ marginBottom: 12 }}>
+                <label style={{ fontSize: "0.78rem" }}>Topik / Pelatihan yang Diminati *</label>
+                <input type="text" required placeholder="Contoh: Budget Operation, Data Analysis, dll." style={{ padding: "8px 12px", fontSize: "0.82rem", borderRadius: 8 }} />
+              </div>
+
+              <div className="form-group" style={{ marginBottom: 16 }}>
+                <label style={{ fontSize: "0.78rem" }}>Catatan Tambahan (Estimasi Peserta / Waktu)</label>
+                <textarea rows={2} placeholder="Sebutkan perkiraan peserta atau jadwal yang diharapkan..." style={{ width: "100%", padding: "8px 12px", fontSize: "0.82rem", borderRadius: 8, resize: "vertical" }} />
+              </div>
+
+              <button type="submit" className="btn btn-primary" style={{ width: "100%", padding: "11px", fontWeight: 700, borderRadius: 10 }}>
+                Kirim Permintaan Pelatihan Offline
+              </button>
+            </form>
+          </div>
+        </div>
+      </section>
+
       {/* ── FAQ SECTION (#faq) ── */}
       <section id="faq" style={{ padding: "80px 24px", maxWidth: 860, margin: "0 auto" }}>
         <div style={{ textAlign: "center", marginBottom: 44 }}>
@@ -2028,8 +2163,8 @@ export default function LandingPage({ initialCourses, initialCategories, initial
               a: "Ya. Seluruh sesi live webinar akan direkam secara otomatis dalam kualitas HD dan dapat diakses ulang seumur hidup melalui portal kelas Anda."
             },
             {
-              q: "Bagaimana alur pembayaran untuk Instansi / Korporasi yang memesan Offline Workshop?",
-              a: "Untuk instansi pemerintah (APBN/APBD) atau korporasi (BUMN/Swasta), kami menyediakan mekanisme invoice resmi, Surat Perintah Kerja (SPK), dan pembayaran termin via transfer rekening institusi resmi."
+              q: "Bagaimana cara mengajukan permintaan Pelatihan Offline (Tatap Muka)?",
+              a: "Bagi Anda atau kelompok yang membutuhkan pelatihan offline (tatap muka), Anda dapat mengajukan permintaan langsung melalui Contact Us atau WhatsApp kami. Tim kami akan mendiskusikan ketersediaan pengajar ahli, kurikulum, serta lokasi pelatihan yang diinginkan."
             }
           ].map((item, i) => (
             <div
@@ -2175,7 +2310,7 @@ export default function LandingPage({ initialCourses, initialCategories, initial
             <h4 style={{ fontSize: "0.92rem", fontWeight: 700, color: "var(--text-primary)", marginBottom: 14 }}>Akses Pengguna</h4>
             <div style={{ display: "flex", flexDirection: "column", gap: 8, fontSize: "0.82rem" }}>
               <Link href="/dashboard" style={{ color: "inherit", textDecoration: "none" }}>Login Peserta Mandiri</Link>
-              <Link href="/dashboard" style={{ color: "inherit", textDecoration: "none" }}>Portal Biro SDM & HR</Link>
+              <a href="#kontak" onClick={(e) => { e.preventDefault(); const el = document.getElementById("kontak"); if (el) el.scrollIntoView({ behavior: "smooth" }); }} style={{ color: "inherit", textDecoration: "none" }}>Hubungi Kami (Contact Us)</a>
               <Link href="/dashboard" style={{ color: "inherit", textDecoration: "none" }}>Portal Instruktur & Asesor</Link>
             </div>
           </div>
@@ -2648,6 +2783,12 @@ export default function LandingPage({ initialCourses, initialCategories, initial
                 </button>
                 <button
                   onClick={() => {
+                    if (selectedModalTier === "offline") {
+                      setSelectedCourseModal(null);
+                      const el = document.getElementById("kontak");
+                      if (el) el.scrollIntoView({ behavior: "smooth" });
+                      return;
+                    }
                     const targetId = selectedCourseModal?.id;
                     setSelectedCourseModal(null);
                     if (currentUser) {
@@ -2679,7 +2820,7 @@ export default function LandingPage({ initialCourses, initialCategories, initial
                       ? (Number(selectedCourseModal.price) === 0 ? "Buka via Akses Member" : "Daftar Kursus Mandiri")
                       : selectedModalTier === "online"
                       ? "Daftar Kelas Online Live"
-                      : "Reservasi Kursi Workshop Offline"}
+                      : "Hubungi Kami untuk Pelatihan Offline"}
                   </span>
                   <ArrowRight size={16} />
                 </button>

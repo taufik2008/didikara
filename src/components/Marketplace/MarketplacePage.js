@@ -406,21 +406,21 @@ export default function MarketplacePage() {
         }}>
           <div>
             <div style={{ fontSize: "0.72rem", fontWeight: 700, color: "#60a5fa", textTransform: "uppercase" }}>
-              🏢 Pelatihan Tim &amp; B2B Korporat
+              📍 Permintaan Pelatihan Offline
             </div>
             <div style={{ fontWeight: 700, fontSize: "0.85rem", marginTop: 2 }}>
-              Beli Paket Lisensi Tim (5 - 50 Seats)
+              Workshop Tatap Muka &amp; Pelatihan Khusus
             </div>
             <div style={{ fontSize: "0.72rem", color: "var(--text-muted)", marginTop: 2 }}>
-              Dilengkapi Dasbor Manajer &amp; Laporan Progres Tim
+              Memerlukan pelatihan tatap muka atau pendampingan khusus? Hubungi tim kami
             </div>
           </div>
           <button
             type="button"
             className="btn btn-secondary"
             onClick={() => { setCorporateSubmitted(false); setShowCorporateModal(true); }}
-            style={{ width: "auto", padding: "6px 12px", fontSize: "0.72rem", whiteSpace: "nowrap", borderColor: "rgba(59,130,246,0.4)", color: "#93c5fd" }}>
-            Paket Korporat
+            style={{ width: "auto", padding: "6px 12px", fontSize: "0.72rem", whiteSpace: "nowrap", borderColor: "rgba(168,85,247,0.4)", color: "#c084fc" }}>
+            Hubungi Kami (Contact Us)
           </button>
         </div>
       </div>
@@ -830,7 +830,37 @@ export default function MarketplacePage() {
                             </button>
                           </div>
                         )}
-                        {course.price === 0 ? (
+                        {getLearningType(course) === "offline" ? (
+                          <button
+                            type="button"
+                            className="btn btn-secondary"
+                            onClick={() => {
+                              setCorporateForm(prev => ({
+                                ...prev,
+                                courseTitle: course.title,
+                                company: course.title
+                              }));
+                              setCorporateSubmitted(false);
+                              setShowCorporateModal(true);
+                            }}
+                            style={{
+                              width: "auto",
+                              padding: "6px 12px",
+                              fontSize: "0.78rem",
+                              height: "auto",
+                              minHeight: "unset",
+                              lineHeight: 1.25,
+                              whiteSpace: "nowrap",
+                              borderColor: "rgba(168,85,247,0.4)",
+                              color: "#c084fc",
+                              display: "inline-flex",
+                              alignItems: "center",
+                              gap: 4
+                            }}
+                          >
+                            <MapPin size={12} /> Hubungi Kami
+                          </button>
+                        ) : course.price === 0 ? (
                           isSubscribed ? (
                             <button
                               className="btn btn-secondary"
@@ -907,7 +937,7 @@ export default function MarketplacePage() {
             </div>
 
             <div style={{ padding: "12px 16px", borderRadius: 8, background: "rgba(255,255,255,0.03)", border: "1px solid var(--border-color)", marginBottom: 16, fontSize: "0.82rem", color: "var(--text-secondary)", lineHeight: 1.5 }}>
-              Praktisi dan pengajar bersertifikasi nasional dengan pengalaman ekstensif dalam membimbing aparatur pemerintah dan profesional industri untuk mencapai standar kompetensi tertinggi.
+              Praktisi dan pengajar bersertifikasi dengan pengalaman ekstensif dalam membimbing peserta umum dan profesional untuk mencapai standar kompetensi terbaik.
             </div>
 
             <h4 style={{ fontSize: "0.9rem", color: "var(--text-primary)", marginBottom: 12 }}>
@@ -1139,8 +1169,8 @@ export default function MarketplacePage() {
                   <Building2 size={18} />
                 </div>
                 <div>
-                  <h3 style={{ margin: 0, fontSize: "1.1rem" }}>Paket Korporat &amp; Pelatihan Tim</h3>
-                  <p style={{ margin: 0, fontSize: "0.75rem", color: "var(--text-muted)" }}>Tingkatkan kompetensi SDM instansi/perusahaan Anda</p>
+                  <h3 style={{ margin: 0, fontSize: "1.1rem" }}>Permintaan Pelatihan Offline (Tatap Muka)</h3>
+                  <p style={{ margin: 0, fontSize: "0.75rem", color: "var(--text-muted)" }}>Konsultasikan kebutuhan workshop tatap muka atau kelas khusus dengan tim kami</p>
                 </div>
               </div>
               <button
@@ -1158,26 +1188,36 @@ export default function MarketplacePage() {
                 </div>
                 <h4 style={{ margin: "0 0 8px 0" }}>Pengajuan Berhasil Dikirim!</h4>
                 <p style={{ fontSize: "0.82rem", color: "var(--text-secondary)", lineHeight: 1.6, maxWidth: 380, margin: "0 auto 20px" }}>
-                  Terima kasih <strong>{corporateForm.picName || "Bpk/Ibu"}</strong>. Tim Account Manager B2B kami akan segera menghubungi Anda di <strong>{corporateForm.whatsapp || corporateForm.email}</strong> dalam 1x24 jam kerja untuk memberikan proposal penawaran khusus.
+                  Terima kasih <strong>{corporateForm.picName || "Bpk/Ibu"}</strong>. Tim kami telah menerima permintaan pelatihan offline Anda dan akan segera menghubungi di <strong>{corporateForm.whatsapp || corporateForm.email}</strong> untuk mendiskusikan kurikulum, jadwal, dan ketersediaan pengajar.
                 </p>
-                <button
-                  type="button"
-                  className="btn btn-primary"
-                  onClick={() => setShowCorporateModal(false)}
-                  style={{ width: "auto", padding: "8px 24px" }}>
-                  Selesai
-                </button>
+                <div style={{ display: "flex", gap: 10, justifyContent: "center", flexWrap: "wrap" }}>
+                  <a
+                    href="https://wa.me/6281234567890?text=Halo%20DIDIKARA,%20saya%20tertarik%20dengan%20informasi%20pelatihan%20offline%20tatap%20muka"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="btn btn-primary"
+                    style={{ width: "auto", padding: "8px 18px", textDecoration: "none", background: "#25D366", borderColor: "#25D366" }}>
+                    💬 Chat WhatsApp
+                  </a>
+                  <button
+                    type="button"
+                    className="btn btn-secondary"
+                    onClick={() => setShowCorporateModal(false)}
+                    style={{ width: "auto", padding: "8px 20px" }}>
+                    Tutup
+                  </button>
+                </div>
               </div>
             ) : (
               <form onSubmit={(e) => { e.preventDefault(); setCorporateSubmitted(true); }}>
                 <div className="form-group">
-                  <label>Nama Perusahaan / Instansi *</label>
+                  <label>Topik Pelatihan / Kursus yang Diminati *</label>
                   <input
                     type="text"
                     required
                     value={corporateForm.company}
                     onChange={e => setCorporateForm({ ...corporateForm, company: e.target.value })}
-                    placeholder="PT. Maju Bersama / Dinas Kominfo"
+                    placeholder="Contoh: Financial Modeling, AI Automation, dsb."
                     style={{ paddingLeft: 16 }}
                   />
                 </div>
@@ -1195,7 +1235,7 @@ export default function MarketplacePage() {
                     />
                   </div>
                   <div className="form-group">
-                    <label>Perkiraan Jumlah Peserta (Seats) *</label>
+                    <label>Rencana Lokasi &amp; Jumlah Peserta *</label>
                     <select
                       value={corporateForm.seats}
                       onChange={e => setCorporateForm({ ...corporateForm, seats: e.target.value })}
