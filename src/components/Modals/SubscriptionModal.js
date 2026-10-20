@@ -1,6 +1,6 @@
 "use client";
 import { useState, useEffect } from "react";
-import { Zap, Check, X, ShieldCheck, Sparkles, Award, BookOpen, Layers } from "lucide-react";
+import { Zap, Check, X, Sparkles, ShieldCheck, Award, BookOpen, Infinity } from "lucide-react";
 import { useApp } from "@/context/AppContext";
 
 export default function SubscriptionModal() {
@@ -12,12 +12,8 @@ export default function SubscriptionModal() {
     platformSettings,
   } = useApp();
 
-  const [plan, setPlan] = useState("annual"); // "monthly" | "annual"
-  const [loading, setLoading] = useState(false);
   const [pricing, setPricing] = useState({
-    monthlyPrice: 149000,
-    annualPrice: 999000,
-    annualBadge: "HEMAT 44%",
+    price: 499000,
   });
 
   useEffect(() => {
@@ -26,11 +22,11 @@ export default function SubscriptionModal() {
         .then((res) => res.json())
         .then((data) => {
           if (data?.settings) {
-            setPricing({
-              monthlyPrice: Number(data.settings.membership_monthly_price) || 149000,
-              annualPrice: Number(data.settings.membership_annual_price) || 999000,
-              annualBadge: data.settings.membership_annual_badge || "HEMAT 44%",
-            });
+            const rawPrice =
+              Number(data.settings.membership_price) ||
+              Number(data.settings.membership_monthly_price) ||
+              499000;
+            setPricing({ price: rawPrice });
           }
         })
         .catch(() => {});
@@ -39,16 +35,14 @@ export default function SubscriptionModal() {
 
   if (!showSubscriptionModal) return null;
 
-  const handleSelectPlanAndPay = () => {
-    const isAnnual = plan === "annual";
-    const finalPrice = isAnnual ? pricing.annualPrice : pricing.monthlyPrice;
+  const handlePayOneTime = () => {
     const membershipItem = {
-      id: `membership-${plan}`,
-      title: `Paket Langganan All-Access (${isAnnual ? "Tahunan" : "Bulanan"})`,
-      badge: "ALL-ACCESS MEMBERSHIP",
-      price: finalPrice,
-      priceLabel: `Rp ${finalPrice.toLocaleString("id-ID")} / ${isAnnual ? "tahun" : "bulan"}`,
-      desc: "Akses tanpa batas ke seluruh program pelatihan, modul kurikulum, ujian akhir, dan sertifikat resmi.",
+      id: "membership-lifetime",
+      title: "Paket Akses Kursus Penuh (One-Time Charge)",
+      badge: "ONE-TIME CHARGE",
+      price: pricing.price,
+      priceLabel: `Rp ${pricing.price.toLocaleString("id-ID")} (Sekali Bayar)`,
+      desc: "Akses penuh tanpa batas seumur hidup ke seluruh modul pelatihan, kurikulum, kuis, ujian sertifikasi, dan materi presentasi.",
     };
     setShowSubscriptionModal(false);
     handleEnrollCourse(membershipItem);
@@ -61,7 +55,7 @@ export default function SubscriptionModal() {
       <div
         className="modal-content glass-panel"
         style={{
-          maxWidth: 540,
+          maxWidth: 500,
           maxHeight: "92vh",
           overflowY: "auto",
           padding: "24px 28px",
@@ -89,7 +83,7 @@ export default function SubscriptionModal() {
             </div>
             <div>
               <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-                <h3 style={{ margin: 0, fontSize: "1.25rem", fontWeight: 800 }}>Langganan Belajar</h3>
+                <h3 style={{ margin: 0, fontSize: "1.25rem", fontWeight: 800 }}>Akses Kursus Penuh</h3>
                 <span
                   style={{
                     background: "rgba(249, 115, 22, 0.15)",
@@ -101,11 +95,11 @@ export default function SubscriptionModal() {
                     letterSpacing: "0.5px",
                   }}
                 >
-                  ALL-ACCESS
+                  ONE-TIME CHARGE
                 </span>
               </div>
               <p style={{ margin: "3px 0 0", fontSize: "0.82rem", color: "var(--text-secondary)" }}>
-                Akses seluruh kursus di platform {brandName} tanpa batasan
+                Akses seluruh kursus di platform {brandName} seumur hidup
               </p>
             </div>
           </div>
@@ -128,7 +122,7 @@ export default function SubscriptionModal() {
           </button>
         </div>
 
-        {/* Informasi Wajib Berlangganan */}
+        {/* Informasi Wajib Berlangganan (Sekali Bayar) */}
         <div
           style={{
             background: "rgba(249, 115, 22, 0.08)",
@@ -146,92 +140,65 @@ export default function SubscriptionModal() {
         >
           <Sparkles size={18} style={{ color: "var(--primary)", flexShrink: 0, marginTop: 2 }} />
           <div>
-            Untuk mengakses materi kursus (baik kursus <strong>Gratis</strong> maupun <strong>Berbayar</strong>), Anda wajib memiliki status langganan aktif.
+            Untuk mengakses materi kursus (baik kelas <strong>Gratis</strong> maupun <strong>Berbayar</strong>), Anda cukup membayar <strong>satu kali (one-time charge)</strong> untuk akses selamanya tanpa biaya iuran bulanan atau tahunan.
           </div>
         </div>
 
-        {/* Pemilih Paket: Bulanan vs Tahunan */}
-        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 14, marginBottom: 20 }}>
-          {/* Bulanan */}
+        {/* Kartu Harga One-Time Charge */}
+        <div
+          style={{
+            border: "2px solid var(--primary)",
+            background: "linear-gradient(135deg, rgba(249, 115, 22, 0.12), rgba(249, 115, 22, 0.03))",
+            borderRadius: 14,
+            padding: "20px 24px",
+            textAlign: "center",
+            marginBottom: 20,
+            position: "relative",
+          }}
+        >
           <div
-            onClick={() => setPlan("monthly")}
-            role="button"
-            tabIndex={0}
-            onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") setPlan("monthly"); }}
             style={{
-              border: `2px solid ${plan === "monthly" ? "var(--primary)" : "var(--border-color)"}`,
-              background: plan === "monthly" ? "rgba(249, 115, 22, 0.1)" : "rgba(255, 255, 255, 0.02)",
-              borderRadius: 12,
-              padding: 16,
-              cursor: "pointer",
-              transition: "all 0.2s ease",
-              textAlign: "center",
+              position: "absolute",
+              top: -11,
+              left: "50%",
+              transform: "translateX(-50%)",
+              background: "var(--primary)",
+              color: "#ffffff",
+              fontSize: "0.65rem",
+              fontWeight: 800,
+              padding: "3px 12px",
+              borderRadius: 20,
+              letterSpacing: "0.6px",
+              textTransform: "uppercase",
             }}
           >
-            <div style={{ fontSize: "0.78rem", fontWeight: 700, color: "var(--text-secondary)" }}>Paket Bulanan</div>
-            <div style={{ fontSize: "1.35rem", fontWeight: 800, color: "var(--text-primary)", marginTop: 6 }}>
-              Rp {pricing.monthlyPrice.toLocaleString("id-ID")}
-            </div>
-            <div style={{ fontSize: "0.72rem", color: "var(--text-muted)", marginTop: 2 }}>/ bulan (Fleksibel)</div>
+            Sekali Bayar · Akses Selamanya
           </div>
 
-          {/* Tahunan */}
-          <div
-            onClick={() => setPlan("annual")}
-            role="button"
-            tabIndex={0}
-            onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") setPlan("annual"); }}
-            style={{
-              border: `2px solid ${plan === "annual" ? "var(--primary)" : "var(--border-color)"}`,
-              background: plan === "annual" ? "rgba(249, 115, 22, 0.1)" : "rgba(255, 255, 255, 0.02)",
-              borderRadius: 12,
-              padding: 16,
-              cursor: "pointer",
-              transition: "all 0.2s ease",
-              textAlign: "center",
-              position: "relative",
-            }}
-          >
-            {pricing.annualBadge && (
-              <div
-                style={{
-                  position: "absolute",
-                  top: -10,
-                  right: 12,
-                  background: "var(--primary)",
-                  color: "#ffffff",
-                  fontSize: "0.62rem",
-                  fontWeight: 800,
-                  padding: "2px 8px",
-                  borderRadius: 20,
-                  letterSpacing: "0.5px",
-                }}
-              >
-                {pricing.annualBadge}
-              </div>
-            )}
-            <div style={{ fontSize: "0.78rem", fontWeight: 700, color: "var(--primary)" }}>Paket Tahunan ⭐</div>
-            <div style={{ fontSize: "1.35rem", fontWeight: 800, color: "var(--text-primary)", marginTop: 6 }}>
-              Rp {pricing.annualPrice.toLocaleString("id-ID")}
-            </div>
-            <div style={{ fontSize: "0.72rem", color: "var(--text-muted)", marginTop: 2 }}>
-              / tahun (~Rp {Math.round(pricing.annualPrice / 12 / 1000)}rb/bln)
-            </div>
+          <div style={{ fontSize: "0.82rem", fontWeight: 700, color: "var(--text-secondary)", marginTop: 4 }}>
+            Biaya Aktivasi Sekali Saja (One-Time)
+          </div>
+          <div style={{ fontSize: "2rem", fontWeight: 800, color: "var(--text-primary)", margin: "8px 0 4px" }}>
+            Rp {pricing.price.toLocaleString("id-ID")}
+          </div>
+          <div style={{ fontSize: "0.75rem", color: "var(--text-muted)" }}>
+            ✓ Tanpa langganan bulanan &bull; ✓ Tanpa perpanjangan tahunan &bull; ✓ Akses seumur hidup
           </div>
         </div>
 
         {/* Daftar Keuntungan */}
         <div className="glass-card" style={{ padding: 16, marginBottom: 22, borderRadius: 10 }}>
           <div style={{ fontSize: "0.82rem", fontWeight: 700, marginBottom: 12, color: "var(--text-primary)" }}>
-            Fasilitas &amp; Keuntungan Langganan:
+            Fasilitas &amp; Keuntungan Termasuk:
           </div>
           <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
             {[
-              "Akses penuh tanpa batas ke SELURUH modul kursus, video pembelajaran, & materi slide",
+              "Akses tak terbatas ke SELURUH materi kursus, kurikulum, & video pembelajaran HD",
+              "Akses bebas ke kursus free maupun kursus berbayar selamanya",
               "Sertifikat Digital resmi ber-QR Code untuk setiap kelas yang diselesaikan",
               "Akses latihan soal, kuis interaktif, & ujian sertifikasi",
-              "Forum diskusi komunitas dan tanya jawab dengan instruktur ahli",
-              "Dukungan beragam metode pembayaran (QRIS, Mayar, Transfer Bank, E-Wallet)",
+              "Forum diskusi komunitas dan tanya jawab langsung dengan instruktur ahli",
+              "Dukungan beragam metode pembayaran aman (Mayar, QRIS, Transfer Bank, E-Wallet)",
             ].map((item, idx) => (
               <div key={idx} style={{ display: "flex", alignItems: "flex-start", gap: 10, fontSize: "0.82rem", color: "var(--text-secondary)" }}>
                 <Check size={16} style={{ color: "#34d399", flexShrink: 0, marginTop: 2 }} />
@@ -254,7 +221,7 @@ export default function SubscriptionModal() {
           <button
             type="button"
             className="btn btn-primary"
-            onClick={handleSelectPlanAndPay}
+            onClick={handlePayOneTime}
             style={{
               flex: 2,
               padding: "12px 16px",
@@ -267,9 +234,7 @@ export default function SubscriptionModal() {
             }}
           >
             <Zap size={16} />
-            <span>
-              Berlangganan Sekarang ({plan === "annual" ? `Rp ${(pricing.annualPrice / 1000).toFixed(0)}k/Thn` : `Rp ${(pricing.monthlyPrice / 1000).toFixed(0)}k/Bln`})
-            </span>
+            <span>Bayar Sekali &amp; Aktifkan Akses (Rp {(pricing.price / 1000).toFixed(0)}k)</span>
           </button>
         </div>
       </div>

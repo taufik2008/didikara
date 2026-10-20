@@ -38,12 +38,15 @@ test('Subscription Access Control: hasActiveSubscription helper memeriksa status
   // 4. User dengan status active dan masa berlaku valid
   const futureDate = new Date(Date.now() + 1000 * 60 * 60 * 24 * 30).toISOString();
   assert.equal(await hasActiveSubscription({ role: 'student', subscription_status: 'active', subscription_expires_at: futureDate }), true, 'Active subscription harus true');
+
+  // 5. User dengan status active One-Time Charge (lifetime, subscription_expires_at = null)
+  assert.equal(await hasActiveSubscription({ role: 'student', subscription_status: 'active', subscription_expires_at: null }), true, 'Lifetime one-time charge harus true');
 });
 
-test('Subscription Modal & Course Gate: Modal langganan global dan gating di LmsPage & CourseContext terpasang', () => {
+test('Subscription Modal & Course Gate: Modal langganan One-Time Charge dan gating di LmsPage & CourseContext terpasang', () => {
   const modalSrc = fs.readFileSync(path.resolve('src/components/Modals/SubscriptionModal.js'), 'utf8');
-  assert.ok(modalSrc.includes('Paket Bulanan'), 'Modal harus menampilkan paket bulanan');
-  assert.ok(modalSrc.includes('Paket Tahunan'), 'Modal harus menampilkan paket tahunan');
+  assert.ok(modalSrc.includes('ONE-TIME CHARGE'), 'Modal harus menampilkan badge ONE-TIME CHARGE');
+  assert.ok(modalSrc.includes('Sekali Bayar'), 'Modal harus menjelaskan skema Sekali Bayar');
   assert.ok(modalSrc.includes('handleEnrollCourse'), 'Modal harus memicu pendaftaran/checkout membership');
 
   const lmsSrc = fs.readFileSync(path.resolve('src/components/Lms/LmsPage.js'), 'utf8');

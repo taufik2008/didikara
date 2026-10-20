@@ -49,6 +49,7 @@ const DEFAULTS = {
   // Balasan peserta jatuh ke sini, bukan ke alamat no-reply.
   support_email: "",
   // Tarif Berlangganan (Membership All-Access)
+  membership_price:         "499000",
   membership_monthly_price: "149000",
   membership_annual_price:  "999000",
   membership_annual_badge:  "HEMAT 44%",
@@ -72,7 +73,7 @@ const KUNCI_PUBLIK = [
   "bank3_name", "bank3_account", "bank3_holder",
   "qris_image", "payment_instructions", "payment_expiry_hours",
   "admin_whatsapp", "cdn_url", "storage_provider", "support_email",
-  "membership_monthly_price", "membership_annual_price", "membership_annual_badge",
+  "membership_price", "membership_monthly_price", "membership_annual_price", "membership_annual_badge",
   "cert_signature", "cert_signer_name", "cert_signer_title",
 ];
 

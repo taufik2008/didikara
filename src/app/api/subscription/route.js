@@ -14,12 +14,13 @@ export async function GET(request) {
 
     // Ambil setting tarif langganan
     const { rows: settingRows } = await query(
-      "SELECT key, value FROM platform_settings WHERE key IN ('membership_monthly_price', 'membership_annual_price', 'membership_annual_badge')"
+      "SELECT key, value FROM platform_settings WHERE key IN ('membership_price', 'membership_monthly_price', 'membership_annual_price', 'membership_annual_badge')"
     ).catch(() => ({ rows: [] }));
 
     const settingsMap = {};
     settingRows.forEach(r => { settingsMap[r.key] = r.value; });
 
+    const price = Number(settingsMap.membership_price) || Number(settingsMap.membership_monthly_price) || 499000;
     const monthlyPrice = Number(settingsMap.membership_monthly_price) || 149000;
     const annualPrice = Number(settingsMap.membership_annual_price) || 999000;
     const annualBadge = settingsMap.membership_annual_badge || "HEMAT 44%";
@@ -39,6 +40,7 @@ export async function GET(request) {
         expiresAt: userData?.subscription_expires_at || null,
       },
       pricing: {
+        price,
         monthlyPrice,
         annualPrice,
         annualBadge,

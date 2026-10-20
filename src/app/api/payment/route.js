@@ -133,16 +133,13 @@ export async function POST(request) {
     // Kursus gratis atau promo 100% — langsung enroll
     if (discountedBaseAmount === 0) {
       if (courseId.startsWith("membership-")) {
-        const isAnnual = courseId.includes("annual");
-        const plan = isAnnual ? "annual" : "monthly";
-        const days = isAnnual ? 365 : 30;
         await query(
-          `UPDATE users SET subscription_status = 'active', subscription_plan = $1, subscription_expires_at = NOW() + (${days} * INTERVAL '1 day') WHERE email = $2`,
-          [plan, user.email]
+          `UPDATE users SET subscription_status = 'active', subscription_plan = 'lifetime', subscription_expires_at = NULL WHERE email = $1`,
+          [user.email]
         ).catch(() => {});
         await query(
-          `INSERT INTO user_subscriptions (user_email, plan, status, starts_at, expires_at, order_id) VALUES ($1, $2, 'active', NOW(), NOW() + (${days} * INTERVAL '1 day'), $3)`,
-          [user.email, plan, `PROMO-${Date.now()}`]
+          `INSERT INTO user_subscriptions (user_email, plan, status, starts_at, expires_at, order_id) VALUES ($1, 'lifetime', 'active', NOW(), NULL, $2)`,
+          [user.email, `PROMO-${Date.now()}`]
         ).catch(() => {});
         const { rows: allCourses } = await query("SELECT id FROM courses").catch(() => ({ rows: [] }));
         for (const c of allCourses) {

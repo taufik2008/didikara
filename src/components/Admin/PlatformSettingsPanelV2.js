@@ -317,83 +317,43 @@ export default function PlatformSettingsPanelV2() {
               Pengaturan Paket Langganan (All-Access Membership)
             </div>
             <p style={{ fontSize: "0.8rem", color: "var(--text-secondary)", marginBottom: 18 }}>
-              Tentukan nominal harga berlangganan paket All-Access untuk peserta mandiri. Nilai ini akan otomatis diterapkan pada katalog marketplace dan sistem pembayaran.
+              Tentukan nominal biaya subscribe (One-Time Charge) untuk membuka akses penuh ke seluruh kelas (baik free maupun berbayar). Customer hanya membayar 1x seumur hidup tanpa biaya bulanan atau tahunan.
             </p>
 
-            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16, marginBottom: 16 }}>
-              {/* Paket Bulanan */}
+            <div style={{ marginBottom: 16 }}>
+              {/* Paket One-Time Charge */}
               <div style={{
-                background: "var(--bg-secondary)", padding: 16, borderRadius: 10,
-                border: "1px solid var(--border-color)"
+                background: "var(--bg-secondary)", padding: 20, borderRadius: 10,
+                border: "1.5px solid var(--border-color)", maxWidth: 540
               }}>
-                <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 12 }}>
-                  <div style={{ width: 28, height: 28, borderRadius: 6, background: "rgba(249,115,22,0.15)", display: "flex", alignItems: "center", justifyContent: "center", color: "var(--primary)" }}>
-                    📅
+                <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 14 }}>
+                  <div style={{ width: 32, height: 32, borderRadius: 8, background: "rgba(249,115,22,0.15)", display: "flex", alignItems: "center", justifyContent: "center", color: "var(--primary)", fontSize: "1.1rem" }}>
+                    💎
                   </div>
                   <div>
-                    <h4 style={{ margin: 0, fontSize: "0.88rem" }}>Paket Langganan Bulanan</h4>
-                    <span style={{ fontSize: "0.7rem", color: "var(--text-muted)" }}>Billing per bulan (fleksibel)</span>
+                    <h4 style={{ margin: 0, fontSize: "0.95rem", fontWeight: 700 }}>Biaya Akses Platform (One-Time Charge)</h4>
+                    <span style={{ fontSize: "0.74rem", color: "var(--text-muted)" }}>Sekali bayar seumur hidup — tanpa iuran bulanan atau tahunan</span>
                   </div>
                 </div>
 
-                <div className="form-group" style={{ marginBottom: 10 }}>
-                  <label style={{ fontSize: "0.75rem", fontWeight: 600 }}>Harga Bulanan (Rp / Bulan)</label>
+                <div className="form-group" style={{ marginBottom: 12 }}>
+                  <label style={{ fontSize: "0.78rem", fontWeight: 600 }}>Tarif Subscribe Sekali Bayar (Rp)</label>
                   <input
                     type="number"
                     min={0}
                     step={1000}
                     className="input-field"
-                    placeholder="149000"
-                    value={settings.membership_monthly_price || "149000"}
-                    onChange={e => set("membership_monthly_price", e.target.value)}
-                  />
-                </div>
-                <div style={{ fontSize: "0.75rem", color: "var(--text-muted)" }}>
-                  Tampilan User: <strong style={{ color: "var(--primary)" }}>Rp {Number(settings.membership_monthly_price || 149000).toLocaleString("id-ID")} / bulan</strong>
-                </div>
-              </div>
-
-              {/* Paket Tahunan */}
-              <div style={{
-                background: "var(--bg-secondary)", padding: 16, borderRadius: 10,
-                border: "1px solid var(--border-color)"
-              }}>
-                <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 12 }}>
-                  <div style={{ width: 28, height: 28, borderRadius: 6, background: "rgba(16,185,129,0.15)", display: "flex", alignItems: "center", justifyContent: "center", color: "var(--success)" }}>
-                    ⭐
-                  </div>
-                  <div>
-                    <h4 style={{ margin: 0, fontSize: "0.88rem" }}>Paket Langganan Tahunan</h4>
-                    <span style={{ fontSize: "0.7rem", color: "var(--text-muted)" }}>Billing per tahun (hemat)</span>
-                  </div>
-                </div>
-
-                <div className="form-group" style={{ marginBottom: 10 }}>
-                  <label style={{ fontSize: "0.75rem", fontWeight: 600 }}>Harga Tahunan (Rp / Tahun)</label>
-                  <input
-                    type="number"
-                    min={0}
-                    step={1000}
-                    className="input-field"
-                    placeholder="999000"
-                    value={settings.membership_annual_price || "999000"}
-                    onChange={e => set("membership_annual_price", e.target.value)}
+                    placeholder="499000"
+                    value={settings.membership_price || settings.membership_monthly_price || "499000"}
+                    onChange={e => {
+                      set("membership_price", e.target.value);
+                      set("membership_monthly_price", e.target.value);
+                    }}
                   />
                 </div>
 
-                <div className="form-group" style={{ marginBottom: 10 }}>
-                  <label style={{ fontSize: "0.75rem", fontWeight: 600 }}>Badge Label Diskon (opsional)</label>
-                  <input
-                    type="text"
-                    className="input-field"
-                    placeholder="HEMAT 44%"
-                    value={settings.membership_annual_badge || "HEMAT 44%"}
-                    onChange={e => set("membership_annual_badge", e.target.value)}
-                  />
-                </div>
-
-                <div style={{ fontSize: "0.75rem", color: "var(--text-muted)" }}>
-                  Tampilan User: <strong style={{ color: "var(--primary)" }}>Rp {Number(settings.membership_annual_price || 999000).toLocaleString("id-ID")} / tahun</strong> (~Rp {Math.round(Number(settings.membership_annual_price || 999000) / 12).toLocaleString("id-ID")}/bln)
+                <div style={{ fontSize: "0.8rem", color: "var(--text-secondary)", marginTop: 6 }}>
+                  Tampilan ke Customer: <strong style={{ color: "var(--primary)" }}>Rp {Number(settings.membership_price || settings.membership_monthly_price || 499000).toLocaleString("id-ID")} (Sekali Bayar Selamanya)</strong>
                 </div>
               </div>
             </div>

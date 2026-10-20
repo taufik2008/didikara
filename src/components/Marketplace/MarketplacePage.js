@@ -49,6 +49,7 @@ export default function MarketplacePage() {
       .then(data => {
         if (data.settings) {
           setMembershipSettings({
+            price: Number(data.settings.membership_price) || Number(data.settings.membership_monthly_price) || 499000,
             monthlyPrice: Number(data.settings.membership_monthly_price) || 149000,
             annualPrice: Number(data.settings.membership_annual_price) || 999000,
             annualBadge: data.settings.membership_annual_badge || "HEMAT 44%"
@@ -379,13 +380,13 @@ export default function MarketplacePage() {
         }}>
           <div>
             <div style={{ fontSize: "0.72rem", fontWeight: 700, color: "var(--primary)", textTransform: "uppercase" }}>
-              💎 Paket Membership All-Access
+              💎 Paket Akses Penuh (One-Time Charge)
             </div>
             <div style={{ fontWeight: 700, fontSize: "0.85rem", marginTop: 2 }}>
-              Akses Semua Kursus &amp; Ujian
+              Akses Semua Kursus &amp; Ujian Seumur Hidup
             </div>
             <div style={{ fontSize: "0.72rem", color: "var(--text-muted)", marginTop: 2 }}>
-              Hanya Rp 149.000/bulan atau Rp 999.000/tahun
+              Cukup Rp {(membershipSettings.price || 499000).toLocaleString("id-ID")} (Sekali Bayar Selamanya)
             </div>
           </div>
           <button
