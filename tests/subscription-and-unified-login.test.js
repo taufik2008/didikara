@@ -50,12 +50,19 @@ test('Subscription Modal & Course Gate: Modal langganan One-Time Charge dan gati
   assert.ok(modalSrc.includes('handleEnrollCourse'), 'Modal harus memicu pendaftaran/checkout membership');
 
   const lmsSrc = fs.readFileSync(path.resolve('src/components/Lms/LmsPage.js'), 'utf8');
-  assert.ok(lmsSrc.includes('if (!isSubscribed)'), 'LmsPage harus memeriksa isSubscribed sebelum membuka modul');
-  assert.ok(lmsSrc.includes('Akses Kursus Memerlukan Paket Langganan'), 'LmsPage harus menampilkan banner langganan jika belum subscribe');
+  assert.ok(lmsSrc.includes('if (!isSubscribed'), 'LmsPage harus memeriksa isSubscribed sebelum membuka modul');
+  assert.ok(lmsSrc.includes('Akses Kursus Memerlukan Status Member Aktif'), 'LmsPage harus menampilkan banner langganan jika belum subscribe');
 
   const courseCtxSrc = fs.readFileSync(path.resolve('src/context/CourseContext.js'), 'utf8');
-  assert.ok(courseCtxSrc.includes('if (!isSubscribed)'), 'CourseContext harus memblokir akses kelas jika belum langganan');
+  assert.ok(courseCtxSrc.includes('if (!isSubscribed'), 'CourseContext harus memblokir akses kelas jika belum langganan');
   assert.ok(courseCtxSrc.includes('setShowSubscriptionModal(true)'), 'CourseContext harus membuka modal langganan');
+});
+
+test('Akses Member Model: Marketplace membedakan Akses Member vs Kursus Berbayar', () => {
+  const mktSrc = fs.readFileSync(path.resolve('src/components/Marketplace/MarketplacePage.js'), 'utf8');
+  assert.ok(mktSrc.includes('course.price === 0 ? "Akses Member"'), 'Label kursus price === 0 harus Akses Member');
+  assert.ok(mktSrc.includes('<Zap size={13} /> Akses Member'), 'Tombol un-subscribed harus Akses Member');
+  assert.ok(mktSrc.includes('Beli Kelas'), 'Tombol kursus berbayar harus Beli Kelas');
 });
 
 test('DashboardPage: Safe guarding recommendedCourse against null/undefined', () => {

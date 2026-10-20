@@ -845,9 +845,9 @@ export default function LandingPage({ initialCourses, initialCategories, initial
               <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 16 }}>
                 <span style={{ fontSize: "0.75rem", padding: "4px 10px", borderRadius: 6, background: "rgba(16, 185, 129, 0.18)", color: "#10b981", fontWeight: 700, display: "flex", alignItems: "center", gap: 5 }}>
                   <Gift size={13} />
-                  <span>BELAJAR MANDIRI</span>
+                  <span>AKSES MEMBER</span>
                 </span>
-                <span style={{ fontSize: "1.1rem", fontWeight: 800, color: "#10b981" }}>Mulai Rp 0</span>
+                <span style={{ fontSize: "1.05rem", fontWeight: 800, color: "#10b981" }}>Akses Member</span>
               </div>
 
               <h3 style={{ fontSize: "1.3rem", fontWeight: 800, marginBottom: 10 }}>Self-Learning (Mandiri)</h3>
@@ -896,7 +896,7 @@ export default function LandingPage({ initialCourses, initialCategories, initial
                 gap: 6
               }}
             >
-              <span>Jelajahi Kursus Gratis</span>
+              <span>Jelajahi Akses Member</span>
               <ChevronRight size={16} />
             </button>
           </div>
@@ -1460,7 +1460,7 @@ export default function LandingPage({ initialCourses, initialCategories, initial
                               color: isFree ? "#10b981" : "var(--primary)"
                             }}
                           >
-                            {isFree ? "Gratis (Free)" : course.priceLabel || `Rp ${Number(course.price).toLocaleString("id-ID")}`}
+                            {isFree ? "Akses Member" : course.priceLabel || `Rp ${Number(course.price).toLocaleString("id-ID")}`}
                           </div>
                         </div>
 
@@ -1511,7 +1511,7 @@ export default function LandingPage({ initialCourses, initialCategories, initial
                               boxShadow: "var(--shadow-sm)"
                             }}
                           >
-                            <span>{(enrolledCourses && enrolledCourses.includes(course.id)) ? "Buka Kelas" : isFree ? "Mulai Gratis" : "Daftar"}</span>
+                            <span>{(enrolledCourses && enrolledCourses.includes(course.id)) ? "Buka Kelas" : isFree ? "Akses Member" : "Daftar"}</span>
                             <ChevronRight size={14} />
                           </button>
                         </div>
@@ -2430,11 +2430,11 @@ export default function LandingPage({ initialCourses, initialCategories, initial
                     >
                       <div>
                         <span style={{ fontSize: "0.7rem", padding: "2px 6px", borderRadius: 4, background: "rgba(16, 185, 129, 0.2)", color: "#10b981", fontWeight: 700 }}>
-                          {Number(selectedCourseModal?.price) === 0 ? "GRATIS" : "ON-DEMAND"}
+                          {Number(selectedCourseModal?.price) === 0 ? "AKSES MEMBER" : "ON-DEMAND"}
                         </span>
                         <h4 style={{ fontSize: "1rem", fontWeight: 700, margin: "8px 0 4px 0" }}>Self-Learning</h4>
                         <div style={{ fontSize: "1.1rem", fontWeight: 800, color: "#10b981", marginBottom: 10 }}>
-                          {Number(selectedCourseModal?.price) === 0 ? "Rp 0" : (selectedCourseModal?.priceLabel || `Rp ${Number(selectedCourseModal?.price || 0).toLocaleString("id-ID")}`)}
+                          {Number(selectedCourseModal?.price) === 0 ? "Akses Member" : (selectedCourseModal?.priceLabel || `Rp ${Number(selectedCourseModal?.price || 0).toLocaleString("id-ID")}`)}
                         </div>
                         <p style={{ fontSize: "0.76rem", color: "var(--text-secondary)", lineHeight: 1.4 }}>
                           Akses on-demand video & materi mandiri 24/7 (hanya lihat video, tanpa perlu pilih jadwal), kuis pemahaman, dan sertifikat partisipasi digital.
@@ -2622,7 +2622,7 @@ export default function LandingPage({ initialCourses, initialCategories, initial
                   }}
                 >
                   {selectedModalTier === "self_learning"
-                    ? (Number(selectedCourseModal.price) === 0 ? "Rp 0 (Gratis)" : (selectedCourseModal.priceLabel || `Rp ${Number(selectedCourseModal.price).toLocaleString("id-ID")}`))
+                    ? (Number(selectedCourseModal.price) === 0 ? "Akses Member" : (selectedCourseModal.priceLabel || `Rp ${Number(selectedCourseModal.price).toLocaleString("id-ID")}`))
                     : selectedModalTier === "online"
                     ? (selectedCourseModal.learningType === "online" ? (selectedCourseModal.priceLabel || `Rp ${Number(selectedCourseModal.price).toLocaleString("id-ID")}`) : "Rp 1.250.000")
                     : (selectedCourseModal.learningType === "offline" ? (selectedCourseModal.priceLabel || `Rp ${Number(selectedCourseModal.price).toLocaleString("id-ID")}`) : "Rp 3.500.000")}
@@ -2675,7 +2675,7 @@ export default function LandingPage({ initialCourses, initialCategories, initial
                     {selectedCourseModal && enrolledCourses && enrolledCourses.includes(selectedCourseModal.id)
                       ? "Buka Ruang Kelas"
                       : selectedModalTier === "self_learning"
-                      ? (Number(selectedCourseModal.price) === 0 ? "Mulai Belajar Gratis (Instan)" : "Daftar Kursus Mandiri")
+                      ? (Number(selectedCourseModal.price) === 0 ? "Buka via Akses Member" : "Daftar Kursus Mandiri")
                       : selectedModalTier === "online"
                       ? "Daftar Kelas Online Live"
                       : "Reservasi Kursi Workshop Offline"}

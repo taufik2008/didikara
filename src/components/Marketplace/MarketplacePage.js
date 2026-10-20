@@ -346,7 +346,7 @@ export default function MarketplacePage() {
             )}
             {selectedPriceRange !== "all" && (
               <span className="badge-role" style={{ background: "rgba(16,185,129,0.15)", color: "#6ee7b7", display: "inline-flex", alignItems: "center", gap: 4 }}>
-                Harga: {selectedPriceRange === "free" ? "Gratis" : selectedPriceRange === "under500" ? "< Rp 500k" : "≥ Rp 500k"}
+                Harga: {selectedPriceRange === "free" ? "Akses Member" : selectedPriceRange === "under500" ? "< Rp 500k" : "≥ Rp 500k"}
                 <X size={10} style={{ cursor: "pointer" }} onClick={() => setSelectedPriceRange("all")} />
               </span>
             )}
@@ -520,7 +520,7 @@ export default function MarketplacePage() {
               cursor: "pointer"
             }}>
             <option value="all">Semua Harga</option>
-            <option value="free">Gratis (Rp 0)</option>
+            <option value="free">Akses Member</option>
             <option value="under500">&lt; Rp 500.000</option>
             <option value="above500">≥ Rp 500.000</option>
           </select>
@@ -801,7 +801,7 @@ export default function MarketplacePage() {
                       <span style={{ color: "var(--warning)" }}><Star size={12} style={{ marginRight: 4, verticalAlign: "middle", fill: "var(--warning)" }} />{course.rating}</span>
                     </div>
                     <div className="course-footer">
-                      <span className="course-price">{course.priceLabel}</span>
+                      <span className="course-price">{course.price === 0 ? "Akses Member" : course.priceLabel}</span>
                       <div style={{ display: "flex", gap: 6, alignItems: "center" }}>
                         {(getLearningType(course) === "online" || getLearningType(course) === "offline") && (
                           <div style={{ display: "flex", gap: 4 }}>
@@ -830,23 +830,45 @@ export default function MarketplacePage() {
                             </button>
                           </div>
                         )}
-                        {isSubscribed ? (
-                          <button
-                            className="btn btn-primary"
-                            onClick={() => handleOpenClass(course.id)}
-                            style={{ width: "auto" }}
-                            disabled={isLocked}
-                          >
-                            {isLocked ? <><Lock size={12} style={{ marginRight: 4 }} />Terkunci</> : "Buka Kelas"}
-                          </button>
+                        {course.price === 0 ? (
+                          isSubscribed ? (
+                            <button
+                              className="btn btn-secondary"
+                              onClick={() => handleOpenClass(course.id)}
+                              style={{ width: "auto" }}
+                              disabled={isLocked}
+                            >
+                              {isLocked ? <><Lock size={12} style={{ marginRight: 4 }} />Terkunci</> : "Buka Kelas"}
+                            </button>
+                          ) : (
+                            <button
+                              className="btn btn-primary"
+                              onClick={() => setShowSubscriptionModal(true)}
+                              style={{ width: "auto", display: "flex", alignItems: "center", gap: 6 }}
+                            >
+                              <Zap size={13} /> Akses Member
+                            </button>
+                          )
                         ) : (
-                          <button
-                            className="btn btn-primary"
-                            onClick={() => setShowSubscriptionModal(true)}
-                            style={{ width: "auto", display: "flex", alignItems: "center", gap: 6 }}
-                          >
-                            <Zap size={13} /> Berlangganan
-                          </button>
+                          isEnrolled ? (
+                            <button
+                              className="btn btn-secondary"
+                              onClick={() => handleOpenClass(course.id)}
+                              style={{ width: "auto" }}
+                              disabled={isLocked}
+                            >
+                              {isLocked ? <><Lock size={12} style={{ marginRight: 4 }} />Terkunci</> : "Buka Kelas"}
+                            </button>
+                          ) : (
+                            <button
+                              className="btn btn-primary"
+                              onClick={() => isLocked ? null : handleEnrollCourse(course)}
+                              style={{ width: "auto", opacity: isLocked ? 0.5 : 1, cursor: isLocked ? "not-allowed" : "pointer" }}
+                              disabled={isLocked}
+                            >
+                              {isLocked ? <><Lock size={12} style={{ marginRight: 4 }} />Terkunci</> : "Beli Kelas"}
+                            </button>
+                          )
                         )}
                       </div>
                     </div>
@@ -901,22 +923,42 @@ export default function MarketplacePage() {
                       <div style={{ fontSize: "0.85rem", fontWeight: 600, color: "var(--text-primary)" }}>{c.title}</div>
                       <div style={{ fontSize: "0.72rem", color: "var(--text-secondary)", marginTop: 2 }}>{c.category} · {c.duration} · {c.level}</div>
                     </div>
-                    {isSubscribed ? (
-                      <button
-                        className="btn btn-secondary"
-                        style={{ width: "auto", padding: "4px 10px", fontSize: "0.75rem", height: "auto" }}
-                        onClick={() => { setInstructorModal(null); handleOpenClass(c.id); }}
-                      >
-                        Buka Kelas
-                      </button>
+                    {c.price === 0 ? (
+                      isSubscribed ? (
+                        <button
+                          className="btn btn-secondary"
+                          style={{ width: "auto", padding: "4px 10px", fontSize: "0.75rem", height: "auto" }}
+                          onClick={() => { setInstructorModal(null); handleOpenClass(c.id); }}
+                        >
+                          Buka Kelas
+                        </button>
+                      ) : (
+                        <button
+                          className="btn btn-primary"
+                          style={{ width: "auto", padding: "4px 10px", fontSize: "0.75rem", height: "auto", display: "flex", alignItems: "center", gap: 4 }}
+                          onClick={() => { setInstructorModal(null); setShowSubscriptionModal(true); }}
+                        >
+                          <Zap size={11} /> Akses Member
+                        </button>
+                      )
                     ) : (
-                      <button
-                        className="btn btn-primary"
-                        style={{ width: "auto", padding: "4px 10px", fontSize: "0.75rem", height: "auto", display: "flex", alignItems: "center", gap: 4 }}
-                        onClick={() => { setInstructorModal(null); setShowSubscriptionModal(true); }}
-                      >
-                        <Zap size={11} /> Berlangganan
-                      </button>
+                      isEnrolled ? (
+                        <button
+                          className="btn btn-secondary"
+                          style={{ width: "auto", padding: "4px 10px", fontSize: "0.75rem", height: "auto" }}
+                          onClick={() => { setInstructorModal(null); handleOpenClass(c.id); }}
+                        >
+                          Buka Kelas
+                        </button>
+                      ) : (
+                        <button
+                          className="btn btn-primary"
+                          style={{ width: "auto", padding: "4px 10px", fontSize: "0.75rem", height: "auto" }}
+                          onClick={() => { setInstructorModal(null); handleEnrollCourse(c); }}
+                        >
+                          {c.priceLabel}
+                        </button>
+                      )
                     )}
                   </div>
                 );

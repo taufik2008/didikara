@@ -140,7 +140,7 @@ export default function SubscriptionModal() {
         >
           <Sparkles size={18} style={{ color: "var(--primary)", flexShrink: 0, marginTop: 2 }} />
           <div>
-            Untuk mengakses materi kursus (baik kelas <strong>Gratis</strong> maupun <strong>Berbayar</strong>), Anda cukup membayar <strong>satu kali (one-time charge)</strong> untuk akses selamanya tanpa biaya iuran bulanan atau tahunan.
+            Cukup membayar <strong>satu kali (one-time charge)</strong> untuk membuka akses penuh ke seluruh kursus berlabel <strong>Akses Member</strong> selamanya tanpa iuran bulanan atau tahunan. <em>(Untuk kelas pelatihan tatap muka / program intensif berbayar dibeli terpisah per kelas).</em>
           </div>
         </div>
 
@@ -194,7 +194,8 @@ export default function SubscriptionModal() {
           <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
             {[
               "Akses tak terbatas ke SELURUH materi kursus, kurikulum, & video pembelajaran HD",
-              "Akses bebas ke kursus free maupun kursus berbayar selamanya",
+              "Akses bebas selamanya ke seluruh modul & materi bertanda Akses Member",
+              "Hak belajar fleksibel tanpa batas waktu dan tanpa tagihan berkala",
               "Sertifikat Digital resmi ber-QR Code untuk setiap kelas yang diselesaikan",
               "Akses latihan soal, kuis interaktif, & ujian sertifikasi",
               "Forum diskusi komunitas dan tanya jawab langsung dengan instruktur ahli",

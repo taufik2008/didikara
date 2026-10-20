@@ -158,9 +158,22 @@ export function CourseProvider({ children }) {
     const c = courses.find(item => item.id === courseId);
     if (!c) return;
 
-    if (!isSubscribed) {
-      setShowSubscriptionModal(true);
-      return;
+    const isAdmin = currentUser?.role === "admin" || currentUser?.role === "superadmin";
+
+    // 1. Kursus Akses Member (price === 0): wajib subscribe / jadi member
+    if (c.price === 0) {
+      if (!isSubscribed && !isAdmin) {
+        setShowSubscriptionModal(true);
+        return;
+      }
+    } else {
+      // 2. Kursus Berbayar (price > 0): harus sudah beli / terdaftar kursus ini
+      const isPaidEnrolled = enrolledCourses.includes(courseId) || isAdmin;
+      if (!isPaidEnrolled) {
+        setSelectedPayCourse(c);
+        setPaymentModalActive(true);
+        return;
+      }
     }
 
     const prereqCheck = checkPrerequisite(courseId);
@@ -208,7 +221,7 @@ export function CourseProvider({ children }) {
     } catch {
       setActiveLessonIndex(0);
     }
-  }, [courses, checkPrerequisite, muatKehadiran, setActivePage, router, isSubscribed]);
+  }, [courses, checkPrerequisite, muatKehadiran, setActivePage, router, isSubscribed, enrolledCourses, currentUser]);
 
   // Sinkronisasi kursus aktif dari URL query ?courseId=... atau fallback default
   useEffect(() => {
@@ -239,18 +252,25 @@ export function CourseProvider({ children }) {
   }, []);
 
   const handleEnrollCourse = useCallback((course) => {
-    if (course?.id?.startsWith("membership-") || course?.badge === "ALL-ACCESS MEMBERSHIP") {
+    if (course?.id?.startsWith("membership-") || course?.badge === "ALL-ACCESS MEMBERSHIP" || course?.badge === "ONE-TIME CHARGE") {
       setSelectedPayCourse(course);
       setPaymentModalActive(true);
       return;
     }
 
-    if (!isSubscribed) {
-      setShowSubscriptionModal(true);
+    // Kursus Akses Member (price === 0)
+    if (course?.price === 0) {
+      if (!isSubscribed) {
+        setShowSubscriptionModal(true);
+        return;
+      }
+      handleOpenClass(course.id);
       return;
     }
 
-    handleOpenClass(course.id);
+    // Kursus Berbayar (price > 0): buka modal pembayaran untuk kursus tersebut
+    setSelectedPayCourse(course);
+    setPaymentModalActive(true);
   }, [isSubscribed, handleOpenClass]);
 
   const refreshEnrollments = useCallback(async () => {
