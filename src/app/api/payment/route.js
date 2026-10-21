@@ -86,10 +86,26 @@ export async function POST(request) {
     let course;
     if (courseId.startsWith("membership-")) {
       const isAnnual = courseId.includes("annual") || courseId.includes("tahunan");
+      let membershipPrice = isAnnual ? 2400000 : 499000;
+      try {
+        const { rows: settingsRows } = await query(
+          "SELECT key, value FROM platform_settings WHERE key IN ('membership_price', 'membership_monthly_price', 'membership_annual_price')"
+        );
+        const sMap = {};
+        (settingsRows || []).forEach(r => { sMap[r.key] = r.value; });
+        if (isAnnual && sMap.membership_annual_price) {
+          membershipPrice = Number(sMap.membership_annual_price) || 2400000;
+        } else if (sMap.membership_price || sMap.membership_monthly_price) {
+          membershipPrice = Number(sMap.membership_price || sMap.membership_monthly_price) || 499000;
+        }
+      } catch (err) {
+        console.warn("Failed to query membership_price from platform_settings:", err.message);
+      }
+
       course = {
         id: courseId,
-        title: isAnnual ? "Membership All-Access (Akses Penuh 1 Tahun)" : "Membership All-Access (Akses Penuh 1 Bulan)",
-        price: isAnnual ? 2400000 : 250000,
+        title: isAnnual ? "Membership Akses Penuh (1 Tahun)" : "Paket Akses Kursus Penuh (One-Time Charge)",
+        price: membershipPrice,
       };
     } else {
       const { rows: [c] } = await query("SELECT id, title, price FROM courses WHERE id = $1", [courseId]);
