@@ -176,10 +176,10 @@ export async function POST(request) {
       return NextResponse.json({ success: true, free: true, promoApplied: validPromo });
     }
 
-    // Generate kode unik 3 digit
+    // Nominal pembayaran pas / bulat (tanpa tambahan kode unik acak)
     const cfg         = await getPaymentConfig();
-    const uniqueCode  = generateUniqueCode();
-    const totalAmount = discountedBaseAmount + uniqueCode;
+    const uniqueCode  = 0;
+    const totalAmount = discountedBaseAmount;
     const invoiceNumber = generateInvoiceNumber();
     const orderId     = `ORD-${Date.now()}-${user.email.split("@")[0].toUpperCase()}`;
     const expiredAt   = new Date(Date.now() + cfg.expiryHours * 60 * 60 * 1000);

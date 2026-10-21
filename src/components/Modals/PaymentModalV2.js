@@ -504,9 +504,11 @@ export default function PaymentModal() {
             <div style={{ fontSize:"1.6rem", fontWeight:800, color:"var(--primary)" }}>
               Rp {totalAmount?.toLocaleString("id-ID")}
             </div>
-            <div style={{ fontSize:"0.72rem", color:"var(--text-muted)", marginTop:4 }}>
-              (Nominal transfer + kode unik <b style={{ color:"var(--primary)" }}>{uniqueCode}</b>)
-            </div>
+            {uniqueCode > 0 && (
+              <div style={{ fontSize:"0.72rem", color:"var(--text-muted)", marginTop:4 }}>
+                (Nominal transfer + kode unik <b style={{ color:"var(--primary)" }}>{uniqueCode}</b>)
+              </div>
+            )}
             <button onClick={() => handleCopy(String(totalAmount), "amount")}
               style={{ marginTop:8, background:"none", border:"1px solid rgba(249,115,22,0.4)", borderRadius:6, padding:"3px 10px", cursor:"pointer", fontSize:"0.72rem", color:"var(--primary)", display:"inline-flex", alignItems:"center", gap:5 }}>
               {copied==="amount" ? <><Check size={12}/>Disalin!</> : <><Copy size={12}/>Salin nominal</>}
