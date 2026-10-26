@@ -98,7 +98,7 @@ function CourseManager() {
 function UserManager() {
   const { filteredUsers, currentUser, userSearchQuery, userRoleFilter, userStatusFilter, setUserSearchQuery, setUserRoleFilter, setUserStatusFilter, handleOpenCrudModal, handleDeleteCrud } = useApp();
 
-  const roleLabels = { admin: "Platform Admin", government: "Kepala Biro SDM", corporate: "HR Manager", student: "Peserta Mandiri" };
+  const roleLabels = { admin: "Platform Admin", instructor: "Instruktur", government: "Kepala Biro SDM", corporate: "HR Manager", student: "Peserta Mandiri" };
   const statusLabels = { active: "Aktif", suspended: "Ditangguhkan", pending: "Menunggu" };
 
   return (
@@ -110,7 +110,7 @@ function UserManager() {
             <input type="text" placeholder="Cari nama, email, instansi..." value={userSearchQuery} onChange={(e) => setUserSearchQuery(e.target.value)} style={{ width: "100%", padding: "8px 12px 8px 34px", borderRadius: 6, border: "1px solid var(--border-color)", background: "var(--bg-secondary)", color: "var(--text-primary)", fontSize: "0.8rem" }} />
           </div>
           <select value={userRoleFilter} onChange={(e) => setUserRoleFilter(e.target.value)} style={{ padding: "6px 12px", borderRadius: 8, border: "1px solid var(--border-color)", background: "var(--bg-tertiary)", color: "var(--text-primary)", fontSize: "0.82rem", cursor: "pointer" }}>
-            <option value="all">Semua Peran</option><option value="student">Peserta Mandiri</option><option value="corporate">HR Manager</option><option value="government">Kepala Biro SDM</option><option value="admin">Platform Admin</option>
+            <option value="all">Semua Peran</option><option value="student">Peserta Mandiri</option><option value="instructor">Instruktur</option><option value="corporate">HR Manager</option><option value="government">Kepala Biro SDM</option><option value="admin">Platform Admin</option>
           </select>
           <select value={userStatusFilter} onChange={(e) => setUserStatusFilter(e.target.value)} style={{ padding: "6px 12px", borderRadius: 8, border: "1px solid var(--border-color)", background: "var(--bg-tertiary)", color: "var(--text-primary)", fontSize: "0.82rem", cursor: "pointer" }}>
             <option value="all">Semua Status</option><option value="active">Aktif</option><option value="suspended">Ditangguhkan</option><option value="pending">Menunggu Verifikasi</option>

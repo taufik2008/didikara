@@ -290,7 +290,7 @@ export function AdminProvider({ children }) {
         }
       }
     } else if (crudType === "user") {
-      const roleLabels = { student: "Peserta Mandiri", corporate: "HR Manager", government: "Kepala Biro SDM", admin: "Platform Admin" };
+      const roleLabels = { student: "Peserta Mandiri", instructor: "Instruktur", corporate: "HR Manager", government: "Kepala Biro SDM", admin: "Platform Admin" };
       const initials = userForm.fullname.split(" ").map(w => w[0]).join("").substring(0, 2).toUpperCase();
       if (crudAction === "add") {
         const newUser = {

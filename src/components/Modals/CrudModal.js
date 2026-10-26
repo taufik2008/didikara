@@ -704,6 +704,7 @@ export default function CrudModal() {
                   <label>Peran Pengguna (Role)</label>
                   <select value={userForm.role} onChange={(e) => setUserForm({ ...userForm, role: e.target.value })} style={{ paddingLeft: 16 }}>
                     <option value="student">Peserta Mandiri</option>
+                    <option value="instructor">Instruktur / Pengajar Ahli</option>
                     <option value="corporate">Perwakilan Korporat (HR)</option>
                     <option value="government">Aparatur Pemerintah (ASN)</option>
                     <option value="admin">Administrator</option>
