@@ -110,8 +110,9 @@ export function AdminProvider({ children }) {
         try {
           const uRes = await fetch("/api/db?entity=users");
           const uJson = await uRes.json();
-          if (isMounted && uJson.success && Array.isArray(uJson.data)) {
-            setUsers(uJson.data);
+          if (isMounted && uJson.success) {
+            const userList = Array.isArray(uJson.data) ? uJson.data : (uJson.data?.users || []);
+            setUsers(userList);
           }
         } catch {}
       }

@@ -89,6 +89,11 @@ export default function DashboardPage() {
         <div className="welcome-text">
           <div style={{ display: "flex", alignItems: "center", gap: 10, flexWrap: "wrap", marginBottom: 4 }}>
             <h2 style={{ margin: 0 }}>Selamat Datang, {currentUser.fullname}!</h2>
+            {currentUser?.role && (
+              <span className={`badge-role badge-role-${currentUser.role}`} style={{ fontSize: "0.72rem", padding: "3px 8px", borderRadius: 6, fontWeight: 700 }}>
+                {currentUser.roleLabel || (currentUser.role === "admin" ? "Platform Admin" : currentUser.role === "instructor" ? "Instruktur" : currentUser.role === "corporate" ? "HR Manager" : currentUser.role === "government" ? "Kepala Biro SDM" : "Peserta")}
+              </span>
+            )}
             {isSubscribed ? (
               <span style={{
                 background: "rgba(52, 211, 153, 0.15)", border: "1px solid rgba(52, 211, 153, 0.3)",

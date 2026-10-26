@@ -76,11 +76,16 @@ export default function Header() {
         <div className="partner-badge" style={{ borderRadius: 20, fontWeight: 700, letterSpacing: "-0.01em" }}>
           <Award size={14} style={{ marginRight: 6 }} /> {brandName}
         </div>
-        <div className="user-profile-badge">
+        <div className="user-profile-badge" style={{ display: "flex", alignItems: "center", gap: 8 }}>
           {/* Notification Center — bell dengan badge count */}
           <NotificationCenter />
           <div style={{ width: 1, height: 16, backgroundColor: "var(--border-color)" }} />
           <span style={{ fontSize: "0.85rem", fontWeight: 500 }}>{currentUser?.fullname}</span>
+          {currentUser?.role && (
+            <span className={`badge-role badge-role-${currentUser.role}`} style={{ fontSize: "0.68rem", padding: "2px 7px", borderRadius: 5, fontWeight: 700 }}>
+              {currentUser.roleLabel || (currentUser.role === "admin" ? "Platform Admin" : currentUser.role === "instructor" ? "Instruktur" : currentUser.role === "corporate" ? "HR Manager" : currentUser.role === "government" ? "Kepala Biro SDM" : "Peserta")}
+            </span>
+          )}
         </div>
       </div>
 
