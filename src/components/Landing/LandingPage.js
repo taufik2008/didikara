@@ -43,7 +43,7 @@ import {
 
 export default function LandingPage({ initialCourses, initialCategories, initialLevels }) {
   const router = useRouter();
-  const { courses: appCourses, categories: appCategories, levels: appLevels, currentUser, theme, toggleTheme, platformSettings, enrolledCourses = [] } = useApp();
+  const { courses: appCourses, categories: appCategories, levels: appLevels, currentUser, theme, toggleTheme, platformSettings, enrolledCourses = [], isSubscribed } = useApp();
 
   const [courses, setCourses] = useState(() => {
     if (initialCourses && initialCourses.length > 0) return initialCourses;
@@ -1524,19 +1524,19 @@ export default function LandingPage({ initialCourses, initialCategories, initial
                               <span>Hubungi Kami</span>
                               <ChevronRight size={14} />
                             </button>
-                          ) : (
+                          ) : !isSubscribed ? (
                             <button
                               onClick={() => {
                                 if (currentUser) {
-                                  router.push(`/kelas?courseId=${course.id}`);
+                                  router.push("/marketplace");
                                 } else {
-                                  router.push(`/dashboard?redirect=${encodeURIComponent(`/kelas?courseId=${course.id}`)}`);
+                                  router.push(`/dashboard?redirect=${encodeURIComponent("/marketplace")}`);
                                 }
                               }}
                               style={{
                                 padding: "6px 11px",
                                 borderRadius: 8,
-                                background: (isFree || (enrolledCourses && enrolledCourses.includes(course.id))) ? "linear-gradient(135deg, #10b981 0%, #059669 100%)" : "var(--primary-gradient)",
+                                background: "var(--primary-gradient)",
                                 color: "#fff",
                                 fontSize: "0.76rem",
                                 fontWeight: 700,
@@ -1548,7 +1548,53 @@ export default function LandingPage({ initialCourses, initialCategories, initial
                                 boxShadow: "var(--shadow-sm)"
                               }}
                             >
-                              <span>{(enrolledCourses && enrolledCourses.includes(course.id)) ? "Buka Kelas" : isFree ? "Akses Member" : "Daftar"}</span>
+                              <span>Akses Member</span>
+                              <ChevronRight size={14} />
+                            </button>
+                          ) : (isFree || (enrolledCourses && enrolledCourses.includes(course.id))) ? (
+                            <button
+                              onClick={() => {
+                                router.push(`/kelas?courseId=${course.id}`);
+                              }}
+                              style={{
+                                padding: "6px 11px",
+                                borderRadius: 8,
+                                background: "linear-gradient(135deg, #10b981 0%, #059669 100%)",
+                                color: "#fff",
+                                fontSize: "0.76rem",
+                                fontWeight: 700,
+                                border: "none",
+                                cursor: "pointer",
+                                display: "flex",
+                                alignItems: "center",
+                                gap: 5,
+                                boxShadow: "var(--shadow-sm)"
+                              }}
+                            >
+                              <span>Buka Kelas</span>
+                              <ChevronRight size={14} />
+                            </button>
+                          ) : (
+                            <button
+                              onClick={() => {
+                                router.push(`/kelas?courseId=${course.id}`);
+                              }}
+                              style={{
+                                padding: "6px 11px",
+                                borderRadius: 8,
+                                background: "var(--primary-gradient)",
+                                color: "#fff",
+                                fontSize: "0.76rem",
+                                fontWeight: 700,
+                                border: "none",
+                                cursor: "pointer",
+                                display: "flex",
+                                alignItems: "center",
+                                gap: 5,
+                                boxShadow: "var(--shadow-sm)"
+                              }}
+                            >
+                              <span>Beli Kelas</span>
                               <ChevronRight size={14} />
                             </button>
                           )}
@@ -2808,7 +2854,7 @@ export default function LandingPage({ initialCourses, initialCategories, initial
                 </button>
                 <button
                   onClick={() => {
-                    if (selectedModalTier === "offline") {
+                    if (selectedModalTier === "offline" || selectedModalTier === "online") {
                       setSelectedCourseModal(null);
                       const el = document.getElementById("kontak");
                       if (el) el.scrollIntoView({ behavior: "smooth" });
@@ -2816,17 +2862,20 @@ export default function LandingPage({ initialCourses, initialCategories, initial
                     }
                     const targetId = selectedCourseModal?.id;
                     setSelectedCourseModal(null);
-                    if (currentUser) {
-                      router.push(targetId ? `/kelas?courseId=${targetId}` : "/kelas");
-                    } else {
-                      const dest = targetId ? `/kelas?courseId=${targetId}` : "/kelas";
-                      router.push(`/dashboard?redirect=${encodeURIComponent(dest)}`);
+                    if (!isSubscribed) {
+                      if (currentUser) {
+                        router.push("/marketplace");
+                      } else {
+                        router.push(`/dashboard?redirect=${encodeURIComponent("/marketplace")}`);
+                      }
+                      return;
                     }
+                    router.push(targetId ? `/kelas?courseId=${targetId}` : "/kelas");
                   }}
                   style={{
                     padding: "10px 22px",
                     borderRadius: 10,
-                    background: selectedModalTier === "self_learning" ? "linear-gradient(135deg, #10b981 0%, #059669 100%)" : "var(--primary-gradient)",
+                    background: (selectedModalTier === "self_learning" && (Number(selectedCourseModal?.price) === 0 || (enrolledCourses && enrolledCourses.includes(selectedCourseModal?.id)))) ? "linear-gradient(135deg, #10b981 0%, #059669 100%)" : "var(--primary-gradient)",
                     color: "#fff",
                     fontWeight: 700,
                     fontSize: "0.85rem",
@@ -2839,13 +2888,13 @@ export default function LandingPage({ initialCourses, initialCategories, initial
                   }}
                 >
                   <span>
-                    {selectedCourseModal && enrolledCourses && enrolledCourses.includes(selectedCourseModal.id)
+                    {(selectedModalTier === "offline" || selectedModalTier === "online")
+                      ? "Hubungi Kami (Contact Us)"
+                      : !isSubscribed
+                      ? "Aktivasi Akses Member"
+                      : (Number(selectedCourseModal?.price) === 0 || (enrolledCourses && enrolledCourses.includes(selectedCourseModal?.id)))
                       ? "Buka Ruang Kelas"
-                      : selectedModalTier === "self_learning"
-                      ? (Number(selectedCourseModal.price) === 0 ? "Buka via Akses Member" : "Daftar Kursus Mandiri")
-                      : selectedModalTier === "online"
-                      ? "Daftar Kelas Online Live"
-                      : "Hubungi Kami untuk Pelatihan Offline"}
+                      : "Beli Kelas Sekarang"}
                   </span>
                   <ArrowRight size={16} />
                 </button>

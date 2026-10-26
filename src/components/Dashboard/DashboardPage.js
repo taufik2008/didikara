@@ -179,9 +179,15 @@ export default function DashboardPage() {
                   ) : (
                     <>
                       <span style={{ fontSize: "0.85rem", color: "var(--text-primary)", fontWeight: 700 }}>{recommendedCourse.priceLabel || "Akses Gratis/Berbayar"}</span>
-                      <button className="btn btn-primary" style={{ width: "auto", padding: "6px 12px", fontSize: "0.75rem", height: "auto" }} onClick={() => setActivePage("marketplace-page")}>
-                        Daftar Kelas
-                      </button>
+                      {!isSubscribed ? (
+                        <button className="btn btn-primary" style={{ width: "auto", padding: "6px 12px", fontSize: "0.75rem", height: "auto" }} onClick={() => setShowSubscriptionModal(true)}>
+                          Akses Member
+                        </button>
+                      ) : (
+                        <button className="btn btn-primary" style={{ width: "auto", padding: "6px 12px", fontSize: "0.75rem", height: "auto" }} onClick={() => setActivePage("marketplace-page")}>
+                          {recommendedCourse.price === 0 ? "Buka Kelas" : "Beli Kelas"}
+                        </button>
+                      )}
                     </>
                   )}
                 </div>
