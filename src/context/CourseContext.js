@@ -160,14 +160,28 @@ export function CourseProvider({ children }) {
 
     const isAdmin = currentUser?.role === "admin" || currentUser?.role === "superadmin";
 
-    // 1. Kursus Akses Member (price === 0): wajib subscribe / jadi member
-    if (c.price === 0) {
-      if (!isSubscribed && !isAdmin) {
-        setShowSubscriptionModal(true);
-        return;
+    // Semua kursus (video, online, offline) wajib melalui akses member terlebih dahulu
+    if (!isSubscribed && !isAdmin) {
+      setShowSubscriptionModal(true);
+      return;
+    }
+
+    // Untuk kursus online atau offline: diarahkan ke Contact Us
+    const learningType = c.learningType || c.learning_type;
+    if (learningType === "online" || learningType === "offline") {
+      if (typeof window !== "undefined") {
+        const el = document.getElementById("kontak");
+        if (el) {
+          el.scrollIntoView({ behavior: "smooth" });
+        } else {
+          window.open(`https://wa.me/6281234567890?text=${encodeURIComponent(`Halo DIDIKARA, saya member terdaftar dan ingin konsultasi mengenai pelatihan ${c.title} (${learningType})`)}`, "_blank");
+        }
       }
-    } else {
-      // 2. Kursus Berbayar (price > 0): harus sudah beli / terdaftar kursus ini
+      return;
+    }
+
+    // Kursus Video Berbayar (price > 0): harus sudah mendaftar/membeli kelas ini
+    if (c.price > 0) {
       const isPaidEnrolled = enrolledCourses.includes(courseId) || isAdmin;
       if (!isPaidEnrolled) {
         setSelectedPayCourse(c);
@@ -258,20 +272,38 @@ export function CourseProvider({ children }) {
       return;
     }
 
-    // Kursus Akses Member (price === 0)
-    if (course?.price === 0) {
-      if (!isSubscribed) {
-        setShowSubscriptionModal(true);
-        return;
+    const isAdmin = currentUser?.role === "admin" || currentUser?.role === "superadmin";
+
+    // Semua kursus (video, online, offline) wajib melalui akses member terlebih dahulu
+    if (!isSubscribed && !isAdmin) {
+      setShowSubscriptionModal(true);
+      return;
+    }
+
+    // Untuk kursus online atau offline: dialihkan ke Contact Us
+    const learningType = course?.learningType || course?.learning_type;
+    if (learningType === "online" || learningType === "offline") {
+      if (typeof window !== "undefined") {
+        const el = document.getElementById("kontak");
+        if (el) {
+          el.scrollIntoView({ behavior: "smooth" });
+        } else {
+          window.open(`https://wa.me/6281234567890?text=${encodeURIComponent(`Halo DIDIKARA, saya member terdaftar dan ingin konsultasi mengenai pelatihan ${course?.title || ""} (${learningType})`)}`, "_blank");
+        }
       }
+      return;
+    }
+
+    // Kursus Video Akses Member (price === 0)
+    if (course?.price === 0) {
       handleOpenClass(course.id);
       return;
     }
 
-    // Kursus Berbayar (price > 0): buka modal pembayaran untuk kursus tersebut
+    // Kursus Video Berbayar (price > 0): setelah register member, peserta baru bisa daftar/bayar
     setSelectedPayCourse(course);
     setPaymentModalActive(true);
-  }, [isSubscribed, handleOpenClass]);
+  }, [isSubscribed, currentUser, handleOpenClass]);
 
   const refreshEnrollments = useCallback(async () => {
     const milik = await loadEnrollments();

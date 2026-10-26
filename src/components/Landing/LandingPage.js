@@ -1501,32 +1501,57 @@ export default function LandingPage({ initialCourses, initialCategories, initial
                             <FileText size={14} />
                             <span>Silabus</span>
                           </button>
-                          <button
-                            onClick={() => {
-                              if (currentUser) {
-                                router.push(`/kelas?courseId=${course.id}`);
-                              } else {
-                                router.push(`/dashboard?redirect=${encodeURIComponent(`/kelas?courseId=${course.id}`)}`);
-                              }
-                            }}
-                            style={{
-                              padding: "6px 11px",
-                              borderRadius: 8,
-                              background: (isFree || (enrolledCourses && enrolledCourses.includes(course.id))) ? "linear-gradient(135deg, #10b981 0%, #059669 100%)" : "var(--primary-gradient)",
-                              color: "#fff",
-                              fontSize: "0.76rem",
-                              fontWeight: 700,
-                              border: "none",
-                              cursor: "pointer",
-                              display: "flex",
-                              alignItems: "center",
-                              gap: 5,
-                              boxShadow: "var(--shadow-sm)"
-                            }}
-                          >
-                            <span>{(enrolledCourses && enrolledCourses.includes(course.id)) ? "Buka Kelas" : isFree ? "Akses Member" : "Daftar"}</span>
-                            <ChevronRight size={14} />
-                          </button>
+                          {(course.learningType === "online" || course.learningType === "offline") ? (
+                            <button
+                              onClick={() => {
+                                const el = document.getElementById("kontak");
+                                if (el) el.scrollIntoView({ behavior: "smooth" });
+                              }}
+                              style={{
+                                padding: "6px 11px",
+                                borderRadius: 8,
+                                background: course.learningType === "offline" ? "rgba(168, 85, 247, 0.15)" : "rgba(59, 130, 246, 0.15)",
+                                color: course.learningType === "offline" ? "#a855f7" : "#3b82f6",
+                                border: `1px solid ${course.learningType === "offline" ? "#a855f7" : "#3b82f6"}`,
+                                fontSize: "0.76rem",
+                                fontWeight: 700,
+                                cursor: "pointer",
+                                display: "flex",
+                                alignItems: "center",
+                                gap: 5,
+                              }}
+                            >
+                              <span>Hubungi Kami</span>
+                              <ChevronRight size={14} />
+                            </button>
+                          ) : (
+                            <button
+                              onClick={() => {
+                                if (currentUser) {
+                                  router.push(`/kelas?courseId=${course.id}`);
+                                } else {
+                                  router.push(`/dashboard?redirect=${encodeURIComponent(`/kelas?courseId=${course.id}`)}`);
+                                }
+                              }}
+                              style={{
+                                padding: "6px 11px",
+                                borderRadius: 8,
+                                background: (isFree || (enrolledCourses && enrolledCourses.includes(course.id))) ? "linear-gradient(135deg, #10b981 0%, #059669 100%)" : "var(--primary-gradient)",
+                                color: "#fff",
+                                fontSize: "0.76rem",
+                                fontWeight: 700,
+                                border: "none",
+                                cursor: "pointer",
+                                display: "flex",
+                                alignItems: "center",
+                                gap: 5,
+                                boxShadow: "var(--shadow-sm)"
+                              }}
+                            >
+                              <span>{(enrolledCourses && enrolledCourses.includes(course.id)) ? "Buka Kelas" : isFree ? "Akses Member" : "Daftar"}</span>
+                              <ChevronRight size={14} />
+                            </button>
+                          )}
                         </div>
                       </div>
                     </div>

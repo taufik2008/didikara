@@ -970,55 +970,8 @@ Didikara - Platform Pelatihan & Sertifikasi Profesional
   const isAdminUser = currentUser?.role === "admin" || currentUser?.role === "superadmin";
 
   // Pemeriksaan akses kursus:
-  // 1. Jika kursus berbayar (price > 0), periksa apakah pengguna sudah terdaftar/beli
-  if (activeCourse && activeCourse.price > 0) {
-    const isEnrolledInPaid = (enrolledCourses || []).includes(activeCourse.id) || isAdminUser;
-    if (!isEnrolledInPaid) {
-      return (
-        <main className="page-view active">
-          <div style={{
-            display: "flex", flexDirection: "column", alignItems: "center",
-            justifyContent: "center", minHeight: "70vh", padding: 40, textAlign: "center"
-          }}>
-            <div style={{
-              width: 72, height: 72, borderRadius: "50%", background: "rgba(59, 130, 246, 0.12)",
-              border: "1.5px solid rgba(59, 130, 246, 0.3)", display: "flex", alignItems: "center",
-              justifyContent: "center", marginBottom: 20, color: "#3b82f6"
-            }}>
-              <Lock size={36} />
-            </div>
-            <h2 style={{ fontSize: "1.5rem", fontWeight: 800, marginBottom: 10, color: "var(--text-primary)" }}>
-              Pendaftaran Kelas Diperlukan
-            </h2>
-            <p style={{ color: "var(--text-secondary)", maxWidth: 500, lineHeight: 1.6, marginBottom: 20, fontSize: "0.9rem" }}>
-              Kursus <strong>"{activeCourse.title}"</strong> adalah pelatihan khusus berbayar ({activeCourse.priceLabel}). Silakan selesaikan pembayaran untuk membuka seluruh materi dan sesi live.
-            </p>
-            <div style={{ display: "flex", gap: 12, flexWrap: "wrap", justifyContent: "center" }}>
-              <button
-                type="button"
-                className="btn btn-primary"
-                onClick={() => handleEnrollCourse(activeCourse)}
-                style={{ width: "auto", padding: "12px 24px", fontWeight: 700 }}
-              >
-                Beli Kelas Sekarang ({activeCourse.priceLabel})
-              </button>
-              <button
-                type="button"
-                className="btn btn-secondary"
-                onClick={() => setActivePage("marketplace-page")}
-                style={{ width: "auto", padding: "12px 24px" }}
-              >
-                Kembali ke Marketplace
-              </button>
-            </div>
-          </div>
-        </main>
-      );
-    }
-  }
-
-  // 2. Jika kursus Akses Member (price === 0 atau belum pilih kelas): wajib subscribe
-  if (!isSubscribed && !isAdminUser && (!activeCourse || activeCourse.price === 0)) {
+  // 1. Semua kursus (video, online, offline) wajib melalui akses member terlebih dahulu
+  if (!isSubscribed && !isAdminUser) {
     return (
       <main className="page-view active">
         <div style={{
@@ -1039,7 +992,7 @@ Didikara - Platform Pelatihan & Sertifikasi Profesional
             color: "var(--text-secondary)", maxWidth: 540, lineHeight: 1.6,
             marginBottom: 24, fontSize: "0.92rem"
           }}>
-            Untuk dapat mengakses seluruh materi kurikulum, menonton video interaktif, mengikuti latihan dan ujian sertifikasi pada modul <strong>Akses Member</strong>, Anda cukup mengaktifkan Akses Member (One-Time Charge) sekali saja seumur hidup.
+            Untuk dapat mengakses materi kurikulum, menonton video interaktif, atau mendaftar kursus, Anda harus mengaktifkan Akses Member terlebih dahulu.
           </p>
           <div style={{ display: "flex", gap: 12, flexWrap: "wrap", justifyContent: "center" }}>
             <button
@@ -1063,6 +1016,102 @@ Didikara - Platform Pelatihan & Sertifikasi Profesional
         </div>
       </main>
     );
+  }
+
+  // 2. Jika kursus Online / Offline: diarahkan melalui Contact Us
+  const learningTypeLms = activeCourse?.learningType || activeCourse?.learning_type;
+  if (learningTypeLms === "online" || learningTypeLms === "offline") {
+    return (
+      <main className="page-view active">
+        <div style={{
+          display: "flex", flexDirection: "column", alignItems: "center",
+          justifyContent: "center", minHeight: "70vh", padding: 40, textAlign: "center"
+        }}>
+          <div style={{
+            width: 72, height: 72, borderRadius: "50%", background: "rgba(168, 85, 247, 0.12)",
+            border: "1.5px solid rgba(168, 85, 247, 0.3)", display: "flex", alignItems: "center",
+            justifyContent: "center", marginBottom: 20, color: "#c084fc"
+          }}>
+            <MapPin size={36} />
+          </div>
+          <h2 style={{ fontSize: "1.5rem", fontWeight: 800, marginBottom: 10, color: "var(--text-primary)" }}>
+            Pelatihan {learningTypeLms === "offline" ? "Tatap Muka (Offline)" : "Webinar (Online)"}
+          </h2>
+          <p style={{ color: "var(--text-secondary)", maxWidth: 540, lineHeight: 1.6, marginBottom: 24, fontSize: "0.92rem" }}>
+            Program <strong>"{activeCourse?.title}"</strong> diselenggarakan secara {learningTypeLms === "offline" ? "tatap muka" : "online webinar"}. Pendaftaran dan penjadwalan peserta dikoordinasikan langsung melalui Contact Us.
+          </p>
+          <div style={{ display: "flex", gap: 12, flexWrap: "wrap", justifyContent: "center" }}>
+            <button
+              type="button"
+              className="btn btn-primary"
+              onClick={() => {
+                if (typeof window !== "undefined") {
+                  window.open(`https://wa.me/6281234567890?text=${encodeURIComponent(`Halo DIDIKARA, saya member terdaftar dan ingin konsultasi mengenai pelatihan ${activeCourse?.title} (${learningTypeLms})`)}`, "_blank");
+                }
+              }}
+              style={{ width: "auto", padding: "12px 24px", fontWeight: 700, display: "flex", alignItems: "center", gap: 8 }}
+            >
+              Hubungi Kami via WhatsApp
+            </button>
+            <button
+              type="button"
+              className="btn btn-secondary"
+              onClick={() => setActivePage("marketplace-page")}
+              style={{ width: "auto", padding: "12px 24px" }}
+            >
+              Kembali ke Katalog
+            </button>
+          </div>
+        </div>
+      </main>
+    );
+  }
+
+  // 3. Jika kursus Video Berbayar (price > 0): setelah register member, peserta baru bisa daftar
+  if (activeCourse && activeCourse.price > 0) {
+    const isEnrolledInPaid = (enrolledCourses || []).includes(activeCourse.id) || isAdminUser;
+    if (!isEnrolledInPaid) {
+      return (
+        <main className="page-view active">
+          <div style={{
+            display: "flex", flexDirection: "column", alignItems: "center",
+            justifyContent: "center", minHeight: "70vh", padding: 40, textAlign: "center"
+          }}>
+            <div style={{
+              width: 72, height: 72, borderRadius: "50%", background: "rgba(59, 130, 246, 0.12)",
+              border: "1.5px solid rgba(59, 130, 246, 0.3)", display: "flex", alignItems: "center",
+              justifyContent: "center", marginBottom: 20, color: "#3b82f6"
+            }}>
+              <Lock size={36} />
+            </div>
+            <h2 style={{ fontSize: "1.5rem", fontWeight: 800, marginBottom: 10, color: "var(--text-primary)" }}>
+              Pendaftaran Kelas Video Berbayar
+            </h2>
+            <p style={{ color: "var(--text-secondary)", maxWidth: 500, lineHeight: 1.6, marginBottom: 20, fontSize: "0.9rem" }}>
+              Sebagai member terdaftar, Anda dapat mendaftar kursus khusus <strong>"{activeCourse.title}"</strong> ({activeCourse.priceLabel}). Silakan selesaikan pendaftaran untuk membuka seluruh video materi dan modul sertifikasi.
+            </p>
+            <div style={{ display: "flex", gap: 12, flexWrap: "wrap", justifyContent: "center" }}>
+              <button
+                type="button"
+                className="btn btn-primary"
+                onClick={() => handleEnrollCourse(activeCourse)}
+                style={{ width: "auto", padding: "12px 24px", fontWeight: 700 }}
+              >
+                Beli Kelas Sekarang ({activeCourse.priceLabel})
+              </button>
+              <button
+                type="button"
+                className="btn btn-secondary"
+                onClick={() => setActivePage("marketplace-page")}
+                style={{ width: "auto", padding: "12px 24px" }}
+              >
+                Kembali ke Marketplace
+              </button>
+            </div>
+          </div>
+        </main>
+      );
+    }
   }
 
   if (!activeCourse) {

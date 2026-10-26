@@ -830,58 +830,70 @@ export default function MarketplacePage() {
                             </button>
                           </div>
                         )}
-                        {getLearningType(course) === "offline" ? (
-                          <button
-                            type="button"
-                            className="btn btn-secondary"
-                            onClick={() => {
-                              setCorporateForm(prev => ({
-                                ...prev,
-                                courseTitle: course.title,
-                                company: course.title
-                              }));
-                              setCorporateSubmitted(false);
-                              setShowCorporateModal(true);
-                            }}
-                            style={{
-                              width: "auto",
-                              padding: "6px 12px",
-                              fontSize: "0.78rem",
-                              height: "auto",
-                              minHeight: "unset",
-                              lineHeight: 1.25,
-                              whiteSpace: "nowrap",
-                              borderColor: "rgba(168,85,247,0.4)",
-                              color: "#c084fc",
-                              display: "inline-flex",
-                              alignItems: "center",
-                              gap: 4
-                            }}
-                          >
-                            <MapPin size={12} /> Hubungi Kami
-                          </button>
-                        ) : course.price === 0 ? (
-                          isSubscribed ? (
+                        {(getLearningType(course) === "online" || getLearningType(course) === "offline") ? (
+                          !isSubscribed ? (
                             <button
-                              className="btn btn-secondary"
-                              onClick={() => handleOpenClass(course.id)}
-                              style={{ width: "auto", padding: "6px 12px", fontSize: "0.78rem", height: "auto", minHeight: "unset", lineHeight: 1.25, whiteSpace: "nowrap" }}
-                              disabled={isLocked}
-                            >
-                              {isLocked ? <><Lock size={12} style={{ marginRight: 4 }} />Terkunci</> : "Buka Kelas"}
-                            </button>
-                          ) : (
-                            <button
+                              type="button"
                               className="btn btn-primary"
                               onClick={() => setShowSubscriptionModal(true)}
                               style={{ width: "auto", padding: "6px 12px", fontSize: "0.78rem", height: "auto", minHeight: "unset", lineHeight: 1.25, whiteSpace: "nowrap", display: "inline-flex", alignItems: "center", gap: 5 }}
                             >
                               <Zap size={13} /> Akses Member
                             </button>
+                          ) : (
+                            <button
+                              type="button"
+                              className="btn btn-secondary"
+                              onClick={() => {
+                                setCorporateForm(prev => ({
+                                  ...prev,
+                                  courseTitle: course.title,
+                                  company: course.title
+                                }));
+                                setCorporateSubmitted(false);
+                                setShowCorporateModal(true);
+                              }}
+                              style={{
+                                width: "auto",
+                                padding: "6px 12px",
+                                fontSize: "0.78rem",
+                                height: "auto",
+                                minHeight: "unset",
+                                lineHeight: 1.25,
+                                whiteSpace: "nowrap",
+                                borderColor: "rgba(168,85,247,0.4)",
+                                color: "#c084fc",
+                                display: "inline-flex",
+                                alignItems: "center",
+                                gap: 4
+                              }}
+                            >
+                              <MapPin size={12} /> Hubungi Kami
+                            </button>
                           )
+                        ) : !isSubscribed ? (
+                          <button
+                            type="button"
+                            className="btn btn-primary"
+                            onClick={() => setShowSubscriptionModal(true)}
+                            style={{ width: "auto", padding: "6px 12px", fontSize: "0.78rem", height: "auto", minHeight: "unset", lineHeight: 1.25, whiteSpace: "nowrap", display: "inline-flex", alignItems: "center", gap: 5 }}
+                          >
+                            <Zap size={13} /> Akses Member
+                          </button>
+                        ) : course.price === 0 ? (
+                          <button
+                            type="button"
+                            className="btn btn-secondary"
+                            onClick={() => handleOpenClass(course.id)}
+                            style={{ width: "auto", padding: "6px 12px", fontSize: "0.78rem", height: "auto", minHeight: "unset", lineHeight: 1.25, whiteSpace: "nowrap" }}
+                            disabled={isLocked}
+                          >
+                            {isLocked ? <><Lock size={12} style={{ marginRight: 4 }} />Terkunci</> : "Buka Kelas"}
+                          </button>
                         ) : (
                           isEnrolled ? (
                             <button
+                              type="button"
                               className="btn btn-secondary"
                               onClick={() => handleOpenClass(course.id)}
                               style={{ width: "auto", padding: "6px 12px", fontSize: "0.78rem", height: "auto", minHeight: "unset", lineHeight: 1.25, whiteSpace: "nowrap" }}
@@ -891,6 +903,7 @@ export default function MarketplacePage() {
                             </button>
                           ) : (
                             <button
+                              type="button"
                               className="btn btn-primary"
                               onClick={() => isLocked ? null : handleEnrollCourse(course)}
                               style={{ width: "auto", padding: "6px 12px", fontSize: "0.78rem", height: "auto", minHeight: "unset", lineHeight: 1.25, whiteSpace: "nowrap", opacity: isLocked ? 0.5 : 1, cursor: isLocked ? "not-allowed" : "pointer" }}
@@ -953,42 +966,67 @@ export default function MarketplacePage() {
                       <div style={{ fontSize: "0.85rem", fontWeight: 600, color: "var(--text-primary)" }}>{c.title}</div>
                       <div style={{ fontSize: "0.72rem", color: "var(--text-secondary)", marginTop: 2 }}>{c.category} · {c.duration} · {c.level}</div>
                     </div>
-                    {c.price === 0 ? (
-                      isSubscribed ? (
+                    {(getLearningType(c) === "online" || getLearningType(c) === "offline") ? (
+                      !isSubscribed ? (
                         <button
-                          className="btn btn-secondary"
-                          style={{ width: "auto", padding: "4px 10px", fontSize: "0.75rem", height: "auto" }}
-                          onClick={() => { setInstructorModal(null); handleOpenClass(c.id); }}
-                        >
-                          Buka Kelas
-                        </button>
-                      ) : (
-                        <button
+                          type="button"
                           className="btn btn-primary"
                           style={{ width: "auto", padding: "4px 10px", fontSize: "0.75rem", height: "auto", display: "flex", alignItems: "center", gap: 4 }}
                           onClick={() => { setInstructorModal(null); setShowSubscriptionModal(true); }}
                         >
                           <Zap size={11} /> Akses Member
                         </button>
-                      )
-                    ) : (
-                      isEnrolled ? (
-                        <button
-                          className="btn btn-secondary"
-                          style={{ width: "auto", padding: "4px 10px", fontSize: "0.75rem", height: "auto" }}
-                          onClick={() => { setInstructorModal(null); handleOpenClass(c.id); }}
-                        >
-                          Buka Kelas
-                        </button>
                       ) : (
                         <button
-                          className="btn btn-primary"
-                          style={{ width: "auto", padding: "4px 10px", fontSize: "0.75rem", height: "auto" }}
-                          onClick={() => { setInstructorModal(null); handleEnrollCourse(c); }}
+                          type="button"
+                          className="btn btn-secondary"
+                          style={{ width: "auto", padding: "4px 10px", fontSize: "0.75rem", height: "auto", display: "flex", alignItems: "center", gap: 4 }}
+                          onClick={() => {
+                            setInstructorModal(null);
+                            setCorporateForm(prev => ({ ...prev, courseTitle: c.title, company: c.title }));
+                            setCorporateSubmitted(false);
+                            setShowCorporateModal(true);
+                          }}
                         >
-                          {c.priceLabel}
+                          <MapPin size={11} /> Hubungi Kami
                         </button>
                       )
+                    ) : !isSubscribed ? (
+                      <button
+                        type="button"
+                        className="btn btn-primary"
+                        style={{ width: "auto", padding: "4px 10px", fontSize: "0.75rem", height: "auto", display: "flex", alignItems: "center", gap: 4 }}
+                        onClick={() => { setInstructorModal(null); setShowSubscriptionModal(true); }}
+                      >
+                        <Zap size={11} /> Akses Member
+                      </button>
+                    ) : c.price === 0 ? (
+                      <button
+                        type="button"
+                        className="btn btn-secondary"
+                        style={{ width: "auto", padding: "4px 10px", fontSize: "0.75rem", height: "auto" }}
+                        onClick={() => { setInstructorModal(null); handleOpenClass(c.id); }}
+                      >
+                        Buka Kelas
+                      </button>
+                    ) : isEnrolled ? (
+                      <button
+                        type="button"
+                        className="btn btn-secondary"
+                        style={{ width: "auto", padding: "4px 10px", fontSize: "0.75rem", height: "auto" }}
+                        onClick={() => { setInstructorModal(null); handleOpenClass(c.id); }}
+                      >
+                        Buka Kelas
+                      </button>
+                    ) : (
+                      <button
+                        type="button"
+                        className="btn btn-primary"
+                        style={{ width: "auto", padding: "4px 10px", fontSize: "0.75rem", height: "auto" }}
+                        onClick={() => { setInstructorModal(null); handleEnrollCourse(c); }}
+                      >
+                        Beli Kelas
+                      </button>
                     )}
                   </div>
                 );
