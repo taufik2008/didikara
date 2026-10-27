@@ -173,6 +173,7 @@ function MetaDataManager() {
     handleAddCategory, handleUpdateCategory, handleDeleteCategory,
     handleAddLevel, handleUpdateLevel, handleDeleteLevel,
     handleAddCompetencySkill, handleUpdateCompetencySkill, handleDeleteCompetencySkill,
+    setAdminTab,
   } = useApp();
 
   // State untuk Edit Category
@@ -186,6 +187,32 @@ function MetaDataManager() {
   // State untuk Edit Competency Skill
   const [editingSkill, setEditingSkill] = useState(null); // { key, name }
   const [skillSearch, setSkillSearch] = useState("");
+
+  // State untuk Master Data Instruktur
+  const [instructorsList, setInstructorsList] = useState([]);
+  const [instSearch, setInstSearch] = useState("");
+
+  useEffect(() => {
+    fetch("/api/instructors")
+      .then(res => res.json())
+      .then(data => {
+        if (data.success && Array.isArray(data.instructors)) {
+          setInstructorsList(data.instructors);
+        }
+      })
+      .catch(() => {});
+  }, []);
+
+  const filteredInstructors = useMemo(() => {
+    if (!instSearch.trim()) return instructorsList;
+    const q = instSearch.toLowerCase();
+    return instructorsList.filter(i =>
+      (i.fullname || "").toLowerCase().includes(q) ||
+      (i.specialty || "").toLowerCase().includes(q) ||
+      (i.organization || "").toLowerCase().includes(q) ||
+      (i.user_email || "").toLowerCase().includes(q)
+    );
+  }, [instructorsList, instSearch]);
 
   const systemCatKeys = ["AI", "Tech", "Procurement", "Leadership"];
   const systemLvlKeys = ["Dasar", "Menengah", "Lanjutan", "Eksekutif"];
@@ -626,6 +653,90 @@ function MetaDataManager() {
             <Plus size={13} style={{ marginRight: 4 }} /> Tambah
           </button>
         </form>
+      </div>
+
+      {/* ── 4. Master Data Instruktur & Pengajar Ahli ────────────────────────── */}
+      <div className="glass-card" style={{ padding: 20 }}>
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 14 }}>
+          <div>
+            <h4 style={{ margin: 0, color: "var(--text-primary)", fontSize: "1rem", fontWeight: 700 }}>
+              👨‍🏫 Master Data Instruktur &amp; Pengajar Ahli
+            </h4>
+            <span style={{ fontSize: "0.72rem", color: "var(--text-muted)" }}>
+              Total: {instructorsList.length} profil instruktur terdaftar
+            </span>
+          </div>
+          <button
+            type="button"
+            className="btn btn-primary"
+            style={{ width: "auto", padding: "6px 14px", fontSize: "0.75rem" }}
+            onClick={() => setAdminTab && setAdminTab("instructors")}
+          >
+            Kelola Lengkap di Tab Instruktur →
+          </button>
+        </div>
+
+        {/* Search Instruktur */}
+        <div style={{ position: "relative", marginBottom: 12 }}>
+          <Search size={13} style={{ position: "absolute", left: 10, top: "50%", transform: "translateY(-50%)", color: "var(--text-muted)" }} />
+          <input
+            type="text"
+            placeholder="Cari nama, keahlian, atau instansi instruktur..."
+            value={instSearch}
+            onChange={(e) => setInstSearch(e.target.value)}
+            style={{ width: "100%", padding: "6px 10px 6px 30px", fontSize: "0.78rem", borderRadius: 6 }}
+          />
+        </div>
+
+        {/* Tabel Ringkas Master Data Instruktur */}
+        <div style={{ maxHeight: 220, overflowY: "auto", marginBottom: 14, border: "1px solid var(--border-color)", borderRadius: 8 }}>
+          <table style={{ width: "100%", borderCollapse: "collapse", fontSize: "0.8rem" }}>
+            <thead>
+              <tr style={{ borderBottom: "1px solid var(--border-color)", background: "var(--bg-secondary)", color: "var(--text-secondary)", textAlign: "left" }}>
+                <th style={{ padding: "8px 10px" }}>Instruktur</th>
+                <th style={{ padding: "8px 10px" }}>Instansi / Keahlian</th>
+                <th style={{ padding: "8px 10px", textAlign: "center" }}>Kursus Diampu</th>
+              </tr>
+            </thead>
+            <tbody>
+              {filteredInstructors.length === 0 ? (
+                <tr>
+                  <td colSpan={3} style={{ textAlign: "center", padding: 16, color: "var(--text-muted)", fontSize: "0.75rem" }}>
+                    {instructorsList.length === 0 ? "Memuat data instruktur..." : "Tidak ada instruktur cocok dengan pencarian."}
+                  </td>
+                </tr>
+              ) : filteredInstructors.map(inst => (
+                <tr key={inst.user_email} style={{ borderBottom: "1px solid var(--border-color)" }}>
+                  <td style={{ padding: "7px 10px" }}>
+                    <div style={{ fontWeight: 600, color: "var(--text-primary)" }}>{inst.fullname}</div>
+                    <div style={{ fontSize: "0.7rem", color: "var(--text-muted)" }}>{inst.user_email}</div>
+                  </td>
+                  <td style={{ padding: "7px 10px" }}>
+                    <div style={{ color: "var(--text-secondary)", fontWeight: 500 }}>{inst.specialty || "Pengajar Ahli"}</div>
+                    <div style={{ fontSize: "0.7rem", color: "var(--text-muted)" }}>{inst.organization || "LMS Certified"}</div>
+                  </td>
+                  <td style={{ padding: "7px 10px", textAlign: "center" }}>
+                    <span style={{ fontSize: "0.7rem", padding: "2px 8px", borderRadius: 10, background: "rgba(128,128,128,0.1)", color: "var(--text-secondary)", fontWeight: 600 }}>
+                      {inst.jumlah_kursus || 0} Kursus
+                    </span>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", fontSize: "0.75rem", color: "var(--text-muted)" }}>
+          <span>Penugasan kursus, bagi hasil royalti, dan jadwal sesi virtual dapat dikonfigurasi melalui tab Instruktur.</span>
+          <button
+            type="button"
+            className="btn btn-secondary"
+            style={{ width: "auto", padding: "4px 12px", fontSize: "0.72rem" }}
+            onClick={() => setAdminTab && setAdminTab("instructors")}
+          >
+            Buka Tab Instruktur
+          </button>
+        </div>
       </div>
     </div>
   );
@@ -1838,7 +1949,7 @@ const ADMIN_CATEGORIES = [
     description: "Kurikulum, Instruktur, Live Class, Master Data & Sertifikat",
     tabs: [
       { key: "courses",      label: "Manajemen Kursus",    icon: BookOpen },
-      { key: "instructors",  label: "Instruktur",          icon: Award },
+      { key: "instructors",  label: "Data Instruktur",     icon: Award },
       { key: "livesessions", label: "Live Class",          icon: Video },
       { key: "metadata",     label: "Data Master",         icon: FileText },
       { key: "template",     label: "Template Sertifikat", icon: Award },

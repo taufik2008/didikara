@@ -1362,6 +1362,154 @@ async function seedLevels(client) {
 // ─── Public API ───────────────────────────────────────────────────────────────
 
 
+async function seedInstructors(client) {
+  const hashed = await bcrypt.hash("DidikaraInstruktur2026!", 10);
+  const INSTRUCTORS = [
+    {
+      email: "budi.santoso@didikara.id",
+      fullname: "Dr. Ir. Budi Santoso, M.Si",
+      organization: "LKPP RI",
+      jobTitle: "Ahli Pengadaan Utama & Asesor BNSP",
+      specialty: "Pengadaan Barang & Jasa Pemerintah (PBJ)",
+      bio: "Praktisi dan konsultan senior Pengadaan Barang dan Jasa Pemerintah bersertifikasi BNSP dan LKPP RI dengan pengalaman lebih dari 15 tahun.",
+      avatar: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=120&auto=format&fit=crop&q=80",
+      phone: "081234567801",
+      courseId: "c1",
+      revenueSharePct: 35
+    },
+    {
+      email: "rian.gunawan@didikara.id",
+      fullname: "Prof. Rian Gunawan, Ph.D",
+      organization: "Center for Digital Government",
+      jobTitle: "AI Ethics & Public Policy Advisor",
+      specialty: "Artificial Intelligence Strategy & Public Policy",
+      bio: "Pakar AI Governance dan penasihat strategis transformasi digital sektor publik dengan riset terpublikasi di berbagai jurnal internasional.",
+      avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=120&auto=format&fit=crop&q=80",
+      phone: "081234567802",
+      courseId: "c2",
+      revenueSharePct: 40
+    },
+    {
+      email: "siti.rahmawati@didikara.id",
+      fullname: "Siti Rahmawati, M.Kom",
+      organization: "TechGov Analytics",
+      jobTitle: "Lead Data Architect & BI Specialist",
+      specialty: "Business Intelligence & Data Analytics",
+      bio: "Spesialis arsitektur data, visualisasi analitik Power BI & Tableau, serta tata kelola data warehouse modern untuk institusi publik dan korporat.",
+      avatar: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=120&auto=format&fit=crop&q=80",
+      phone: "081234567803",
+      courseId: "c3",
+      revenueSharePct: 35
+    },
+    {
+      email: "hendra.kusuma@didikara.id",
+      fullname: "Drs. Hendra Kusuma, MM",
+      organization: "Lembaga Administrasi Negara",
+      jobTitle: "Executive Leadership Coach",
+      specialty: "Strategic Leadership & Change Management",
+      bio: "Coach eksekutif kepemimpinan aparatur sipil negara dan pimpinan BUMN, spesialis reformasi birokrasi dan manajemen perubahan strategis.",
+      avatar: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=120&auto=format&fit=crop&q=80",
+      phone: "081234567804",
+      courseId: "c4",
+      revenueSharePct: 35
+    },
+    {
+      email: "nurul.hidayati@didikara.id",
+      fullname: "Dra. Nurul Hidayati, Ak., CA",
+      organization: "Kementerian Keuangan RI",
+      jobTitle: "Senior Public Financial Analyst",
+      specialty: "Public Finance & Government Budgeting",
+      bio: "Akuntan publik teregistrasi CA dengan pengalaman mendalam pada analisis APBN/APBD, perbendaharaan negara, dan audit kepatuhan keuangan sektor publik.",
+      avatar: "https://images.unsplash.com/photo-1580489944761-15a19d654956?w=120&auto=format&fit=crop&q=80",
+      phone: "081234567805",
+      courseId: "c5",
+      revenueSharePct: 35
+    },
+    {
+      email: "bambang.wijaya@didikara.id",
+      fullname: "Bambang Wijaya, S.T., MBA",
+      organization: "Public Sector Excellence",
+      jobTitle: "Lean Process & Efficiency Consultant",
+      specialty: "Operational Management & Lean Bureaucracy",
+      bio: "Praktisi optimasi efisiensi operasional dan perampingan birokrasi dengan metodologi Lean Six Sigma di kementerian dan lembaga negara.",
+      avatar: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=120&auto=format&fit=crop&q=80",
+      phone: "081234567806",
+      courseId: "c6",
+      revenueSharePct: 35
+    },
+    {
+      email: "yocki.siregar@didikara.id",
+      fullname: "Yocki Fidra Siregar, ST",
+      organization: "LMS Certified",
+      jobTitle: "Mining Operation & Budgeting Specialist",
+      specialty: "Mining Operations & Budget Engineering",
+      bio: "Praktisi industri pertambangan batubara dengan pengalaman puluhan tahun dalam penyusunan budget operation dan manajemen alat berat.",
+      avatar: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=120&auto=format&fit=crop&q=80",
+      phone: "081234567807",
+      courseId: "c7",
+      revenueSharePct: 35
+    },
+    {
+      email: "kadir@didikara.id",
+      fullname: "Prof. Dr. Kadir",
+      organization: "LSP Digital & Mutu Nasional",
+      jobTitle: "Direktur LSP & Penjamin Mutu",
+      specialty: "Public Procurement & Quality Assurance",
+      bio: "Ketua Dewan Pengarah Sertifikasi Profesi Nasional dan Penjamin Mutu Pendidikan Vokasi Digital.",
+      avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=120&auto=format&fit=crop&q=80",
+      phone: "081234567808",
+      courseId: null,
+      revenueSharePct: 40
+    }
+  ];
+
+  for (const inst of INSTRUCTORS) {
+    await client.query(`
+      INSERT INTO users (
+        email, password, fullname, role, role_label, avatar,
+        stats, job_title, organization, status, permissions, competencies
+      ) VALUES (
+        $1, $2, $3, 'instructor', 'Instruktur / Pengajar Ahli', $4,
+        '{"coursesEnrolled":0,"coursesCompleted":0,"certificatesEarned":0,"competency":"Master Instructor"}',
+        $5, $6, 'active',
+        '["view_dashboard","access_lms","manage_courses","manage_live_sessions","grade_assignments"]',
+        '{}'
+      )
+      ON CONFLICT (email) DO UPDATE SET
+        fullname = EXCLUDED.fullname,
+        role = 'instructor',
+        role_label = EXCLUDED.role_label,
+        avatar = EXCLUDED.avatar,
+        job_title = EXCLUDED.job_title,
+        organization = EXCLUDED.organization,
+        status = 'active'
+    `, [inst.email, hashed, inst.fullname, inst.avatar, inst.jobTitle, inst.organization]);
+
+    await client.query(`
+      INSERT INTO instructor_profiles (
+        user_email, specialty, bio, phone, revenue_share_pct, active
+      ) VALUES (
+        $1, $2, $3, $4, $5, true
+      )
+      ON CONFLICT (user_email) DO UPDATE SET
+        specialty = EXCLUDED.specialty,
+        bio = EXCLUDED.bio,
+        phone = EXCLUDED.phone,
+        revenue_share_pct = EXCLUDED.revenue_share_pct,
+        active = true,
+        updated_at = NOW()
+    `, [inst.email, inst.specialty, inst.bio, inst.phone, inst.revenueSharePct]);
+
+    if (inst.courseId) {
+      await client.query(`
+        INSERT INTO course_instructors (course_id, user_email, assigned_by)
+        VALUES ($1, $2, 'admin@didikara.id')
+        ON CONFLICT DO NOTHING
+      `, [inst.courseId, inst.email]);
+    }
+  }
+}
+
 async function seedBadges(client) {
   const BADGES = [
     { id: 'first_login',    name: 'Langkah Pertama',   description: 'Pertama kali login',              icon: '👣', color: '#94a3b8', criteria_type: 'login_count',    criteria_value: 1  },
@@ -1438,6 +1586,18 @@ export async function initDatabase() {
           );
           await client.query('COMMIT');
           console.log('✅ Initial seeds applied successfully');
+        }
+
+        // 5. Eksekusi Seeders Instruktur jika belum pernah dijalankan
+        if (!appliedMigrations.has('20261027_seed_instructor_profiles')) {
+          await client.query('BEGIN');
+          await seedInstructors(client);
+          await client.query(
+            "INSERT INTO schema_migrations (version) VALUES ($1) ON CONFLICT (version) DO NOTHING",
+            ['20261027_seed_instructor_profiles']
+          );
+          await client.query('COMMIT');
+          console.log('✅ Seed instructor profiles migration applied successfully');
         }
 
         global._dbInitialized = true;
