@@ -7,6 +7,7 @@ export default function MarketplacePage() {
   const {
     courses, categories, levels, enrolledCourses, filterCategory, setFilterCategory,
     handleOpenClass, handleEnrollCourse, checkPrerequisite, isSubscribed, setShowSubscriptionModal,
+    platformSettings,
   } = useApp();
 
   const distinctLevels = useMemo(() => {
@@ -38,6 +39,7 @@ export default function MarketplacePage() {
   const [selectedMembershipPlan, setSelectedMembershipPlan] = useState("annual"); // "monthly" | "annual"
   const [membershipSuccess, setMembershipSuccess] = useState(false);
   const [membershipSettings, setMembershipSettings] = useState({
+    price: 499000,
     monthlyPrice: 149000,
     annualPrice: 999000,
     annualBadge: "HEMAT 44%"
@@ -58,6 +60,17 @@ export default function MarketplacePage() {
       })
       .catch(() => {});
   }, []);
+
+  const activeMembershipPrice = useMemo(() => {
+    const fromPlatform = platformSettings?.membership_price || platformSettings?.membership_monthly_price;
+    if (fromPlatform !== undefined && fromPlatform !== null && fromPlatform !== "") {
+      return Number(fromPlatform);
+    }
+    if (membershipSettings?.price !== undefined && membershipSettings?.price !== null) {
+      return Number(membershipSettings.price);
+    }
+    return 499000;
+  }, [platformSettings, membershipSettings]);
 
   const [corporateSubmitted, setCorporateSubmitted] = useState(false);
   const [corporateForm, setCorporateForm] = useState({
@@ -386,7 +399,7 @@ export default function MarketplacePage() {
               Akses Semua Kursus &amp; Ujian Seumur Hidup
             </div>
             <div style={{ fontSize: "0.72rem", color: "var(--text-muted)", marginTop: 2 }}>
-              Cukup Rp {(membershipSettings.price || 499000).toLocaleString("id-ID")} (Sekali Bayar Selamanya)
+              Cukup Rp {activeMembershipPrice.toLocaleString("id-ID")} (Sekali Bayar Selamanya)
             </div>
           </div>
           <button

@@ -1,5 +1,5 @@
 "use client";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { Zap, Check, X, Sparkles, ShieldCheck, Award, BookOpen, Infinity } from "lucide-react";
 import { useApp } from "@/context/AppContext";
 
@@ -33,6 +33,14 @@ export default function SubscriptionModal() {
     }
   }, [showSubscriptionModal]);
 
+  const activePrice = useMemo(() => {
+    const fromPlatform = platformSettings?.membership_price || platformSettings?.membership_monthly_price;
+    if (fromPlatform !== undefined && fromPlatform !== null && fromPlatform !== "") {
+      return Number(fromPlatform);
+    }
+    return pricing.price || 499000;
+  }, [platformSettings, pricing.price]);
+
   if (!showSubscriptionModal) return null;
 
   const handlePayOneTime = () => {
@@ -40,8 +48,8 @@ export default function SubscriptionModal() {
       id: "membership-lifetime",
       title: "Paket Akses Kursus Penuh (One-Time Charge)",
       badge: "ONE-TIME CHARGE",
-      price: pricing.price,
-      priceLabel: `Rp ${pricing.price.toLocaleString("id-ID")} (Sekali Bayar)`,
+      price: activePrice,
+      priceLabel: `Rp ${activePrice.toLocaleString("id-ID")} (Sekali Bayar)`,
       desc: "Akses penuh tanpa batas seumur hidup ke seluruh modul pelatihan, kurikulum, kuis, ujian sertifikasi, dan materi presentasi.",
     };
     setShowSubscriptionModal(false);
@@ -179,7 +187,7 @@ export default function SubscriptionModal() {
             Biaya Aktivasi Sekali Saja (One-Time)
           </div>
           <div style={{ fontSize: "2rem", fontWeight: 800, color: "var(--text-primary)", margin: "8px 0 4px" }}>
-            Rp {pricing.price.toLocaleString("id-ID")}
+            Rp {activePrice.toLocaleString("id-ID")}
           </div>
           <div style={{ fontSize: "0.75rem", color: "var(--text-muted)" }}>
             ✓ Tanpa langganan bulanan &bull; ✓ Tanpa perpanjangan tahunan &bull; ✓ Akses seumur hidup

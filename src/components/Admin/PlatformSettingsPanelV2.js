@@ -343,17 +343,18 @@ export default function PlatformSettingsPanelV2() {
                     min={0}
                     step={1000}
                     className="input-field"
-                    placeholder="499000"
-                    value={settings.membership_price || settings.membership_monthly_price || "499000"}
+                    placeholder="Contoh: 499000"
+                    value={settings.membership_price !== undefined ? settings.membership_price : (settings.membership_monthly_price !== undefined ? settings.membership_monthly_price : "")}
                     onChange={e => {
-                      set("membership_price", e.target.value);
-                      set("membership_monthly_price", e.target.value);
+                      const val = e.target.value;
+                      set("membership_price", val);
+                      set("membership_monthly_price", val);
                     }}
                   />
                 </div>
 
                 <div style={{ fontSize: "0.8rem", color: "var(--text-secondary)", marginTop: 6 }}>
-                  Tampilan ke Customer: <strong style={{ color: "var(--primary)" }}>Rp {Number(settings.membership_price || settings.membership_monthly_price || 499000).toLocaleString("id-ID")} (Sekali Bayar Selamanya)</strong>
+                  Tampilan ke Customer: <strong style={{ color: "var(--primary)" }}>Rp {Number(settings.membership_price !== undefined && settings.membership_price !== "" ? settings.membership_price : (settings.membership_monthly_price || 0)).toLocaleString("id-ID")} (Sekali Bayar Selamanya)</strong>
                 </div>
               </div>
             </div>
