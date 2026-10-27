@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { query } from "@/lib/db";
 import { sendPasswordResetEmail } from "@/lib/email";
+import { checkRateLimit } from "@/lib/rateLimit";
 import { z } from "zod";
 import crypto from "node:crypto";
 
@@ -9,6 +10,14 @@ const schema = z.object({
 });
 
 export async function POST(request) {
+  const ip = request.headers.get("x-forwarded-for") || "unknown";
+  const { limited, retryAfter } = checkRateLimit(`forgot-pw:${ip}`, 5, 60_000);
+  if (limited) {
+    return NextResponse.json(
+      { success: false, error: "Terlalu banyak permintaan reset password. Coba lagi dalam 1 menit." },
+      { status: 429, headers: { "Retry-After": String(retryAfter) } }
+    );
+  }
   try {
     const body = await request.json();
     const parsed = schema.safeParse(body);

@@ -7,7 +7,10 @@ import crypto from "node:crypto";
 
 const schema = z.object({
   resetToken: z.string().min(1),
-  newPassword: z.string().min(8, "Kata sandi minimal 8 karakter"),
+  newPassword: z.string()
+    .min(8, "Kata sandi minimal 8 karakter")
+    .regex(/[a-zA-Z]/, "Kata sandi harus mengandung huruf")
+    .regex(/[0-9]/, "Kata sandi harus mengandung angka"),
 });
 
 export async function POST(request) {

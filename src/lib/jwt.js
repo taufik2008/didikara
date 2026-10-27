@@ -21,10 +21,16 @@ const DEV_SECRET = "ailms-dev-secret-key-UNSAFE-DO-NOT-USE-IN-PROD";
 let cachedSecret = null;
 export function getSecret() {
   if (cachedSecret) return cachedSecret;
-  const jwtSecret =
-    process.env.JWT_SECRET ||
-    process.env.NEXTAUTH_SECRET ||
-    "didikara_production_secret_key_jwt_2026_super_secure_lms";
+  const jwtSecret = process.env.JWT_SECRET || process.env.NEXTAUTH_SECRET;
+
+  if (!jwtSecret) {
+    if (process.env.NODE_ENV === "production") {
+      throw new Error("FATAL: JWT_SECRET atau NEXTAUTH_SECRET wajib dikonfigurasi di environment produksi.");
+    }
+    cachedSecret = new TextEncoder().encode(DEV_SECRET);
+    return cachedSecret;
+  }
+
   cachedSecret = new TextEncoder().encode(jwtSecret);
   return cachedSecret;
 }

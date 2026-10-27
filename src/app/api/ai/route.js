@@ -6,6 +6,7 @@
 import { NextResponse } from "next/server";
 import { authenticateRequest } from "@/lib/auth";
 import { query } from "@/lib/db";
+import { checkRateLimit } from "@/lib/rateLimit";
 import { getRecommendations, chatWithAI, analyzeCompetency } from "@/lib/ai";
 
 /**
@@ -89,6 +90,14 @@ export async function GET(request) {
 export async function POST(request) {
   const user = await authenticateRequest(request);
   if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+
+  const { limited, retryAfter } = checkRateLimit(`ai:${user.email}`, 20, 60_000);
+  if (limited) {
+    return NextResponse.json(
+      { success: false, error: "Batas pengiriman pesan AI tercapai. Harap tunggu sebentar sebelum mengirim pesan kembali." },
+      { status: 429, headers: { "Retry-After": String(retryAfter) } }
+    );
+  }
 
   const { message, history, courseId } = await request.json();
   if (!message?.trim()) {

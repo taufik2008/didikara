@@ -67,8 +67,8 @@ export async function POST(request) {
       {
         success: false,
         error: hasDbEnv
-          ? `Gagal terhubung ke database: ${dbErr?.message || "Koneksi database bermasalah"}`
-          : "Database belum terkonfigurasi di Vercel (DATABASE_URL / POSTGRES_URL tidak ditemukan).",
+          ? "Gagal terhubung ke layanan basis data. Silakan coba beberapa saat lagi."
+          : "Database belum terkonfigurasi di server.",
       },
       { status: 503 }
     );

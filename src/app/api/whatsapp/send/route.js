@@ -14,6 +14,13 @@ export async function POST(request) {
       return NextResponse.json({ success: false, error: "Unauthorized" }, { status: 401 });
     }
 
+    if (user.role !== "admin") {
+      return NextResponse.json(
+        { success: false, error: "Akses ditolak: Hanya administrator yang dapat memicu pengiriman pesan WhatsApp." },
+        { status: 403 }
+      );
+    }
+
     const body = await request.json();
     const { phone, type, data, rawMessage } = body;
 

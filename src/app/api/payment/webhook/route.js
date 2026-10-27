@@ -46,6 +46,9 @@ export async function POST(request) {
           console.warn(`[Mayar Webhook] Ditolak: token webhook tidak valid untuk order ${orderLookupId}`);
           return NextResponse.json({ error: "Invalid Mayar webhook token" }, { status: 403 });
         }
+      } else if (process.env.NODE_ENV === "production") {
+        console.warn(`[Mayar Webhook] Ditolak: MAYAR_WEBHOOK_TOKEN belum dikonfigurasi di produksi (order ${orderLookupId})`);
+        return NextResponse.json({ error: "Payment gateway Mayar belum terkonfigurasi" }, { status: 503 });
       }
 
       // Cari order berdasarkan id, invoice_number, atau ID invoice Mayar
