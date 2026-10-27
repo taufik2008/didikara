@@ -18,9 +18,9 @@ export async function GET(request) {
   const expectedSecret =
     process.env.HEALTH_CHECK_SECRET ||
     process.env.CRON_SECRET ||
-    "didikara-internal-health";
+    (process.env.NODE_ENV === "production" ? null : "didikara-internal-health");
 
-  const isAuthorized = Boolean(secretHeader && secretHeader === expectedSecret);
+  const isAuthorized = Boolean(expectedSecret && secretHeader && secretHeader === expectedSecret);
 
   const startTime = Date.now();
   let dbConnected = false;
@@ -30,7 +30,10 @@ export async function GET(request) {
   try {
     // Probe database atomik & ringan O(1), tidak menggunakan scan tabel users
     const runQuery = global._mockDbQuery || query;
-    await runQuery("SELECT 1");
+    await Promise.race([
+      runQuery("SELECT 1"),
+      new Promise((_, reject) => setTimeout(() => reject(new Error("Database probe timeout")), 2500)),
+    ]);
     dbConnected = true;
     latencyMs = Date.now() - startTime;
   } catch (err) {

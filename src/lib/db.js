@@ -47,6 +47,7 @@ export function getDbConfig() {
     connectionString: 'postgresql://postgres:postgres@localhost:5432/ailms_db',
     max: maxPool,
     idleTimeoutMillis: idleTimeout,
+    connectionTimeoutMillis: isServerless ? 3000 : 10000,
     ssl: false,
   };
 }
