@@ -475,7 +475,7 @@ export default function LoginPage() {
               <div style={{ marginBottom: 14 }}>
                 {renderGoogleButton("Daftar dengan Google (Gmail)")}
                 <div style={{ textAlign: "center", marginTop: 6, fontSize: "0.74rem", color: "var(--text-secondary)" }}>
-                  Registrasi instan &amp; resmi menggunakan Akun Google (Peserta Mandiri)
+                  Registrasi instan &amp; resmi menggunakan Akun Google (Peserta)
                 </div>
               </div>
 

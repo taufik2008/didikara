@@ -1,0 +1,471 @@
+<!DOCTYPE html>
+
+<html class="scroll-smooth" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>EduStream LMS - Master New Skills</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .glass-card {
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(8px);
+            border: 1px solid rgba(226, 232, 240, 0.8);
+        }
+        .course-card-hover:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 12px 24px -10px rgba(79, 70, 229, 0.15);
+        }
+        .bento-inner {
+            transition: all 0.3s ease;
+        }
+        .bento-inner:hover {
+            background-color: #f1f5f9;
+        }
+    </style>
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                      "inverse-surface": "#213145",
+                      "error-container": "#ffdad6",
+                      "on-secondary-fixed": "#00201d",
+                      "on-tertiary-fixed-variant": "#653e00",
+                      "background": "#f8f9ff",
+                      "surface-container-low": "#eff4ff",
+                      "surface-tint": "#4d44e3",
+                      "surface": "#f8f9ff",
+                      "on-background": "#0b1c30",
+                      "surface-dim": "#cbdbf5",
+                      "secondary-container": "#86f2e4",
+                      "on-surface": "#0b1c30",
+                      "on-primary": "#ffffff",
+                      "on-tertiary-fixed": "#2a1700",
+                      "secondary-fixed": "#89f5e7",
+                      "on-tertiary": "#ffffff",
+                      "inverse-on-surface": "#eaf1ff",
+                      "tertiary-container": "#885500",
+                      "primary-fixed-dim": "#c3c0ff",
+                      "surface-bright": "#f8f9ff",
+                      "surface-container": "#e5eeff",
+                      "primary-fixed": "#e2dfff",
+                      "secondary-fixed-dim": "#6bd8cb",
+                      "surface-container-lowest": "#ffffff",
+                      "error": "#ba1a1a",
+                      "tertiary": "#684000",
+                      "surface-container-highest": "#d3e4fe",
+                      "on-secondary-container": "#006f66",
+                      "tertiary-fixed": "#ffddb8",
+                      "on-secondary": "#ffffff",
+                      "primary": "#3525cd",
+                      "surface-variant": "#d3e4fe",
+                      "primary-container": "#4f46e5",
+                      "on-error": "#ffffff",
+                      "tertiary-fixed-dim": "#ffb95f",
+                      "on-primary-fixed": "#0f0069",
+                      "on-tertiary-container": "#ffd4a4",
+                      "on-secondary-fixed-variant": "#005049",
+                      "on-primary-container": "#dad7ff",
+                      "on-surface-variant": "#464555",
+                      "on-primary-fixed-variant": "#3323cc",
+                      "secondary": "#006a61",
+                      "on-error-container": "#93000a",
+                      "outline-variant": "#c7c4d8",
+                      "outline": "#777587",
+                      "inverse-primary": "#c3c0ff",
+                      "surface-container-high": "#dce9ff"
+              },
+              "borderRadius": {
+                      "DEFAULT": "0.25rem",
+                      "lg": "0.5rem",
+                      "xl": "0.75rem",
+                      "full": "9999px"
+              },
+              "spacing": {
+                      "gutter": "24px",
+                      "base": "4px",
+                      "margin-mobile": "16px",
+                      "lg": "24px",
+                      "xl": "40px",
+                      "container-max": "1280px",
+                      "sm": "8px",
+                      "xxl": "64px",
+                      "xs": "4px",
+                      "md": "16px"
+              },
+              "fontFamily": {
+                      "headline-md": ["Inter"],
+                      "body-sm": ["Inter"],
+                      "body-md": ["Inter"],
+                      "label-md": ["Inter"],
+                      "body-lg": ["Inter"],
+                      "headline-lg": ["Inter"],
+                      "display-lg": ["Inter"],
+                      "headline-lg-mobile": ["Inter"],
+                      "label-sm": ["Inter"],
+                      "headline-sm": ["Inter"]
+              },
+              "fontSize": {
+                      "headline-md": ["24px", {"lineHeight": "1.3", "fontWeight": "600"}],
+                      "body-sm": ["14px", {"lineHeight": "1.5", "fontWeight": "400"}],
+                      "body-md": ["16px", {"lineHeight": "1.5", "fontWeight": "400"}],
+                      "label-md": ["14px", {"lineHeight": "1", "letterSpacing": "0.01em", "fontWeight": "500"}],
+                      "body-lg": ["18px", {"lineHeight": "1.6", "fontWeight": "400"}],
+                      "headline-lg": ["32px", {"lineHeight": "1.2", "letterSpacing": "-0.01em", "fontWeight": "600"}],
+                      "display-lg": ["48px", {"lineHeight": "1.1", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                      "headline-lg-mobile": ["24px", {"lineHeight": "1.2", "fontWeight": "600"}],
+                      "label-sm": ["12px", {"lineHeight": "1", "fontWeight": "600"}],
+                      "headline-sm": ["20px", {"lineHeight": "1.4", "fontWeight": "600"}]
+              }
+            },
+          },
+        }
+    </script>
+</head>
+<body class="bg-background text-on-surface font-body-md overflow-x-hidden">
+<!-- Top Navigation -->
+<header class="fixed top-0 left-0 right-0 z-50 bg-surface dark:bg-surface-container-low shadow-sm border-b border-outline-variant">
+<nav class="flex justify-between items-center w-full px-lg max-w-container-max mx-auto h-16">
+<div class="flex items-center gap-xl">
+<a class="font-headline-md text-headline-md font-bold text-primary" href="#">EduStream</a>
+<div class="hidden md:flex items-center gap-lg">
+<a class="text-primary font-bold border-b-2 border-primary font-label-md text-label-md py-sm" href="#">Course Categories</a>
+<a class="text-on-surface-variant font-medium hover:text-primary transition-colors font-label-md text-label-md py-sm" href="#">My Learning</a>
+</div>
+</div>
+<div class="flex items-center gap-md">
+<div class="relative hidden sm:block">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-outline">search</span>
+<input class="pl-10 pr-4 py-2 rounded-full border border-outline-variant bg-surface-container-lowest focus:ring-2 focus:ring-primary focus:border-transparent outline-none w-64 transition-all" placeholder="Search courses..." type="text"/>
+</div>
+<button class="p-2 text-on-surface-variant hover:text-primary transition-colors">
+<span class="material-symbols-outlined">notifications</span>
+</button>
+<div class="w-10 h-10 rounded-full bg-primary-container overflow-hidden border border-outline-variant">
+<img class="w-full h-full object-cover" data-alt="A professional headshot of a diverse female educator in her late 30s, smiling warmly at the camera. She is wearing a smart-casual blazer and glasses, set against a blurred academic library background with soft, natural morning light filtering through windows. The lighting is high-key and professional, reinforcing the academic reliability of the EduStream brand." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAFG8Tjg6rRZhvjeD52OkjYAP0oZY9MQPWmu5oUF9aS0pEfuLO4ibWJoMfGchv493yAIMmiZ8EARCV17U1D9wI98CQ-G_T12w9iQei7H4wBnzxNzDyXl-gu-GUkT8wy2rZ6h81n5W28i1cGxnvfPrM7Uzrz2y2ZhI5nlPJDunwXzGmrDb6PRy5juusLG1362aDQ9HIJc3c9eLMcFqmzg1XWBn1-OlPmJAsBH4TNGn6hcWDcoUZytYfBJA"/>
+</div>
+</div>
+</nav>
+</header>
+<main class="pt-16">
+<!-- Hero Section -->
+<section class="relative min-h-[921px] flex items-center overflow-hidden">
+<div class="absolute inset-0 z-0">
+
+</div>
+<div class="relative z-10 max-w-container-max mx-auto px-lg grid lg:grid-cols-2 gap-xl items-center py-xxl">
+<div class="space-y-lg">
+<div class="inline-flex items-center px-4 py-1.5 rounded-full bg-primary-container text-on-primary-container font-label-sm text-label-sm uppercase tracking-wider">
+                        New Courses Available
+                    </div>
+<h1 class="font-display-lg text-display-lg text-on-background leading-tight">
+                        Master New Skills with <span class="text-primary">EduStream</span>
+</h1>
+<p class="text-body-lg text-on-surface-variant max-w-lg">
+                        Elevate your career with industry-leading courses designed by experts. Access a structured, high-focus environment built for modern learners and educators.
+                    </p>
+<div class="flex flex-wrap gap-md">
+<button class="px-xl py-4 bg-primary text-on-primary rounded-lg font-label-md text-label-md shadow-md hover:translate-y-[-2px] transition-all active:scale-95">
+                            Get Started for Free
+                        </button>
+<button class="px-xl py-4 bg-surface-container-lowest text-primary border border-primary rounded-lg font-label-md text-label-md hover:bg-surface-container-low transition-all">
+                            View Curriculum
+                        </button>
+</div>
+<div class="flex items-center gap-md pt-md">
+<div class="flex -space-x-3">
+<img class="w-10 h-10 rounded-full border-2 border-white object-cover" data-alt="A close-up portrait of a young student wearing headphones, deeply focused on a digital tablet in a brightly lit, modern co-working space. Soft ambient lighting creates a calm, productive atmosphere with subtle teal and indigo tones. The style is Corporate Modern, emphasizing clarity and intellectual focus." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAgYPkJMyjYGYPK-w3mmJ-DoQfmp41Bf6AjSA5lHvIa0HIlWl_0nJ7RWmQsb2nbqJuzAlWCwjPA6Y6sMje9U-y8KE09ogrOQHPX7n3ZNqxCHtS1zhjSFJ-iEwOFD0KTxmZ31ZsnKfC9F6K7UK7xPqlGFFJyuEmwXLhxMlvowoiaR7sW8ZDD1CsD41AO2Aq7Jt0l4jOw-x4TUvTcgXTYUTSrwjCVA6Qkahtct7590qWF7cIMaDjOG7ysaw"/>
+<img class="w-10 h-10 rounded-full border-2 border-white object-cover" data-alt="A portrait of a mature professional male in a clean white office setting, smiling and looking at a laptop screen. The environment is minimalist and airy, with slate and light blue accents. High-quality corporate photography style with natural window lighting." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBQRNfx-w05jzu_xCCFl6crpDDahFPemIru2ZenM-zR4gDas5-wZJEGOQeeu2harE-8HB2kzrfxhM379u7fpgYt5n0Tkc4iNsjb2BGwJWEvQB-HjuJJs9Kutau5mCBNdBjEJi0-7SKLPoFYoLFYXoGOWEM_ufxJvhSF9MD_upjO5X0XsOLRL9_TNlAjm2og6kjIWxmIamB2fMK2ZV7puRpw4xQrDdBSobxH-sJQpK5VBXt1xb01JkuHlw"/>
+<img class="w-10 h-10 rounded-full border-2 border-white object-cover" data-alt="A cheerful young woman in a casual academic setting, holding a notebook and gesturing enthusiastically. The background is a blurred university campus with green trees and modern glass architecture under bright daylight. Soft, warm lighting evokes a sense of progress and competence." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDv7wZVfED3SIvLCXoHI0KAxldROP33Xft8LM5UWSViEoZ1GosvqAgjy_qgzi8X0l_zh3YwfJqdWDxGMboRFPL6jowt7FLxXsHrRmLlzDgIrD-vEVMwmkdkpLokWZhv-O4OuJJdbpb4mNhvbOILpsFhSWBkkIvFF4K9mJDmh4HUsAtlI4fPmbOw3jMlhhIuI5E1-0n2LRiNM9mBzdMO2_BJJ8mOXRePe_TR3oUfwdHMh-bBf7H-lUyyZg"/>
+</div>
+<p class="text-label-md text-on-surface-variant">Join <span class="font-bold text-on-surface">15,000+</span> active learners this month</p>
+</div>
+</div>
+<div class="relative hidden lg:block">
+<div class="relative z-10 rounded-2xl overflow-hidden shadow-2xl border border-outline-variant">
+<img class="w-full h-full object-cover" data-alt="A high-quality wide shot of a group of adult learners in a sleek, modern corporate training room. They are interacting with touch-screen displays and laptops, collaborating on a project. The lighting is soft and neutral, featuring a sophisticated palette of slates and primary blues, evoking a sense of modern efficiency and academic reliability." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCZ1t-I9jeW2rt036jyY0ZU1-RGkJwSqA7ZV0drNr0cglu8KH0PT-RnlS6VUW5V5uOCDVy53md7CXYy671qI8VTU51D_LYsuhT961rszYdPBoWQzzx5nF8oZzolsihUnpCvJMl8tKSGG7to1sTncL7hhA23zvWzn4v4ndHGVAk1jJ0YtWjAxeJbdO_NF5PajOlT50pJzJuBKYglgsIAHMljY6pN4SikZpQibhpiuTV616viTbH7NQqSiw"/>
+<!-- Floating Glass Stats -->
+<div class="absolute bottom-6 left-6 right-6 p-lg glass-card rounded-xl flex justify-between items-center shadow-lg">
+<div class="text-center">
+<p class="text-primary font-bold text-headline-sm">98%</p>
+<p class="text-label-sm text-on-surface-variant">Completion Rate</p>
+</div>
+<div class="h-8 w-px bg-outline-variant"></div>
+<div class="text-center">
+<p class="text-primary font-bold text-headline-sm">250+</p>
+<p class="text-label-sm text-on-surface-variant">Expert Tutors</p>
+</div>
+<div class="h-8 w-px bg-outline-variant"></div>
+<div class="text-center">
+<p class="text-primary font-bold text-headline-sm">4.9/5</p>
+<p class="text-label-sm text-on-surface-variant">User Rating</p>
+</div>
+</div>
+</div>
+<!-- Decorative Elements -->
+<div class="absolute -top-6 -right-6 w-32 h-32 bg-primary-container rounded-full opacity-20 blur-2xl"></div>
+<div class="absolute -bottom-10 -left-10 w-48 h-48 bg-secondary-container rounded-full opacity-20 blur-3xl"></div>
+</div>
+</div>
+</section>
+<!-- Partner Logos -->
+<section class="py-xl bg-surface-container-low border-y border-outline-variant">
+<div class="max-w-container-max mx-auto px-lg">
+<p class="text-center text-label-sm text-on-surface-variant uppercase tracking-[0.2em] mb-xl font-semibold">Trusted by Global Industry Leaders</p>
+<div class="flex flex-wrap justify-center items-center gap-xxl opacity-60 grayscale hover:grayscale-0 transition-all duration-500">
+<div class="font-headline-sm font-bold text-on-surface-variant">TECHCORP</div>
+<div class="font-headline-sm font-bold text-on-surface-variant">EDU-GLOBAL</div>
+<div class="font-headline-sm font-bold text-on-surface-variant">INNOVATE.LY</div>
+<div class="font-headline-sm font-bold text-on-surface-variant">SYNERGY SYSTEMS</div>
+<div class="font-headline-sm font-bold text-on-surface-variant">LEADERSHIP ACADEMY</div>
+</div>
+</div>
+</section>
+<!-- Featured Categories (Bento Grid) -->
+<section class="py-xxl max-w-container-max mx-auto px-lg">
+<div class="flex flex-col md:flex-row justify-between items-end mb-xl gap-md">
+<div class="max-w-xl">
+<h2 class="font-headline-lg text-headline-lg mb-md">Explore Top Categories</h2>
+<p class="text-body-md text-on-surface-variant">Unlock your potential in these high-demand fields. Our curriculum is updated weekly to match industry trends.</p>
+</div>
+<a class="text-primary font-bold hover:underline flex items-center gap-xs" href="#">
+                    See All Categories <span class="material-symbols-outlined">arrow_forward</span>
+</a>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-lg h-auto md:h-[500px]">
+<!-- Programming -->
+<div class="md:col-span-2 group relative overflow-hidden rounded-xl border border-outline-variant bg-white p-lg transition-all duration-500 hover:shadow-xl cursor-pointer">
+<div class="absolute top-0 right-0 p-lg opacity-10 group-hover:opacity-20 transition-opacity">
+<span class="material-symbols-outlined !text-[120px]">code</span>
+</div>
+<div class="relative z-10 h-full flex flex-col justify-between">
+<div>
+<span class="inline-block px-3 py-1 bg-primary-container text-on-primary-container rounded-full text-label-sm mb-md">80+ Courses</span>
+<h3 class="font-headline-md text-headline-md mb-sm">Programming &amp; IT</h3>
+<p class="text-on-surface-variant max-w-md">From Full-stack Development to Machine Learning. Master the languages that power the world.</p>
+</div>
+<div class="flex gap-sm">
+<span class="px-md py-sm bg-surface-container rounded-lg text-label-sm font-medium">Python</span>
+<span class="px-md py-sm bg-surface-container rounded-lg text-label-sm font-medium">React</span>
+<span class="px-md py-sm bg-surface-container rounded-lg text-label-sm font-medium">AWS</span>
+</div>
+</div>
+</div>
+<!-- Design -->
+<div class="group relative overflow-hidden rounded-xl border border-outline-variant bg-tertiary-container text-on-tertiary-container p-lg transition-all duration-500 hover:shadow-xl cursor-pointer">
+<div class="absolute -bottom-10 -right-10 opacity-20 group-hover:scale-110 transition-transform">
+<span class="material-symbols-outlined !text-[160px]">palette</span>
+</div>
+<div class="relative z-10">
+<span class="inline-block px-3 py-1 bg-surface-container-lowest/20 rounded-full text-label-sm mb-md">45+ Courses</span>
+<h3 class="font-headline-md text-headline-md mb-sm">UX/UI Design</h3>
+<p class="text-on-tertiary-container/80">Visual storytelling and user-centric design principles for modern digital products.</p>
+</div>
+</div>
+<!-- Business -->
+<div class="group relative overflow-hidden rounded-xl border border-outline-variant bg-secondary-container text-on-secondary-container p-lg transition-all duration-500 hover:shadow-xl cursor-pointer">
+<div class="relative z-10">
+<span class="inline-block px-3 py-1 bg-surface-container-lowest/20 rounded-full text-label-sm mb-md">60+ Courses</span>
+<h3 class="font-headline-md text-headline-md mb-sm">Business Strategy</h3>
+<p class="text-on-secondary-container/80">Leadership, finance, and entrepreneurship essentials for rising professionals.</p>
+</div>
+<div class="mt-md">
+<div class="w-full bg-surface-container-lowest/20 h-1.5 rounded-full overflow-hidden">
+<div class="bg-on-secondary-container h-full w-3/4"></div>
+</div>
+<p class="text-[10px] mt-2 font-bold uppercase tracking-widest">Growth Priority</p>
+</div>
+</div>
+<!-- Resources/Small Card -->
+<div class="md:col-span-2 group relative overflow-hidden rounded-xl border border-outline-variant bg-white flex items-center p-lg transition-all hover:shadow-xl cursor-pointer">
+<div class="flex-1">
+<h3 class="font-headline-sm text-headline-sm">Learning Resources</h3>
+<p class="text-body-sm text-on-surface-variant">E-books, case studies, and interview kits included in all pro plans.</p>
+</div>
+<button class="w-12 h-12 bg-primary text-on-primary rounded-full flex items-center justify-center group-hover:scale-110 transition-transform">
+<span class="material-symbols-outlined">chevron_right</span>
+</button>
+</div>
+</div>
+</section>
+<!-- Testimonial Section -->
+<section class="py-xxl bg-surface">
+<div class="max-w-container-max mx-auto px-lg">
+<div class="text-center mb-xxl">
+<h2 class="font-headline-lg text-headline-lg mb-md">Success Stories</h2>
+<p class="text-body-md text-on-surface-variant max-w-2xl mx-auto">See how EduStream has transformed the professional lives of thousands of students worldwide.</p>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-xl">
+<!-- Testimonial 1 -->
+<div class="p-lg bg-white border border-outline-variant rounded-xl shadow-sm hover:shadow-md transition-shadow relative">
+<div class="absolute -top-4 left-6 w-8 h-8 bg-primary rounded-full flex items-center justify-center text-white">
+<span class="material-symbols-outlined !text-[18px]">format_quote</span>
+</div>
+<p class="text-body-md italic text-on-surface-variant mb-lg pt-md leading-relaxed">
+                            "The structured approach of EduStream allowed me to pivot into a Lead Developer role within six months. The technical depth of their courses is unmatched by any other LMS."
+                        </p>
+<div class="flex items-center gap-md">
+<div class="w-12 h-12 rounded-full overflow-hidden bg-slate-200">
+<img class="w-full h-full object-cover" data-alt="A close-up portrait of a professional man with a friendly, confident expression, set against a minimalist architectural background. He has a neatly trimmed beard and is wearing a crisp white shirt. The lighting is soft and even, highlighting a clean, high-focus atmosphere consistent with the EduStream Corporate Modern style." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDDvXif-BPNPJhjKLCfZK9NIz-B6B9BWr1oQjLUaC-arWtCqPLu5m6UzbdgGgcWcfVi3kPN9dVbuSBzEKM-tlNOKAaBg2ojmxxeiev_ykdPSFJECXGDKdc_Ba9RXZdatWiXS3c_88xL0tr5veuF6nsTXLD18aNnCK_JqjQO6OvuBaVg4Q-qpCWl1bwILVYP02ptwtb7KM1sF9J3EOTrJOtyUTI6tlPhA2XI3XvJauEn-6s5fTFleWl--Q"/>
+</div>
+<div>
+<p class="font-bold text-on-surface">James Arrington</p>
+<p class="text-label-sm text-on-surface-variant">Senior Dev @ TechScale</p>
+</div>
+</div>
+</div>
+<!-- Testimonial 2 -->
+<div class="p-lg bg-white border border-outline-variant rounded-xl shadow-sm hover:shadow-md transition-shadow relative">
+<div class="absolute -top-4 left-6 w-8 h-8 bg-primary rounded-full flex items-center justify-center text-white">
+<span class="material-symbols-outlined !text-[18px]">format_quote</span>
+</div>
+<p class="text-body-md italic text-on-surface-variant mb-lg pt-md leading-relaxed">
+                            "I loved the UI/UX focus. The course content was clear, the exercises were challenging, and the community support kept me motivated during the late-night sessions."
+                        </p>
+<div class="flex items-center gap-md">
+<div class="w-12 h-12 rounded-full overflow-hidden bg-slate-200">
+<img class="w-full h-full object-cover" data-alt="A portrait of a young woman with a vibrant and creative energy, smiling at the camera. She is in a light-filled studio with colorful design books and art supplies in the blurred background. The palette features soft indigo and teal tones, embodying the modern efficiency and intellectual clarity of the EduStream platform." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAX8f7_OW4ZTvJdftsdpZXYnarpdvY-Ae1TXgEPTgE9uyP6xR4hz1xqAEubZdn2ChMWvlu6cGSBcJL7xzod3E8HXi_kKBCx4QcZKO0s5pyZuCSOrkes3xiwB82kKszwvF3GkygsM0cV2SyJ8nv43glw0kI17e1wFa5XHaOTCXTN3LrjxrFdDmpOwAaIN6_GnzEObV9dX_xMk3-8GlXOxG54v3ZbCMfpHIGuAGJWaElGcvjQ5sp139Eylg"/>
+</div>
+<div>
+<p class="font-bold text-on-surface">Sarah Chen</p>
+<p class="text-label-sm text-on-surface-variant">Freelance Product Designer</p>
+</div>
+</div>
+</div>
+<!-- Testimonial 3 -->
+<div class="p-lg bg-white border border-outline-variant rounded-xl shadow-sm hover:shadow-md transition-shadow relative">
+<div class="absolute -top-4 left-6 w-8 h-8 bg-primary rounded-full flex items-center justify-center text-white">
+<span class="material-symbols-outlined !text-[18px]">format_quote</span>
+</div>
+<p class="text-body-md italic text-on-surface-variant mb-lg pt-md leading-relaxed">
+                            "As an educator, EduStream provides the perfect environment for my trainees. The 'calm' UI allows them to focus purely on the content without distractions."
+                        </p>
+<div class="flex items-center gap-md">
+<div class="w-12 h-12 rounded-full overflow-hidden bg-slate-200">
+<img class="w-full h-full object-cover" data-alt="A portrait of a mature professional educator in a high-tech corporate training room environment. He is leaning against a glass whiteboard with technical diagrams. The lighting is sophisticated and professional, with a cool-toned slate and white color scheme that conveys academic reliability and competence." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCnThjcRvcQ3oIb40L5ef6K5zf1TxrHt8dh1vDdBSfW7K5t9ss6asGxnB68Xu-N5PvngeJDAJh-BM4d3dwcOhP9ED7PF7kOMigGtrhZXxdltLQpGJkzogGesndLtWT3u4bSZVAgWl46W3M4SVf1rni8HUMZwztDl8vmGjUrNCs1h7gg3-Ar0PX8kLOY5mrRHSm1fKZcAfviZJUMqv3dv85ppUpLxetV0o3Q_H1JIHvTtRIyKBxobljv2w"/>
+</div>
+<div>
+<p class="font-bold text-on-surface">Dr. Robert Vance</p>
+<p class="text-label-sm text-on-surface-variant">L&amp;D Director, Global Corp</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Final CTA Section -->
+<section class="py-xxl px-lg max-w-container-max mx-auto">
+<div class="relative bg-primary rounded-[2rem] p-xl md:p-xxl overflow-hidden text-center text-on-primary">
+<!-- Background Decorative Pattern -->
+<div class="absolute inset-0 opacity-10 pointer-events-none">
+
+</div>
+<div class="relative z-10 max-w-2xl mx-auto space-y-lg">
+<h2 class="font-display-lg text-display-lg">Ready to transform your future?</h2>
+<p class="text-body-lg opacity-90">Start learning today with free access to our foundational courses. Join a community of over 500,000 learners worldwide.</p>
+<div class="pt-md">
+<button class="px-xxl py-5 bg-white text-primary rounded-xl font-headline-sm text-headline-sm shadow-xl hover:scale-105 transition-transform active:scale-95">
+                            Get Started for Free
+                        </button>
+</div>
+<p class="text-label-sm opacity-70">No credit card required • Instant access • Premium support</p>
+</div>
+</div>
+</section>
+</main>
+<!-- Footer -->
+<footer class="w-full bg-surface-container-high border-t border-outline-variant">
+<div class="w-full py-xl px-lg max-w-container-max mx-auto flex flex-col md:flex-row justify-between gap-xl">
+<div class="max-w-sm space-y-md">
+<div class="font-headline-sm text-headline-sm font-bold text-primary">EduStream</div>
+<p class="text-body-sm text-on-surface-variant">The leading learning management system for professional growth and academic excellence. Built for the learners of tomorrow.</p>
+<div class="flex gap-md">
+<a class="w-8 h-8 rounded-full bg-surface-container-highest flex items-center justify-center text-on-surface-variant hover:text-primary transition-colors" href="#">
+<span class="material-symbols-outlined !text-[20px]">language</span>
+</a>
+<a class="w-8 h-8 rounded-full bg-surface-container-highest flex items-center justify-center text-on-surface-variant hover:text-primary transition-colors" href="#">
+<span class="material-symbols-outlined !text-[20px]">mail</span>
+</a>
+</div>
+</div>
+<div class="grid grid-cols-2 sm:grid-cols-3 gap-xl flex-1 md:ml-xxl">
+<div class="space-y-sm">
+<h4 class="font-label-md text-on-surface font-bold">Platform</h4>
+<nav class="flex flex-col gap-xs">
+<a class="text-body-sm text-on-surface-variant hover:underline decoration-primary" href="#">Categories</a>
+<a class="text-body-sm text-on-surface-variant hover:underline decoration-primary" href="#">Live Classes</a>
+<a class="text-body-sm text-on-surface-variant hover:underline decoration-primary" href="#">Tutoring</a>
+<a class="text-body-sm text-on-surface-variant hover:underline decoration-primary" href="#">Enterprise</a>
+</nav>
+</div>
+<div class="space-y-sm">
+<h4 class="font-label-md text-on-surface font-bold">Company</h4>
+<nav class="flex flex-col gap-xs">
+<a class="text-body-sm text-on-surface-variant hover:underline decoration-primary" href="#">About</a>
+<a class="text-body-sm text-on-surface-variant hover:underline decoration-primary" href="#">Careers</a>
+<a class="text-body-sm text-on-surface-variant hover:underline decoration-primary" href="#">Blog</a>
+<a class="text-body-sm text-on-surface-variant hover:underline decoration-primary" href="#">Contact</a>
+</nav>
+</div>
+<div class="space-y-sm">
+<h4 class="font-label-md text-on-surface font-bold">Support</h4>
+<nav class="flex flex-col gap-xs">
+<a class="text-body-sm text-on-surface-variant hover:underline decoration-primary" href="#">Help</a>
+<a class="text-body-sm text-on-surface-variant hover:underline decoration-primary" href="#">Terms</a>
+<a class="text-body-sm text-on-surface-variant hover:underline decoration-primary" href="#">Privacy</a>
+<a class="text-body-sm text-on-surface-variant hover:underline decoration-primary" href="#">Sitemap</a>
+</nav>
+</div>
+</div>
+</div>
+<div class="w-full border-t border-outline-variant/30 py-lg px-lg max-w-container-max mx-auto flex flex-col md:flex-row justify-between items-center gap-md">
+<p class="text-body-sm text-on-surface-variant">© 2024 EduStream LMS. All rights reserved.</p>
+<div class="flex items-center gap-lg">
+<span class="text-body-sm text-on-surface-variant flex items-center gap-xs">
+<span class="material-symbols-outlined !text-[16px]">public</span> English (US)
+                </span>
+</div>
+</div>
+</footer>
+<script>
+        // Micro-interaction for hover states and button active states
+        document.querySelectorAll('button').forEach(button => {
+            button.addEventListener('mousedown', () => {
+                button.classList.add('scale-95');
+                button.style.transition = 'transform 100ms';
+            });
+            button.addEventListener('mouseup', () => {
+                button.classList.remove('scale-95');
+            });
+            button.addEventListener('mouseleave', () => {
+                button.classList.remove('scale-95');
+            });
+        });
+
+        // Simple scroll reveal effect for sections
+        const observerOptions = {
+            threshold: 0.1
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('opacity-100', 'translate-y-0');
+                    entry.target.classList.remove('opacity-0', 'translate-y-8');
+                }
+            });
+        }, observerOptions);
+
+        document.querySelectorAll('section').forEach(section => {
+            section.classList.add('transition-all', 'duration-700', 'opacity-0', 'translate-y-8');
+            observer.observe(section);
+        });
+    </script>
+</body></html>

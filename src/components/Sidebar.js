@@ -93,7 +93,7 @@ export default function Sidebar() {
           {!sidebarCollapsed && (
             <div style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
               <div style={{ fontSize: "0.85rem", fontWeight: 600 }}>{currentUser?.fullname}</div>
-              <div style={{ fontSize: "0.7rem", color: "var(--text-muted)" }}>{currentUser?.roleLabel}</div>
+              <div style={{ fontSize: "0.7rem", color: "var(--text-muted)" }}>{currentUser?.role === "student" ? "Peserta" : (currentUser?.roleLabel || "Peserta")}</div>
             </div>
           )}
         </div>

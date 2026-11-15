@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<style>
+        body { font-family: 'Inter', sans-serif; }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .glass-card {
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(8px);
+            border: 1px solid #E2E8F0;
+        }
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 6px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 10px;
+        }
+    </style>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "inverse-surface": "#213145",
+                        "surface-variant": "#d3e4fe",
+                        "primary-fixed-dim": "#c3c0ff",
+                        "primary-fixed": "#e2dfff",
+                        "surface-bright": "#f8f9ff",
+                        "secondary-fixed-dim": "#6bd8cb",
+                        "primary": "#3525cd",
+                        "on-tertiary-fixed-variant": "#653e00",
+                        "surface-tint": "#4d44e3",
+                        "surface-container": "#e5eeff",
+                        "outline-variant": "#c7c4d8",
+                        "secondary": "#006a61",
+                        "surface-container-high": "#dce9ff",
+                        "on-error": "#ffffff",
+                        "inverse-primary": "#c3c0ff",
+                        "secondary-fixed": "#89f5e7",
+                        "inverse-on-surface": "#eaf1ff",
+                        "on-primary-container": "#dad7ff",
+                        "on-secondary-fixed-variant": "#005049",
+                        "surface-dim": "#cbdbf5",
+                        "on-secondary": "#ffffff",
+                        "secondary-container": "#86f2e4",
+                        "on-tertiary": "#ffffff",
+                        "on-secondary-fixed": "#00201d",
+                        "tertiary-container": "#885500",
+                        "surface": "#f8f9ff",
+                        "outline": "#777587",
+                        "error-container": "#ffdad6",
+                        "tertiary": "#684000",
+                        "on-error-container": "#93000a",
+                        "surface-container-highest": "#d3e4fe",
+                        "tertiary-fixed-dim": "#ffb95f",
+                        "on-surface-variant": "#464555",
+                        "on-primary": "#ffffff",
+                        "error": "#ba1a1a",
+                        "surface-container-lowest": "#ffffff",
+                        "primary-container": "#4f46e5",
+                        "on-surface": "#0b1c30",
+                        "on-secondary-container": "#006f66",
+                        "on-primary-fixed-variant": "#3323cc",
+                        "on-tertiary-fixed": "#2a1700",
+                        "surface-container-low": "#eff4ff",
+                        "on-tertiary-container": "#ffd4a4",
+                        "tertiary-fixed": "#ffddb8",
+                        "on-background": "#0b1c30",
+                        "on-primary-fixed": "#0f0069",
+                        "background": "#f8f9ff"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "margin-mobile": "16px",
+                        "container-max": "1280px",
+                        "md": "16px",
+                        "xxl": "64px",
+                        "xl": "40px",
+                        "base": "4px",
+                        "gutter": "24px",
+                        "xs": "4px",
+                        "sm": "8px",
+                        "lg": "24px"
+                    },
+                    "fontFamily": {
+                        "label-md": ["Inter"],
+                        "headline-sm": ["Inter"],
+                        "body-sm": ["Inter"],
+                        "headline-md": ["Inter"],
+                        "headline-lg": ["Inter"],
+                        "body-md": ["Inter"],
+                        "body-lg": ["Inter"]
+                    },
+                    "fontSize": {
+                        "label-md": ["14px", {"lineHeight": "1", "letterSpacing": "0.01em", "fontWeight": "500"}],
+                        "headline-sm": ["20px", {"lineHeight": "1.4", "fontWeight": "600"}],
+                        "body-sm": ["14px", {"lineHeight": "1.5", "fontWeight": "400"}],
+                        "headline-md": ["24px", {"lineHeight": "1.3", "fontWeight": "600"}],
+                        "headline-lg": ["32px", {"lineHeight": "1.2", "letterSpacing": "-0.01em", "fontWeight": "600"}],
+                        "body-md": ["16px", {"lineHeight": "1.5", "fontWeight": "400"}],
+                        "body-lg": ["18px", {"lineHeight": "1.6", "fontWeight": "400"}]
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-background text-on-background min-h-screen">
+<!-- Desktop Sidebar -->
+<aside class="hidden md:flex flex-col py-lg px-md h-screen w-64 fixed left-0 top-0 bg-surface-container-low border-r border-outline-variant z-50">
+<div class="mb-xxl">
+<h1 class="font-headline-sm text-headline-sm font-bold text-primary">EduStream</h1>
+<p class="text-[12px] text-on-surface-variant">Academic Excellence</p>
+</div>
+<nav class="flex-grow space-y-sm">
+<a class="flex items-center gap-md p-md text-on-surface-variant hover:bg-surface-container-highest transition-colors rounded-lg font-label-md text-label-md" href="#">
+<span class="material-symbols-outlined" data-icon="dashboard">dashboard</span> Dashboard
+            </a>
+<a class="flex items-center gap-md p-md text-on-surface-variant hover:bg-surface-container-highest transition-colors rounded-lg font-label-md text-label-md" href="#">
+<span class="material-symbols-outlined" data-icon="school">school</span> My Courses
+            </a>
+<a class="flex items-center gap-md p-md bg-primary-container text-on-primary-container rounded-lg font-bold font-label-md text-label-md active:translate-x-1 transition-transform" href="#">
+<span class="material-symbols-outlined" data-icon="shopping_cart" style="font-variation-settings: 'FILL' 1;">shopping_cart</span> Cart
+            </a>
+<a class="flex items-center gap-md p-md text-on-surface-variant hover:bg-surface-container-highest transition-colors rounded-lg font-label-md text-label-md" href="#">
+<span class="material-symbols-outlined" data-icon="settings">settings</span> Settings
+            </a>
+</nav>
+<div class="mt-auto border-t border-outline-variant pt-md space-y-sm">
+<a class="flex items-center gap-md p-md text-on-surface-variant hover:bg-surface-container-highest transition-colors rounded-lg font-label-md text-label-md" href="#">
+<span class="material-symbols-outlined" data-icon="help">help</span> Help
+            </a>
+<a class="flex items-center gap-md p-md text-on-surface-variant hover:bg-surface-container-highest transition-colors rounded-lg font-label-md text-label-md" href="#">
+<span class="material-symbols-outlined" data-icon="logout">logout</span> Logout
+            </a>
+</div>
+</aside>
+<!-- Top Navigation (Mobile/Tablet and Desktop Search) -->
+<header class="w-full top-0 sticky bg-surface shadow-sm z-40">
+<div class="flex justify-between items-center h-16 px-md max-w-container-max mx-auto">
+<div class="flex items-center gap-md md:ml-64">
+<span class="md:hidden font-headline-md text-headline-md font-bold text-primary">EduStream</span>
+<div class="hidden md:flex gap-lg">
+<a class="text-on-surface-variant font-body-md text-body-md hover:text-primary transition-colors" href="#">Courses</a>
+<a class="text-on-surface-variant font-body-md text-body-md hover:text-primary transition-colors" href="#">My Learning</a>
+<a class="text-on-surface-variant font-body-md text-body-md hover:text-primary transition-colors" href="#">Resources</a>
+</div>
+</div>
+<div class="flex items-center gap-md">
+<button class="p-base text-on-surface-variant hover:text-primary transition-transform active:scale-95">
+<span class="material-symbols-outlined" data-icon="notifications">notifications</span>
+</button>
+<div class="w-8 h-8 rounded-full overflow-hidden border border-outline-variant">
+<img class="w-full h-full object-cover" data-alt="A clean, professional headshot of a female educator smiling warmly, with a softly blurred modern office background. The lighting is bright and natural, reflecting an academic and trustworthy tone. Her attire is professional yet approachable, consistent with the corporate modern aesthetic of EduStream." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBHBCK2lWsHHdhL4VSFIHpydTmox0KGwS9t2i77Wuwe8LzxR8hd_JOMyBB-arIRcgfizfeaYyAlwEKUlj5JcoHBIBgrgsVI8AVJmLB0adaKDMoOObgHdjdB-NPNdQLfoyCVkqu_LcEU17KCa9ERpn6YCAJ4axblKhMvg1YbmK34JEJTTJVnSeJI2u9KpbDVRUZc06XUOXXXMQ_wzpX52RHhwwN7lDb5zDW-vGNiJ85t3p7MdW--BuT0cQ"/>
+</div>
+</div>
+</div>
+</header>
+<!-- Main Content Canvas -->
+<main class="md:ml-64 p-md md:p-xl max-w-container-max mx-auto">
+<div class="mb-xl">
+<h2 class="font-headline-lg text-headline-lg text-on-surface mb-xs">Your Shopping Cart</h2>
+<p class="font-body-md text-body-md text-on-surface-variant">Review your selections and proceed to unlock your learning journey.</p>
+</div>
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-xl">
+<!-- Cart Items List (8 Columns) -->
+<div class="lg:col-span-8 space-y-md">
+<!-- Course Item 1 -->
+<div class="bg-surface-container-lowest p-md rounded-xl border border-outline-variant flex flex-col sm:flex-row gap-md shadow-sm hover:shadow-md transition-all">
+<div class="w-full sm:w-48 h-32 rounded-lg overflow-hidden flex-shrink-0">
+<img class="w-full h-full object-cover" data-alt="A high-quality 3D render representing an advanced UI/UX design course. It features sleek floating glass panels, vibrant purple and teal gradients, and clean interface components. The lighting is soft and cinematic, conveying a premium educational experience in a modern corporate style." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBXG9UwjpzXAUPx37VDKqzd9rnCIXm6HqRjZ0OObWX8GCQWGIEYk9on4-q8cabHA2fBpF1XtVZ1_D4GM1KL3JOxXd3aftLEUR-dpboa7VTsgvypdhvd1E71e4CGxjI-VL32d0bU605zRVnNBCakYOb6wHMr0aGJdB_q-cBtKdjjvGiWkAiQCauK822Kamvxqp8ezyzALTawWJD5o8Dk5juqxmoFxKOsJBNPKLwzggrNVMKlkU_6CXZb3w"/>
+</div>
+<div class="flex-grow flex flex-col justify-between py-xs">
+<div>
+<div class="flex justify-between items-start">
+<h3 class="font-headline-sm text-headline-sm text-on-surface">Advanced UI Design Systems</h3>
+<button class="text-error hover:bg-error-container p-xs rounded-full transition-colors">
+<span class="material-symbols-outlined" data-icon="delete">delete</span>
+</button>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant mt-xs">By Dr. Julianne Reed • 12 Modules</p>
+</div>
+<div class="flex justify-between items-end mt-md sm:mt-0">
+<div class="flex gap-sm">
+<span class="bg-primary-container/10 text-primary px-sm py-1 rounded-full font-label-sm text-label-sm">Best Seller</span>
+<span class="bg-secondary-container/10 text-secondary px-sm py-1 rounded-full font-label-sm text-label-sm">Beginner</span>
+</div>
+<p class="font-headline-sm text-headline-sm text-primary">$89.99</p>
+</div>
+</div>
+</div>
+<!-- Course Item 2 -->
+<div class="bg-surface-container-lowest p-md rounded-xl border border-outline-variant flex flex-col sm:flex-row gap-md shadow-sm hover:shadow-md transition-all">
+<div class="w-full sm:w-48 h-32 rounded-lg overflow-hidden flex-shrink-0">
+<img class="w-full h-full object-cover" data-alt="An abstract visualization of data structures and algorithms, featuring glowing nodes connected by precise, thin lines. The color palette uses deep slate blues and accents of soft teal. The composition is clean and organized, suggesting a high-focus learning environment for advanced computer science topics." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCwOb3QXhd347gsLWGA5ZJkX9a7GpxUtiAYEeCo4xGaEHOu5YLMCaSUwy9Ti2qzl99klf3_9ZUa3dejmdyQCkHJ_H4ylAnZ9zljcYj_x114fZMuOlm3U6RLQy76eVHh02iUFCIDfakC4oacQQm9-kIlobs24QkgPA6h-8s8xk3cPSGyBSC3fKX0uO2__Em5-o76vwR7UxtJg0ksP7XaCkTlweZUnKkUBLAa76ovY4CciwhV-ohnVd2tOQ"/>
+</div>
+<div class="flex-grow flex flex-col justify-between py-xs">
+<div>
+<div class="flex justify-between items-start">
+<h3 class="font-headline-sm text-headline-sm text-on-surface">Data Science Mastery 2024</h3>
+<button class="text-error hover:bg-error-container p-xs rounded-full transition-colors">
+<span class="material-symbols-outlined" data-icon="delete">delete</span>
+</button>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant mt-xs">By TechAcademy Team • 24 Hours</p>
+</div>
+<div class="flex justify-between items-end mt-md sm:mt-0">
+<div class="flex gap-sm">
+<span class="bg-tertiary-fixed/10 text-tertiary px-sm py-1 rounded-full font-label-sm text-label-sm">Intermediate</span>
+</div>
+<p class="font-headline-sm text-headline-sm text-primary">$124.50</p>
+</div>
+</div>
+</div>
+<!-- Empty Cart State Hidden Helper -->
+<div class="hidden text-center py-xxl bg-surface-container-low rounded-xl border-2 border-dashed border-outline-variant">
+<span class="material-symbols-outlined text-6xl text-outline-variant mb-md" data-icon="shopping_cart">shopping_cart</span>
+<h3 class="font-headline-md text-headline-md text-on-surface">Your cart is empty</h3>
+<p class="font-body-md text-body-md text-on-surface-variant mt-sm">Start exploring courses to add them to your learning list.</p>
+<button class="mt-lg bg-primary text-on-primary px-xl py-md rounded-lg font-bold hover:opacity-90 transition-opacity">Explore Courses</button>
+</div>
+</div>
+<!-- Summary Panel (4 Columns) -->
+<div class="lg:col-span-4">
+<div class="bg-surface-container-low p-lg rounded-xl border border-outline-variant sticky top-24">
+<h3 class="font-headline-sm text-headline-sm text-on-surface mb-lg">Order Summary</h3>
+<div class="space-y-md">
+<div class="flex justify-between font-body-md text-body-md text-on-surface-variant">
+<span>Subtotal</span>
+<span>$214.49</span>
+</div>
+<div class="flex justify-between font-body-md text-body-md text-on-surface-variant">
+<span>Platform Fee</span>
+<span>$5.00</span>
+</div>
+<div class="flex justify-between font-body-md text-body-md text-secondary">
+<span>Discounts</span>
+<span>-$0.00</span>
+</div>
+<div class="py-md border-y border-outline-variant">
+<label class="block font-label-md text-label-md text-on-surface-variant mb-sm">Coupon Code</label>
+<div class="flex gap-sm">
+<input class="flex-grow bg-surface-container-lowest border border-outline rounded-lg px-md py-sm focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all" placeholder="Enter code" type="text"/>
+<button class="bg-secondary text-on-secondary px-md py-sm rounded-lg font-bold hover:opacity-90 active:scale-95 transition-all">Apply</button>
+</div>
+</div>
+<div class="flex justify-between items-center py-md">
+<span class="font-headline-sm text-headline-sm text-on-surface">Total</span>
+<span class="font-headline-lg text-headline-lg text-primary">$219.49</span>
+</div>
+<button class="w-full bg-primary text-on-primary py-lg rounded-xl font-bold text-lg shadow-lg hover:shadow-xl hover:translate-y-[-2px] active:translate-y-0 transition-all flex items-center justify-center gap-md">
+                            Proceed to Checkout
+                            <span class="material-symbols-outlined" data-icon="arrow_forward">arrow_forward</span>
+</button>
+<div class="pt-lg flex flex-col gap-sm items-center">
+<p class="font-body-sm text-body-sm text-on-surface-variant flex items-center gap-xs">
+<span class="material-symbols-outlined text-[16px]" data-icon="verified_user">verified_user</span> Secure checkout powered by EduPay
+                            </p>
+<div class="flex gap-md opacity-40 grayscale">
+<span class="material-symbols-outlined" data-icon="credit_card">credit_card</span>
+<span class="material-symbols-outlined" data-icon="account_balance_wallet">account_balance_wallet</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Recommended / Continue Shopping -->
+<section class="mt-xxl">
+<h3 class="font-headline-md text-headline-md text-on-surface mb-lg">Recommended for You</h3>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-lg">
+<div class="bg-surface-container-lowest border border-outline-variant rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-all group">
+<div class="h-40 overflow-hidden">
+<img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" data-alt="A clean, minimalist 3D conceptual design of a neural network being visualized on a glass screen. Soft blue and white light, sharp focus on the tech details, and a wide workspace setting. This illustrates a professional Artificial Intelligence course for the EduStream platform." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAe7uFaCG6YccTzz22gq-2nYOq-oVItDj4C9i0YLOC_3nQ7F2KjCj--sJmwVxqzPNj9oTqdk8Td-BqR9USapFO7OP-s7BXaCN3VHdpt4PDdzn7utJQV9LsH5agz95TcRsNihalH8oR9cUlnDZT3acve-KK7AQNW1xQjPaYbncFEmf_37fUn9O_Kcj6mokNsG-QzPMdqIB1qXyshGl_XH9mkhlMC5sHhJv34GoUVkkmG3BJrSXekuwDO-A"/>
+</div>
+<div class="p-md">
+<h4 class="font-headline-sm text-headline-sm text-on-surface line-clamp-1">AI Fundamentals</h4>
+<div class="w-full bg-surface-container h-2 rounded-full mt-md mb-sm">
+<div class="bg-secondary w-0 h-full rounded-full"></div>
+</div>
+<div class="flex justify-between items-center mt-md">
+<span class="font-headline-sm text-headline-sm text-primary">$49.99</span>
+<button class="text-primary font-bold hover:underline flex items-center gap-xs">
+                                Add to Cart
+                            </button>
+</div>
+</div>
+</div>
+<!-- Card 2 -->
+<div class="bg-surface-container-lowest border border-outline-variant rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-all group">
+<div class="h-40 overflow-hidden">
+<img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" data-alt="A macro shot of a modern architectural blueprint being drawn with digital precision lines and warm sunset lighting hitting the drafting table. The scene is calm, intellectual, and professional, representing an architecture or engineering course for adult learners." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBBYz6lypj5mNpEAgNJhLRAjESecn5th1kGJwgJulUSc07n7EgiERiavrn3nA3qajN40Ap7B8d_gvguv1jAPVrH_eW_ijF-bz31dvTZJQoz0LyDXIeB1X6NQb7Vtbkvio73JIvZXEzlDrQxb3n71nG__TwZtDyVZIcTkfTEctek2SBfGlX6hdua3DwGJxNgysdNF-4VK42_2_2Kv0Mxqlo203_kDlKa9NuIdQA7pxMXltF6G7OfNF8XpA"/>
+</div>
+<div class="p-md">
+<h4 class="font-headline-sm text-headline-sm text-on-surface line-clamp-1">Architectural Drawing</h4>
+<div class="w-full bg-surface-container h-2 rounded-full mt-md mb-sm">
+<div class="bg-secondary w-0 h-full rounded-full"></div>
+</div>
+<div class="flex justify-between items-center mt-md">
+<span class="font-headline-sm text-headline-sm text-primary">$55.00</span>
+<button class="text-primary font-bold hover:underline flex items-center gap-xs">
+                                Add to Cart
+                            </button>
+</div>
+</div>
+</div>
+<!-- Card 3 -->
+<div class="bg-surface-container-lowest border border-outline-variant rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-all group">
+<div class="h-40 overflow-hidden">
+<img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" data-alt="A focused image of professional film equipment on a dolly track, set in a beautifully lit urban studio at dawn. High-end camera lenses and lighting rigs are visible. The atmosphere is productive and creative, perfectly capturing the essence of a professional filmmaking masterclass." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDUBkDTZ9kYiL7K7up3YVRphCuDJ5RIMRedpH1FYlPIPvwiTWXo2PJJptj15IGsHljRQBaaNO_YJg8DkwsjGtSnZRiBKA2f3QbtKv4lPKL9bZakOoXfxHbhxZaWZ7utpLESc9Fb2GAztG5mDJNB3prLwJPowADyNYEEvrFVXudeNTfRyCvTlqcNfHqLt1PQpciyDPxpnhzPySacp3MI3q-N5_ntxISTf1F_iKiKVs7Fy-ZVbNRJjPY1YA"/>
+</div>
+<div class="p-md">
+<h4 class="font-headline-sm text-headline-sm text-on-surface line-clamp-1">Cinematography 101</h4>
+<div class="w-full bg-surface-container h-2 rounded-full mt-md mb-sm">
+<div class="bg-secondary w-0 h-full rounded-full"></div>
+</div>
+<div class="flex justify-between items-center mt-md">
+<span class="font-headline-sm text-headline-sm text-primary">$72.25</span>
+<button class="text-primary font-bold hover:underline flex items-center gap-xs">
+                                Add to Cart
+                            </button>
+</div>
+</div>
+</div>
+</div>
+</section>
+</main>
+<!-- Footer Component -->
+<footer class="w-full mt-xl bg-surface-container border-t border-outline-variant">
+<div class="flex flex-col md:flex-row justify-between items-center py-xl px-md max-w-container-max mx-auto md:ml-64">
+<div class="mb-md md:mb-0">
+<span class="font-label-md text-label-md font-bold text-on-surface">EduStream LMS</span>
+<p class="font-body-sm text-body-sm text-on-surface-variant mt-xs">© 2024 EduStream LMS. All rights reserved.</p>
+</div>
+<div class="flex flex-wrap justify-center gap-lg">
+<a class="font-body-sm text-body-sm text-on-surface-variant hover:text-on-surface transition-colors" href="#">Privacy Policy</a>
+<a class="font-body-sm text-body-sm text-on-surface-variant hover:text-on-surface transition-colors" href="#">Terms of Service</a>
+<a class="font-body-sm text-body-sm text-on-surface-variant hover:text-on-surface transition-colors" href="#">Contact Support</a>
+</div>
+</div>
+</footer>
+<!-- Mobile Bottom Navigation (Sync with Sidebar) -->
+<nav class="md:hidden fixed bottom-0 left-0 w-full bg-surface-container border-t border-outline-variant flex justify-around py-sm z-50">
+<button class="flex flex-col items-center gap-xs text-on-surface-variant p-xs">
+<span class="material-symbols-outlined" data-icon="dashboard">dashboard</span>
+<span class="text-[10px] font-label-md">Dashboard</span>
+</button>
+<button class="flex flex-col items-center gap-xs text-on-surface-variant p-xs">
+<span class="material-symbols-outlined" data-icon="school">school</span>
+<span class="text-[10px] font-label-md">Courses</span>
+</button>
+<button class="flex flex-col items-center gap-xs text-primary p-xs">
+<span class="material-symbols-outlined" data-icon="shopping_cart" style="font-variation-settings: 'FILL' 1;">shopping_cart</span>
+<span class="text-[10px] font-label-md font-bold">Cart</span>
+</button>
+<button class="flex flex-col items-center gap-xs text-on-surface-variant p-xs">
+<span class="material-symbols-outlined" data-icon="settings">settings</span>
+<span class="text-[10px] font-label-md">Settings</span>
+</button>
+</nav>
+<script>
+        // Simple Micro-interactions
+        document.querySelectorAll('.active\\:scale-95').forEach(button => {
+            button.addEventListener('mousedown', () => {
+                button.style.transform = 'scale(0.95)';
+            });
+            button.addEventListener('mouseup', () => {
+                button.style.transform = 'scale(1)';
+            });
+            button.addEventListener('mouseleave', () => {
+                button.style.transform = 'scale(1)';
+            });
+        });
+    </script>
+</body></html>

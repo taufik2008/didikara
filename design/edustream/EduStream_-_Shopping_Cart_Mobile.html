@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>EduStream - Shopping Cart</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                      "on-tertiary": "#ffffff",
+                      "secondary-fixed": "#89f5e7",
+                      "on-background": "#0b1c30",
+                      "primary": "#3525cd",
+                      "outline-variant": "#c7c4d8",
+                      "on-tertiary-fixed-variant": "#653e00",
+                      "inverse-primary": "#c3c0ff",
+                      "on-primary": "#ffffff",
+                      "inverse-surface": "#213145",
+                      "on-tertiary-fixed": "#2a1700",
+                      "inverse-on-surface": "#eaf1ff",
+                      "tertiary-fixed": "#ffddb8",
+                      "primary-fixed-dim": "#c3c0ff",
+                      "tertiary-fixed-dim": "#ffb95f",
+                      "on-tertiary-container": "#ffd4a4",
+                      "on-secondary-fixed-variant": "#005049",
+                      "secondary": "#006a61",
+                      "on-surface": "#0b1c30",
+                      "surface-dim": "#cbdbf5",
+                      "outline": "#777587",
+                      "surface-tint": "#4d44e3",
+                      "on-primary-fixed-variant": "#3323cc",
+                      "surface-bright": "#f8f9ff",
+                      "secondary-container": "#86f2e4",
+                      "primary-container": "#4f46e5",
+                      "on-primary-container": "#dad7ff",
+                      "on-error-container": "#93000a",
+                      "on-error": "#ffffff",
+                      "on-secondary-fixed": "#00201d",
+                      "secondary-fixed-dim": "#6bd8cb",
+                      "on-secondary-container": "#006f66",
+                      "error-container": "#ffdad6",
+                      "tertiary-container": "#885500",
+                      "surface-container-lowest": "#ffffff",
+                      "on-surface-variant": "#464555",
+                      "tertiary": "#684000",
+                      "surface-container-high": "#dce9ff",
+                      "on-primary-fixed": "#0f0069",
+                      "surface-container-low": "#eff4ff",
+                      "surface-container-highest": "#d3e4fe",
+                      "on-secondary": "#ffffff",
+                      "error": "#ba1a1a",
+                      "surface-container": "#e5eeff",
+                      "primary-fixed": "#e2dfff",
+                      "background": "#f8f9ff",
+                      "surface": "#f8f9ff",
+                      "surface-variant": "#d3e4fe"
+              },
+              "borderRadius": {
+                      "DEFAULT": "0.25rem",
+                      "lg": "0.5rem",
+                      "xl": "0.75rem",
+                      "full": "9999px"
+              },
+              "spacing": {
+                      "sm": "8px",
+                      "margin-mobile": "16px",
+                      "xs": "4px",
+                      "container-max": "1280px",
+                      "lg": "24px",
+                      "base": "4px",
+                      "xl": "40px",
+                      "xxl": "64px",
+                      "md": "16px",
+                      "gutter": "24px"
+              },
+              "fontFamily": {
+                      "display-lg": ["Inter"],
+                      "body-sm": ["Inter"],
+                      "headline-lg": ["Inter"],
+                      "label-md": ["Inter"],
+                      "body-md": ["Inter"],
+                      "headline-md": ["Inter"],
+                      "label-sm": ["Inter"],
+                      "headline-lg-mobile": ["Inter"],
+                      "headline-sm": ["Inter"],
+                      "body-lg": ["Inter"]
+              },
+              "fontSize": {
+                      "display-lg": ["48px", {"lineHeight": "1.1", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                      "body-sm": ["14px", {"lineHeight": "1.5", "fontWeight": "400"}],
+                      "headline-lg": ["32px", {"lineHeight": "1.2", "letterSpacing": "-0.01em", "fontWeight": "600"}],
+                      "label-md": ["14px", {"lineHeight": "1", "letterSpacing": "0.01em", "fontWeight": "500"}],
+                      "body-md": ["16px", {"lineHeight": "1.5", "fontWeight": "400"}],
+                      "headline-md": ["24px", {"lineHeight": "1.3", "fontWeight": "600"}],
+                      "label-sm": ["12px", {"lineHeight": "1", "fontWeight": "600"}],
+                      "headline-lg-mobile": ["24px", {"lineHeight": "1.2", "fontWeight": "600"}],
+                      "headline-sm": ["20px", {"lineHeight": "1.4", "fontWeight": "600"}],
+                      "body-lg": ["18px", {"lineHeight": "1.6", "fontWeight": "400"}]
+              }
+            },
+          },
+        }
+    </script>
+<style>
+        body { font-family: 'Inter', sans-serif; -webkit-font-smoothing: antialiased; }
+        .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+        .hide-scrollbar::-webkit-scrollbar { display: none; }
+        .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background text-on-surface">
+<!-- TopAppBar -->
+<header class="fixed top-0 w-full z-50 bg-surface dark:bg-on-background shadow-sm flex justify-between items-center px-margin-mobile h-14 w-full">
+<div class="flex items-center gap-md">
+<span class="material-symbols-outlined text-on-surface-variant cursor-pointer active:scale-95 transition-transform">arrow_back</span>
+<h1 class="font-headline-md text-headline-md font-bold text-primary dark:text-primary-fixed">Shopping Cart</h1>
+</div>
+<div class="flex items-center gap-sm">
+<div class="w-8 h-8 rounded-full bg-surface-container-high overflow-hidden border border-outline-variant">
+<img class="w-full h-full object-cover" data-alt="A professional studio portrait of a young adult learner with a friendly expression. The lighting is bright and clean, characteristic of a high-end educational platform. The background is a soft, blurred corporate office setting with hints of indigo and white to match the brand's primary color palette." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDj9M038i7N0vZ6OdumXE6U2-R3UnBmGHl0aztBbvtWW1KVfFWY5QuQPQQXGRkgoCAv0QS52G66wFmbhaj6AEoVs7lKqY5exhH1mXhsMId9O-zGInbT2HU6bQ4xUwZobDWn4Ofh2E5MWB1kfSOvN904vdWEjH8FFQGPtDDJMipD4olZ3DGbd_ctETXFTnaxs2jDfWfU1zswMkDC0IxO2wy1HzV4A4Kh8stO64kyw6BMa-3yi3zX0zJwFQ"/>
+</div>
+</div>
+</header>
+<!-- Main Content Canvas -->
+<main class="pt-20 pb-64 px-margin-mobile max-w-container-max mx-auto">
+<!-- Cart Items List -->
+<section class="space-y-md mb-xl">
+<h2 class="font-headline-sm text-headline-sm text-on-surface mb-sm">Items in Cart (2)</h2>
+<!-- Cart Card 1 -->
+<div class="bg-surface-container-lowest p-md rounded-xl border border-outline-variant shadow-sm flex gap-md relative group transition-all duration-300 hover:shadow-md">
+<div class="w-24 h-24 rounded-lg overflow-hidden flex-shrink-0 bg-surface-container-high">
+<img class="w-full h-full object-cover" data-alt="High-quality digital illustration representing an Advanced UI Design course. It features sleek, floating glassmorphic interface elements, wireframe structures, and vibrant indigo color gradients. The composition is modern and tech-focused, reflecting corporate efficiency and educational excellence." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAuKcxE2LSuUabm2xJG5yJVWn3GPd5KpSE-JPtvpqv9LU_Xht4MBo-DyGRO6RMGlOZJBIY7J2ePOb6LG2q4yl1JFMhjcALVonjb7bh-nWNHUYPQ3TRn0WLI9bWWx2VF8r_rHec6OoUdTyzjMmVZAoRjtx3pUnxMPvw-febOv-EHPqJ5L1fFFHP5ErshG6mMstvbXLfcAeMT09c-xg0aW-RaYitYNMBtNL5ASv7gY90cZhA_0rFWkbhVbw"/>
+</div>
+<div class="flex flex-col justify-between flex-grow">
+<div>
+<h3 class="font-headline-sm text-headline-sm leading-tight mb-xs">Advanced UI Design Systems</h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant">by Sarah Jenkins</p>
+</div>
+<div class="flex justify-between items-end">
+<span class="font-headline-sm text-headline-sm text-primary">$89.99</span>
+</div>
+</div>
+<button class="absolute top-md right-md p-2 text-on-surface-variant hover:bg-surface-container-high rounded-full transition-colors active:scale-90">
+<span class="material-symbols-outlined">delete</span>
+</button>
+</div>
+<!-- Cart Card 2 -->
+<div class="bg-surface-container-lowest p-md rounded-xl border border-outline-variant shadow-sm flex gap-md relative group transition-all duration-300 hover:shadow-md">
+<div class="w-24 h-24 rounded-lg overflow-hidden flex-shrink-0 bg-surface-container-high">
+<img class="w-full h-full object-cover" data-alt="A clean, professional photograph of a laptop displaying complex data visualization charts and code snippets. The setting is a minimalist workspace with a plant and a cup of coffee. The lighting is natural and bright, evoking a sense of calm productivity and intellectual growth." src="https://lh3.googleusercontent.com/aida-public/AB6AXuB-ENfYX13uw4U8uHne5pXsBdQBscYNgHtgQHt5yIf0vM4T-9DlVx0eaY9yc5gn1hjFUq1PyCX83myjA19DvRfvCarz01lhfqU0ukVpLetQ5xuhYjU0xz3DCWLFfcFLo3z01QrhzQx1a1iWSOO5oHmLda3IU4VxV8XfA-gujZF6T-Af3pM_LT_OZunsuXVqDQOk1WCndqSGpWlt6Tq2zdd6MMe610BYGGXxvlNW3BeXPUv7oUSgz3cBKg"/>
+</div>
+<div class="flex flex-col justify-between flex-grow">
+<div>
+<h3 class="font-headline-sm text-headline-sm leading-tight mb-xs">Full-Stack Development Boot Camp</h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant">by Dr. Michael Chen</p>
+</div>
+<div class="flex justify-between items-end">
+<span class="font-headline-sm text-headline-sm text-primary">$124.50</span>
+</div>
+</div>
+<button class="absolute top-md right-md p-2 text-on-surface-variant hover:bg-surface-container-high rounded-full transition-colors active:scale-90">
+<span class="material-symbols-outlined">delete</span>
+</button>
+</div>
+</section>
+<!-- Recommended Section -->
+<section class="mb-xl">
+<div class="flex justify-between items-center mb-md">
+<h2 class="font-headline-sm text-headline-sm text-on-surface">Recommended for You</h2>
+<button class="text-primary font-label-md text-label-md hover:underline">View All</button>
+</div>
+<div class="flex overflow-x-auto gap-md hide-scrollbar pb-xs">
+<!-- Recommended Item 1 -->
+<div class="min-w-[240px] bg-surface-container-lowest rounded-xl border border-outline-variant overflow-hidden flex-shrink-0 shadow-sm hover:shadow-md transition-shadow">
+<div class="h-32 w-full">
+<img class="w-full h-full object-cover" data-alt="Dynamic corporate flat illustration of a team collaborating on a project. The style uses clean lines, ample white space, and a primary palette of indigo and soft teal. The characters look professional and engaged, fitting the academic reliability of the EduStream brand." src="https://lh3.googleusercontent.com/aida-public/AB6AXuC7IASk2JdI6x4v04ho70PNPb4TnyalKzaiIErhROWprz5HU1fSmspuNr62EAMvMaIJTWuwLEJ_kZTqGnVZDw81ZUCKKphWlXRWcpmhgwMg054OVowAJL2eMPNiuV26Bt1EgSYG0Ws5j0UPRzFMUy5sKlHkEkK27AtQlvarBzlVewKUOGKE58g7wTyxAEHqiN5n59FKOX0RvM3MmhKAJiKSv3M2eXiQ1DpA6WXcViWYRewFdDYjb5QR4g"/>
+</div>
+<div class="p-md">
+<span class="inline-block px-2 py-0.5 rounded-full bg-primary-container/10 text-primary font-label-sm text-label-sm mb-xs">Business</span>
+<h4 class="font-label-md text-label-md text-on-surface line-clamp-2 mb-sm">Agile Project Management Masterclass</h4>
+<div class="flex items-center justify-between mt-md">
+<span class="font-headline-sm text-headline-sm text-on-surface">$45.00</span>
+<button class="w-8 h-8 rounded-full bg-primary text-on-primary flex items-center justify-center active:scale-90 transition-transform">
+<span class="material-symbols-outlined text-[18px]">add_shopping_cart</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Recommended Item 2 -->
+<div class="min-w-[240px] bg-surface-container-lowest rounded-xl border border-outline-variant overflow-hidden flex-shrink-0 shadow-sm hover:shadow-md transition-shadow">
+<div class="h-32 w-full">
+<img class="w-full h-full object-cover" data-alt="A focused close-up of a person writing in a high-quality leather journal next to a tablet showing educational diagrams. The color scheme is warm but professional, with soft focus backgrounds. This represents the high-focus environment target learners seek on EduStream." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAvdUWgaIXcvhTCdXI9YT22r5kcq-fFXtq3qWRRXhr8JPt2eI_fR5W0XmU8nGAYjn-ImxXc2dmbDG74I-Jh1GCQeFVvq9EFMOVdiWprxoo_mQVLjmwnMU4rooM-uIBws5T4oVjCWViPhnAM43SWj_xED3nxpMbZz6B9wzywYk7moYJ7-aMwX0yrdL9JFJmKnYYRndToUFgTsvZhKvfCGyYFoRpebkRPhTuCjwED9e38vxqAazpQnCm1Rw"/>
+</div>
+<div class="p-md">
+<span class="inline-block px-2 py-0.5 rounded-full bg-primary-container/10 text-primary font-label-sm text-label-sm mb-xs">Growth</span>
+<h4 class="font-label-md text-label-md text-on-surface line-clamp-2 mb-sm">Effective Communication for Leaders</h4>
+<div class="flex items-center justify-between mt-md">
+<span class="font-headline-sm text-headline-sm text-on-surface">$59.99</span>
+<button class="w-8 h-8 rounded-full bg-primary text-on-primary flex items-center justify-center active:scale-90 transition-transform">
+<span class="material-symbols-outlined text-[18px]">add_shopping_cart</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Recommended Item 3 -->
+<div class="min-w-[240px] bg-surface-container-lowest rounded-xl border border-outline-variant overflow-hidden flex-shrink-0 shadow-sm hover:shadow-md transition-shadow">
+<div class="h-32 w-full">
+<img class="w-full h-full object-cover" data-alt="Abstract digital representation of artificial intelligence and machine learning. Glowing network nodes and data streams in shades of indigo and electric blue on a dark background. The image is sophisticated and crisp, emphasizing modern efficiency and intellectual clarity." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDT_8Py4a2663XWg7U15xKa-6syMa65YVPV64xWW1U5FUja7LRTVkEiiORm8gzpQBRCX1Y83Y5udjHVJ1CVaklabVxbbD6gftIZB89bKSrzzDnoY31ZuanJnG0yFFS9Cck-Bl9aKXAK5HK_kmABboGI0Ekb3Wo4UdUp52jbAJtVbFB5e10nwVG70QDH7pkmhVQgXIZnUqih0Abdsv9fbbUBpH-A4T-T_R1D32Go9bTVwxgVChXPaLNNoA"/>
+</div>
+<div class="p-md">
+<span class="inline-block px-2 py-0.5 rounded-full bg-primary-container/10 text-primary font-label-sm text-label-sm mb-xs">Tech</span>
+<h4 class="font-label-md text-label-md text-on-surface line-clamp-2 mb-sm">AI Fundamentals & Ethics</h4>
+<div class="flex items-center justify-between mt-md">
+<span class="font-headline-sm text-headline-sm text-on-surface">$72.50</span>
+<button class="w-8 h-8 rounded-full bg-primary text-on-primary flex items-center justify-center active:scale-90 transition-transform">
+<span class="material-symbols-outlined text-[18px]">add_shopping_cart</span>
+</button>
+</div>
+</div>
+</div>
+</div>
+</section>
+</main>
+<!-- Sticky Checkout Section -->
+<div class="fixed bottom-[72px] left-0 w-full bg-surface border-t border-outline-variant px-margin-mobile py-md shadow-[0_-4px_12px_rgba(0,0,0,0.05)] z-40">
+<div class="max-w-container-max mx-auto space-y-sm">
+<div class="flex justify-between items-center text-on-surface-variant font-body-sm text-body-sm">
+<span>Subtotal</span>
+<span>$214.49</span>
+</div>
+<div class="flex justify-between items-center text-on-surface-variant font-body-sm text-body-sm">
+<span>Platform Fee</span>
+<span>$4.99</span>
+</div>
+<div class="flex justify-between items-center text-on-surface font-headline-sm text-headline-sm">
+<span>Total</span>
+<span class="text-primary">$219.48</span>
+</div>
+<button class="w-full h-12 bg-primary text-on-primary rounded-xl font-label-md text-label-md uppercase tracking-wider flex items-center justify-center gap-sm active:scale-[0.98] transition-all hover:bg-primary-container/90">
+                Proceed to Checkout
+                <span class="material-symbols-outlined">chevron_right</span>
+</button>
+</div>
+</div>
+<!-- BottomNavBar -->
+<nav class="fixed bottom-0 left-0 w-full z-50 flex justify-around items-center px-2 py-3 bg-surface dark:bg-on-background border-t border-outline-variant h-[72px]">
+<div class="flex flex-col items-center justify-center text-on-surface-variant hover:bg-surface-container-high transition-colors px-4 py-1 rounded-full cursor-pointer">
+<span class="material-symbols-outlined">home</span>
+<span class="font-label-sm text-label-sm">Home</span>
+</div>
+<!-- Courses is active because cart is usually accessed from or leads back to Courses/Discovery -->
+<div class="flex flex-col items-center justify-center bg-primary-container text-on-primary-container rounded-full px-4 py-1 cursor-pointer">
+<span class="material-symbols-outlined">school</span>
+<span class="font-label-sm text-label-sm">Courses</span>
+</div>
+<div class="flex flex-col items-center justify-center text-on-surface-variant hover:bg-surface-container-high transition-colors px-4 py-1 rounded-full cursor-pointer">
+<span class="material-symbols-outlined">menu_book</span>
+<span class="font-label-sm text-label-sm">My Learning</span>
+</div>
+<div class="flex flex-col items-center justify-center text-on-surface-variant hover:bg-surface-container-high transition-colors px-4 py-1 rounded-full cursor-pointer">
+<span class="material-symbols-outlined">settings</span>
+<span class="font-label-sm text-label-sm">Settings</span>
+</div>
+</nav>
+<script>
+        // Simple micro-interaction for item removal (UI only)
+        document.querySelectorAll('.material-symbols-outlined').forEach(icon => {
+            if (icon.textContent === 'delete') {
+                icon.parentElement.addEventListener('click', function() {
+                    const card = this.closest('.bg-surface-container-lowest');
+                    card.style.opacity = '0';
+                    card.style.transform = 'translateX(20px)';
+                    setTimeout(() => {
+                        card.style.display = 'none';
+                    }, 300);
+                });
+            }
+        });
+
+        // Add to cart micro-interaction
+        document.querySelectorAll('button .material-symbols-outlined').forEach(icon => {
+            if (icon.textContent === 'add_shopping_cart') {
+                icon.parentElement.addEventListener('click', function() {
+                    this.innerHTML = '<span class="material-symbols-outlined text-[18px]">check</span>';
+                    this.classList.replace('bg-primary', 'bg-secondary');
+                    setTimeout(() => {
+                        this.innerHTML = '<span class="material-symbols-outlined text-[18px]">add_shopping_cart</span>';
+                        this.classList.replace('bg-secondary', 'bg-primary');
+                    }, 2000);
+                });
+            }
+        });
+    </script>
+</body></html>

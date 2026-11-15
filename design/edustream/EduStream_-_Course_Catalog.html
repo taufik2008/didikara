@@ -1,0 +1,577 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>EduStream - Browse Courses</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            vertical-align: middle;
+        }
+        .filled-icon {
+            font-variation-settings: 'FILL' 1;
+        }
+        body {
+            font-family: 'Inter', sans-serif;
+            scroll-behavior: smooth;
+        }
+        /* Custom scrollbar for side nav */
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 4px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 10px;
+        }
+    </style>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "inverse-surface": "#213145",
+                        "error-container": "#ffdad6",
+                        "on-secondary-fixed": "#00201d",
+                        "on-tertiary-fixed-variant": "#653e00",
+                        "background": "#f8f9ff",
+                        "surface-container-low": "#eff4ff",
+                        "surface-tint": "#4d44e3",
+                        "surface": "#f8f9ff",
+                        "on-background": "#0b1c30",
+                        "surface-dim": "#cbdbf5",
+                        "secondary-container": "#86f2e4",
+                        "on-surface": "#0b1c30",
+                        "on-primary": "#ffffff",
+                        "on-tertiary-fixed": "#2a1700",
+                        "secondary-fixed": "#89f5e7",
+                        "on-tertiary": "#ffffff",
+                        "inverse-on-surface": "#eaf1ff",
+                        "tertiary-container": "#885500",
+                        "primary-fixed-dim": "#c3c0ff",
+                        "surface-bright": "#f8f9ff",
+                        "surface-container": "#e5eeff",
+                        "primary-fixed": "#e2dfff",
+                        "secondary-fixed-dim": "#6bd8cb",
+                        "surface-container-lowest": "#ffffff",
+                        "error": "#ba1a1a",
+                        "tertiary": "#684000",
+                        "surface-container-highest": "#d3e4fe",
+                        "on-secondary-container": "#006f66",
+                        "tertiary-fixed": "#ffddb8",
+                        "on-secondary": "#ffffff",
+                        "primary": "#3525cd",
+                        "primary-container": "#4f46e5",
+                        "on-error": "#ffffff",
+                        "tertiary-fixed-dim": "#ffb95f",
+                        "on-primary-fixed": "#0f0069",
+                        "on-tertiary-container": "#ffd4a4",
+                        "on-secondary-fixed-variant": "#005049",
+                        "on-primary-container": "#dad7ff",
+                        "on-surface-variant": "#464555",
+                        "on-primary-fixed-variant": "#3323cc",
+                        "secondary": "#006a61",
+                        "on-error-container": "#93000a",
+                        "outline-variant": "#c7c4d8",
+                        "outline": "#777587",
+                        "inverse-primary": "#c3c0ff",
+                        "surface-container-high": "#dce9ff"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "gutter": "24px",
+                        "base": "4px",
+                        "margin-mobile": "16px",
+                        "lg": "24px",
+                        "xl": "40px",
+                        "container-max": "1280px",
+                        "sm": "8px",
+                        "xxl": "64px",
+                        "xs": "4px",
+                        "md": "16px"
+                    },
+                    "fontFamily": {
+                        "headline-md": ["Inter"],
+                        "body-sm": ["Inter"],
+                        "body-md": ["Inter"],
+                        "label-md": ["Inter"],
+                        "body-lg": ["Inter"],
+                        "headline-lg": ["Inter"],
+                        "display-lg": ["Inter"],
+                        "headline-lg-mobile": ["Inter"],
+                        "label-sm": ["Inter"],
+                        "headline-sm": ["Inter"]
+                    },
+                    "fontSize": {
+                        "headline-md": ["24px", {"lineHeight": "1.3", "fontWeight": "600"}],
+                        "body-sm": ["14px", {"lineHeight": "1.5", "fontWeight": "400"}],
+                        "body-md": ["16px", {"lineHeight": "1.5", "fontWeight": "400"}],
+                        "label-md": ["14px", {"lineHeight": "1", "letterSpacing": "0.01em", "fontWeight": "500"}],
+                        "body-lg": ["18px", {"lineHeight": "1.6", "fontWeight": "400"}],
+                        "headline-lg": ["32px", {"lineHeight": "1.2", "letterSpacing": "-0.01em", "fontWeight": "600"}],
+                        "display-lg": ["48px", {"lineHeight": "1.1", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                        "headline-lg-mobile": ["24px", {"lineHeight": "1.2", "fontWeight": "600"}],
+                        "label-sm": ["12px", {"lineHeight": "1", "fontWeight": "600"}],
+                        "headline-sm": ["20px", {"lineHeight": "1.4", "fontWeight": "600"}]
+                    }
+                },
+            },
+        }
+    </script>
+</head>
+<body class="bg-background text-on-surface">
+<!-- TopNavBar -->
+<header class="fixed top-0 left-0 right-0 z-50 bg-surface dark:bg-surface-container-low border-b border-outline-variant dark:border-outline shadow-sm dark:shadow-none h-16">
+<div class="flex justify-between items-center w-full px-lg max-w-container-max mx-auto h-full">
+<div class="flex items-center gap-xl">
+<span class="font-headline-md text-headline-md font-bold text-primary dark:text-primary-fixed-dim">EduStream</span>
+<nav class="hidden md:flex items-center gap-lg">
+<a class="text-on-surface-variant dark:text-on-surface-variant font-medium hover:text-primary dark:hover:text-primary-fixed transition-colors font-label-md text-label-md" href="#">Course Categories</a>
+<a class="text-on-surface-variant dark:text-on-surface-variant font-medium hover:text-primary dark:hover:text-primary-fixed transition-colors font-label-md text-label-md" href="#">My Learning</a>
+</nav>
+</div>
+<div class="flex items-center gap-md">
+<div class="relative hidden sm:block">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant">search</span>
+<input class="pl-10 pr-4 py-2 bg-surface-container rounded-full border-none focus:ring-2 focus:ring-primary w-64 text-sm" placeholder="Search courses..." type="text"/>
+</div>
+<button class="p-2 rounded-full hover:bg-surface-container-high transition-colors">
+<span class="material-symbols-outlined text-on-surface-variant" data-icon="notifications">notifications</span>
+</button>
+<div class="w-8 h-8 rounded-full overflow-hidden border border-outline-variant">
+<img class="w-full h-full object-cover" data-alt="Close-up professional portrait of a smiling diverse woman in her late 20s, wearing business casual attire, against a soft blurred office background with warm lighting. The image maintains a clean, modern aesthetic with high-quality focus and natural skin tones, fitting into a premium academic platform interface." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAxEx5fs2wYTTqA72fK6K-YqLV0EooY8R0sF5pFEl520Vl7zZYxFYQ4TuQevBbve8FxKudkxp1uQZKSMHTXXU6mAd_88bsghLrWmx3we_n4-X8Hm1-2XZ3B9RusuLzJIqqPcav_kA5Fzr-dUh1CZX-qQmf3Or92L2s4zTdSH2xq4jVZZGir8M2eerlHY0Rc98LTeSzEqi-xVsXZ1aciSpQWJb-6VY4EmwcwnSlheJXujZ6PPS1wfw95dQ"/>
+</div>
+</div>
+</div>
+</header>
+<!-- SideNavBar (Hidden on Mobile, visible on Desktop) -->
+<aside class="hidden md:flex fixed left-0 top-16 h-[calc(100vh-64px)] w-64 bg-surface-container dark:bg-inverse-surface flex-col p-md z-40 shadow-sm custom-scrollbar overflow-y-auto">
+<div class="mb-xl px-md">
+<h2 class="font-headline-sm text-headline-sm font-bold text-primary dark:text-primary-fixed-dim">EduStream</h2>
+<p class="text-xs text-on-surface-variant opacity-70">Learning Dashboard</p>
+</div>
+<nav class="flex flex-col gap-base">
+<a class="flex items-center gap-md text-on-surface-variant dark:text-outline-variant px-md py-sm hover:bg-surface-container-highest dark:hover:bg-surface-variant transition-all rounded-lg font-label-md text-label-md" href="#">
+<span class="material-symbols-outlined" data-icon="home">home</span>
+<span>Home</span>
+</a>
+<a class="flex items-center gap-md bg-primary-container dark:bg-primary text-on-primary-container dark:text-on-primary rounded-lg px-md py-sm font-label-md text-label-md" href="#">
+<span class="material-symbols-outlined" data-icon="school">school</span>
+<span>Courses</span>
+</a>
+<a class="flex items-center gap-md text-on-surface-variant dark:text-outline-variant px-md py-sm hover:bg-surface-container-highest dark:hover:bg-surface-variant transition-all rounded-lg font-label-md text-label-md" href="#">
+<span class="material-symbols-outlined" data-icon="assignment">assignment</span>
+<span>Assignments</span>
+</a>
+<a class="flex items-center gap-md text-on-surface-variant dark:text-outline-variant px-md py-sm hover:bg-surface-container-highest dark:hover:bg-surface-variant transition-all rounded-lg font-label-md text-label-md" href="#">
+<span class="material-symbols-outlined" data-icon="grade">grade</span>
+<span>Grades</span>
+</a>
+<a class="flex items-center gap-md text-on-surface-variant dark:text-outline-variant px-md py-sm hover:bg-surface-container-highest dark:hover:bg-surface-variant transition-all rounded-lg font-label-md text-label-md" href="#">
+<span class="material-symbols-outlined" data-icon="library_books">library_books</span>
+<span>Resources</span>
+</a>
+<div class="my-md border-t border-outline-variant opacity-30"></div>
+<a class="flex items-center gap-md text-on-surface-variant dark:text-outline-variant px-md py-sm hover:bg-surface-container-highest dark:hover:bg-surface-variant transition-all rounded-lg font-label-md text-label-md" href="#">
+<span class="material-symbols-outlined" data-icon="settings">settings</span>
+<span>Settings</span>
+</a>
+</nav>
+</aside>
+<!-- Main Content Area -->
+<main class="pt-24 pb-xl md:pl-72 pr-lg max-w-container-max mx-auto">
+<!-- Breadcrumbs -->
+<nav class="mb-lg flex items-center gap-2 text-on-surface-variant font-label-md text-label-md px-4 md:px-0">
+<a class="hover:text-primary transition-colors" href="#">Home</a>
+<span class="material-symbols-outlined text-sm">chevron_right</span>
+<span class="text-primary font-bold">Course Catalog</span>
+</nav>
+<div class="flex flex-col lg:flex-row gap-lg px-4 md:px-0">
+<!-- Filter Sidebar -->
+<aside class="w-full lg:w-64 flex-shrink-0">
+<div class="bg-surface-container-lowest border border-outline-variant rounded-xl p-lg sticky top-24 shadow-sm">
+<div class="flex justify-between items-center mb-lg">
+<h3 class="font-headline-sm text-headline-sm">Filters</h3>
+<button class="text-xs text-primary font-semibold hover:underline">Clear all</button>
+</div>
+<!-- Category Filter -->
+<div class="mb-xl">
+<h4 class="font-label-md text-label-md mb-md text-on-surface font-bold">Category</h4>
+<div class="space-y-sm">
+<label class="flex items-center gap-md cursor-pointer group">
+<input class="rounded text-primary focus:ring-primary border-outline-variant" type="checkbox"/>
+<span class="text-body-sm text-on-surface-variant group-hover:text-on-surface transition-colors">Design</span>
+</label>
+<label class="flex items-center gap-md cursor-pointer group">
+<input checked="" class="rounded text-primary focus:ring-primary border-outline-variant" type="checkbox"/>
+<span class="text-body-sm text-on-surface-variant group-hover:text-on-surface transition-colors">Development</span>
+</label>
+<label class="flex items-center gap-md cursor-pointer group">
+<input class="rounded text-primary focus:ring-primary border-outline-variant" type="checkbox"/>
+<span class="text-body-sm text-on-surface-variant group-hover:text-on-surface transition-colors">Business</span>
+</label>
+<label class="flex items-center gap-md cursor-pointer group">
+<input class="rounded text-primary focus:ring-primary border-outline-variant" type="checkbox"/>
+<span class="text-body-sm text-on-surface-variant group-hover:text-on-surface transition-colors">Marketing</span>
+</label>
+</div>
+</div>
+<!-- Level Filter -->
+<div class="mb-xl">
+<h4 class="font-label-md text-label-md mb-md text-on-surface font-bold">Level</h4>
+<div class="space-y-sm">
+<label class="flex items-center gap-md cursor-pointer group">
+<input class="rounded text-primary focus:ring-primary border-outline-variant" type="checkbox"/>
+<span class="text-body-sm text-on-surface-variant group-hover:text-on-surface transition-colors">Beginner</span>
+</label>
+<label class="flex items-center gap-md cursor-pointer group">
+<input class="rounded text-primary focus:ring-primary border-outline-variant" type="checkbox"/>
+<span class="text-body-sm text-on-surface-variant group-hover:text-on-surface transition-colors">Intermediate</span>
+</label>
+<label class="flex items-center gap-md cursor-pointer group">
+<input class="rounded text-primary focus:ring-primary border-outline-variant" type="checkbox"/>
+<span class="text-body-sm text-on-surface-variant group-hover:text-on-surface transition-colors">Expert</span>
+</label>
+</div>
+</div>
+<!-- Rating Filter -->
+<div class="mb-xl">
+<h4 class="font-label-md text-label-md mb-md text-on-surface font-bold">Rating</h4>
+<div class="space-y-sm">
+<label class="flex items-center gap-md cursor-pointer group">
+<input class="text-primary focus:ring-primary border-outline-variant" name="rating" type="radio"/>
+<div class="flex items-center text-tertiary">
+<span class="material-symbols-outlined text-sm filled-icon">star</span>
+<span class="material-symbols-outlined text-sm filled-icon">star</span>
+<span class="material-symbols-outlined text-sm filled-icon">star</span>
+<span class="material-symbols-outlined text-sm filled-icon">star</span>
+<span class="text-body-sm text-on-surface-variant ml-1">&amp; up</span>
+</div>
+</label>
+</div>
+</div>
+<!-- Price Range -->
+<div class="mb-lg">
+<h4 class="font-label-md text-label-md mb-md text-on-surface font-bold">Price Range</h4>
+<input class="w-full h-1 bg-surface-container-high rounded-full appearance-none cursor-pointer accent-primary" type="range"/>
+<div class="flex justify-between mt-sm text-xs text-on-surface-variant">
+<span>$0</span>
+<span>$500+</span>
+</div>
+</div>
+</div>
+</aside>
+<!-- Catalog Section -->
+<div class="flex-grow">
+<!-- Sorting & Stats Bar -->
+<div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-xl gap-md">
+<div>
+<h1 class="font-headline-lg text-headline-lg mb-xs">Available Courses</h1>
+<p class="text-body-sm text-on-surface-variant">Showing <span class="font-bold text-on-surface">1,248</span> courses based on your criteria</p>
+</div>
+<div class="flex items-center gap-sm">
+<span class="text-label-md font-label-md text-on-surface-variant">Sort by:</span>
+<select class="bg-surface-container border-none rounded-lg text-label-md font-label-md py-2 pl-3 pr-8 focus:ring-2 focus:ring-primary cursor-pointer">
+<option>Most Popular</option>
+<option>Newest</option>
+<option>Highest Rated</option>
+<option>Price: Low to High</option>
+</select>
+</div>
+</div>
+<!-- Course Grid (Bento style) -->
+<div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-lg">
+<!-- Course Card 1 -->
+<div class="bg-surface-container-lowest border border-outline-variant rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-all group cursor-pointer hover:-translate-y-1">
+<div class="relative h-48 overflow-hidden">
+<img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" data-alt="A clean, minimalist high-angle shot of a desk with a sleek laptop, a focused architectural diagram, and a soft-lit atmosphere. The color palette is dominated by professional blues and clean whites, reflecting an advanced web development course aesthetic. Soft morning light creates a sense of clarity and modern productivity." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCL821ghPiqvAmVtY3UuIatjYWr68MPj8zgMdCpeQxUCzofLNbnunziXu4DhT4J_t66Z5nfyyjWoz6hP3ucck8pLBPkEq8cmxbSUuNsbwFD6eC5ena3VCg85QTk39CXWr9ciiwmPwbNZUe0f0laHKhoMxHBL7--nmIozRE4zc61EtdGDG8OyNGQEJyfhQddrYVayG1UfPmxQhKaIBuQn1s8izC80cXKJ4QMOJx5oCW1WEvfLiA9GXwiQw"/>
+<div class="absolute top-3 left-3 flex gap-2">
+<span class="bg-primary/90 text-on-primary text-[10px] px-2 py-1 rounded font-bold uppercase tracking-wider">Bestseller</span>
+</div>
+<button class="absolute bottom-3 right-3 bg-white/90 p-2 rounded-full shadow-lg opacity-0 group-hover:opacity-100 transition-opacity">
+<span class="material-symbols-outlined text-primary">bookmark</span>
+</button>
+</div>
+<div class="p-lg">
+<div class="flex items-center gap-2 mb-sm">
+<span class="px-2 py-0.5 bg-primary/10 text-primary text-[10px] font-bold rounded-full">Development</span>
+<span class="text-on-surface-variant text-[10px] font-medium uppercase tracking-widest">• 12h 45m</span>
+</div>
+<h3 class="font-headline-sm text-headline-sm mb-sm group-hover:text-primary transition-colors line-clamp-2">Advanced React &amp; System Architecture</h3>
+<div class="flex items-center gap-2 mb-md">
+<div class="w-6 h-6 rounded-full overflow-hidden bg-surface-container">
+<img class="w-full h-full object-cover" data-alt="Close-up headshot of a professional male instructor in his 40s, wearing glasses and a crisp navy blue shirt, appearing knowledgeable and friendly. The portrait is high-definition with a blurred studio background that suggests an academic environment, maintaining the EduStream corporate modern style." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCzt4FmLORqe3sA2Og0512IPug_f9yvF2mF6DiqyXJqN9jUKbUl5Mo1CmbFddngoF1-UBIuMvP72WSWEgZ9D0GyqY6oXtR1rPJXghzztgyl5zuTosKAMKUOc4Ekt9rIjV6hAPnlfWxl9Azf2ekye8O9qekKDq6BWFlC9ryO3dvsUvkZRXb8yuDu_ZSModtp6ILfol9IZLT-W2JDtbCF-2qKiCwM_sk9TmBfAdjtL3LQyTNLxd2yclyeXA"/>
+</div>
+<span class="text-body-sm text-on-surface-variant">David Henderson</span>
+</div>
+<div class="flex items-center justify-between mt-auto">
+<div class="flex items-center text-tertiary">
+<span class="material-symbols-outlined text-sm filled-icon">star</span>
+<span class="text-label-md font-bold ml-1">4.9</span>
+<span class="text-on-surface-variant text-[11px] ml-1">(2.5k)</span>
+</div>
+<div class="flex items-baseline gap-1">
+<span class="text-headline-sm text-on-surface">$89.99</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Course Card 2 -->
+<div class="bg-surface-container-lowest border border-outline-variant rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-all group cursor-pointer hover:-translate-y-1">
+<div class="relative h-48 overflow-hidden">
+<img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" data-alt="A sophisticated UI/UX design workspace featuring a large monitor showing complex design software, color palettes, and wireframes. The lighting is moody and focused, with indigo and soft teal accents reflecting the brand's aesthetic. The scene communicates professional excellence and high-level artistic training." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBBJmMFgaIjFqkpCD0lZ_uZfdUV5cvxnFvddJPDX70cny3AL2wGKCEpo_g3UM3BeACRlzk7v3rp4r2jQxkraGwNmK_tI7cWc2BYdN5-aHZAuMV1larXgRP90Rhpb5BhOUbJpSF37IyES6-B7mc7hntQUC17B2f_xBfRvKXDtJrNtI3fKGpnm6Z2WF5o2HOBxsPihN29uxdUe81lvGkm6snZaEaCfysBO3eCav_Si8AiXMdcnfCmOvLdtQ"/>
+<div class="absolute top-3 left-3 flex gap-2">
+<span class="bg-secondary/90 text-on-secondary text-[10px] px-2 py-1 rounded font-bold uppercase tracking-wider">New</span>
+</div>
+</div>
+<div class="p-lg">
+<div class="flex items-center gap-2 mb-sm">
+<span class="px-2 py-0.5 bg-primary/10 text-primary text-[10px] font-bold rounded-full">Design</span>
+<span class="text-on-surface-variant text-[10px] font-medium uppercase tracking-widest">• 8h 20m</span>
+</div>
+<h3 class="font-headline-sm text-headline-sm mb-sm group-hover:text-primary transition-colors line-clamp-2">Mastering Figma Auto-Layout 3.0</h3>
+<div class="flex items-center gap-2 mb-md">
+<div class="w-6 h-6 rounded-full overflow-hidden bg-surface-container">
+<img class="w-full h-full object-cover" data-alt="Professional portrait of a creative female lead instructor in her 30s, with a stylish and confident look, in a modern bright studio. The background is slightly out of focus with artistic decor elements. The lighting is natural and crisp, emphasizing a sense of competence and contemporary design expertise." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBfHSk8ZZCRbO43I8razRbFz5HaGqAHCXS8K-7LfiqOc_Eg-lDGqX164It2ycYivE7TXL9uGdrRKZyRlcGhXXDikz3x8rmwUT-6iSEQTFxZVW0HAz4Wg0lf0eFIXax-PitPbFlPDH43FVEpVvya7xdBLcJhlc3nR5CcOa1cjED994uM0NZMS4p3N0Njf7A4RLb3968HGW2HcMpR5cOqhQeDUDlad5vmPiS8aXizjPjwWAtmw0onbEim_A"/>
+</div>
+<span class="text-body-sm text-on-surface-variant">Sarah Jenkins</span>
+</div>
+<div class="flex items-center justify-between mt-auto">
+<div class="flex items-center text-tertiary">
+<span class="material-symbols-outlined text-sm filled-icon">star</span>
+<span class="text-label-md font-bold ml-1">4.7</span>
+<span class="text-on-surface-variant text-[11px] ml-1">(850)</span>
+</div>
+<div class="flex items-baseline gap-1">
+<span class="text-headline-sm text-on-surface">$49.99</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Course Card 3 -->
+<div class="bg-surface-container-lowest border border-outline-variant rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-all group cursor-pointer hover:-translate-y-1">
+<div class="relative h-48 overflow-hidden">
+<img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" data-alt="A dynamic office scene with data visualizations and growth charts projected onto a glass wall, with professional business people in the background blurred. The atmosphere is optimistic and high-paced, with professional corporate lighting. The aesthetic uses slate and indigo tones for a reliable academic feel." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDFJs8SvI6acafUDCG07qL_0hP0OGi5k9FF68YZlO7iScmCA15r4JcIDMCM3IQxdGxxv3ISt3aihGSa5_3M0W9sWRD_piS4kr3UyVRUs6QYaOXXCIPyhce6iut15wEkwFOnJJRNAmGkuI0lOhTaAuefUD9dowefrDkB9uqeky5S6T0T62eR8mIXoH_PMlDtlYdjTkyJqNrE5AozHsEAfrEjN9-iA0D4ajYKv9HkJt-e4ut7wc5v2nY7Gg"/>
+</div>
+<div class="p-lg">
+<div class="flex items-center gap-2 mb-sm">
+<span class="px-2 py-0.5 bg-primary/10 text-primary text-[10px] font-bold rounded-full">Business</span>
+<span class="text-on-surface-variant text-[10px] font-medium uppercase tracking-widest">• 15h 00m</span>
+</div>
+<h3 class="font-headline-sm text-headline-sm mb-sm group-hover:text-primary transition-colors line-clamp-2">Digital Marketing Strategy 2024</h3>
+<div class="flex items-center gap-2 mb-md">
+<div class="w-6 h-6 rounded-full overflow-hidden bg-surface-container">
+<img class="w-full h-full object-cover" data-alt="Executive male instructor portrait, wearing a tailored grey blazer over a casual white shirt. He looks towards the camera with a friendly, mentor-like expression. Background is a modern boardroom with soft daylight, conveying trust and corporate leadership. High professional photography standards." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDzpEa4ugMh7sqYn2S4f0TGTZAh7egjoFUp0qEXhucwUsGKLpqxvV6OamyMwTr7EcbCZ3BxxdpaaVyICzEl_-YLUEBuWGCqBOc9hXlJ2y15hIErAHbKu83zm5b0aInX4sbMZwxVjfIt8LyfAiVYHha0av41Ah8rANQ5pJZtDRUBRD53hMMgAGkf58EsHq5xYVjyhThBDHNuqAhpsBe4FB6RyaBTUQgv031glEoqGe1sLYazE4-AOIULaw"/>
+</div>
+<span class="text-body-sm text-on-surface-variant">Michael Chen</span>
+</div>
+<div class="flex items-center justify-between mt-auto">
+<div class="flex items-center text-tertiary">
+<span class="material-symbols-outlined text-sm filled-icon">star</span>
+<span class="text-label-md font-bold ml-1">4.8</span>
+<span class="text-on-surface-variant text-[11px] ml-1">(1.2k)</span>
+</div>
+<div class="flex items-baseline gap-1">
+<span class="text-headline-sm text-on-surface">$129.99</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Course Card 4 -->
+<div class="bg-surface-container-lowest border border-outline-variant rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-all group cursor-pointer hover:-translate-y-1">
+<div class="relative h-48 overflow-hidden">
+<img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" data-alt="Detailed close-up of a high-end mechanical keyboard and workstation for a software engineer. Screens in the background show Python code with syntax highlighting in a dark mode editor. The lighting is atmospheric with soft blue LEDs, emphasizing a professional development environment. Clean, modern, and high-tech." src="https://lh3.googleusercontent.com/aida-public/AB6AXuA0PPlBOcWp4Mg0WAOnTBtlSWsvvWSWLph1ASiT03Pcp4YuMI2Dq-I63Mgh7n9vlpIMb_8xigkTijNUWMTLDsdZK4aDwUkxNWAYDWpF9vVle3z3b95whRoOImkNwb78PA2gglKtSu6CfazL1fE4svaokUXJhleE_iC67VNryZV8FcQ9p8mVwwuerxkGciH8didX94NtHwZH-hRAWyKgu_Ltj1gnBZDkXHoY1Tjko-AkQAGJVM8_IOI7Zg"/>
+</div>
+<div class="p-lg">
+<div class="flex items-center gap-2 mb-sm">
+<span class="px-2 py-0.5 bg-primary/10 text-primary text-[10px] font-bold rounded-full">Development</span>
+<span class="text-on-surface-variant text-[10px] font-medium uppercase tracking-widest">• 22h 30m</span>
+</div>
+<h3 class="font-headline-sm text-headline-sm mb-sm group-hover:text-primary transition-colors line-clamp-2">Python for Data Science Bootcamp</h3>
+<div class="flex items-center gap-2 mb-md">
+<div class="w-6 h-6 rounded-full overflow-hidden bg-surface-container">
+<img class="w-full h-full object-cover" data-alt="Portrait of a young woman in her late 20s with a sharp, academic look, wearing a professional sweater. She stands in front of a modern campus building. The lighting is soft and even, highlighting her approachable and intelligent demeanor. Professional corporate photography." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAcP64tLNvh_p1SM-d-SRBaYdhI8viwKfrCZobE-_KiqPZUyego0rlMhtNOdV3ooclpa4BcKjOuxJdiA7DYTPpSVUD8f8gCqQUbtX9w_0lSFWX5J5ZntjLcmt3QX7lOFBzhsphsmSOA99IZA6O0Y55bPKAI-9cT-9ZDkn3WtHR4XViRyv6f1eE1UN6Lrbjh_GyYEEC22R4afwlMGblGqVcl_Cc-V33eTF1pNAajaBP41SfN97fden1jGQ"/>
+</div>
+<span class="text-body-sm text-on-surface-variant">Elena Rodriguez</span>
+</div>
+<div class="flex items-center justify-between mt-auto">
+<div class="flex items-center text-tertiary">
+<span class="material-symbols-outlined text-sm filled-icon">star</span>
+<span class="text-label-md font-bold ml-1">4.9</span>
+<span class="text-on-surface-variant text-[11px] ml-1">(3.1k)</span>
+</div>
+<div class="flex items-baseline gap-1">
+<span class="text-headline-sm text-on-surface">$14.99</span>
+<span class="text-xs text-on-surface-variant line-through">$199.99</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Course Card 5 -->
+<div class="bg-surface-container-lowest border border-outline-variant rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-all group cursor-pointer hover:-translate-y-1">
+<div class="relative h-48 overflow-hidden">
+<img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" data-alt="A minimalist and calming workspace setup with a tablet showing brand identity sketches and logos. Neutral tones, soft shadows, and clean lines dominate. There is a small plant and a cup of coffee nearby, creating a sense of professional yet comfortable creativity. Modern, premium design aesthetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuB8OMa_T66oXGWVcEvJmiVi_ZevGo0MUC0MdFHzs4CKhqzpF4VFtnWhEuoV7h_4rNQOwmL6ELhDhKZLwJktYlT5d_6dLqZvsSRPB1x-BVbJamDrCHaev-OxJMOiZ_mLZfVHFwDkinJOlFIZS4hn3iQjYQZwpYiguHZ1DEYXsCn4hni80DyttjR5MSM1PPN4vOFca-UdlYElXcHzyBoa-0g0-fIW2Dury7exP71QA-cpK8xojveP16pBZA"/>
+</div>
+<div class="p-lg">
+<div class="flex items-center gap-2 mb-sm">
+<span class="px-2 py-0.5 bg-primary/10 text-primary text-[10px] font-bold rounded-full">Design</span>
+<span class="text-on-surface-variant text-[10px] font-medium uppercase tracking-widest">• 6h 15m</span>
+</div>
+<h3 class="font-headline-sm text-headline-sm mb-sm group-hover:text-primary transition-colors line-clamp-2">Brand Identity Design Fundamentals</h3>
+<div class="flex items-center gap-2 mb-md">
+<div class="w-6 h-6 rounded-full overflow-hidden bg-surface-container">
+<img class="w-full h-full object-cover" data-alt="Close-up of a male instructor in his 50s, with silver hair and a distinguished look, wearing a black turtleneck. He has a warm smile and looks directly into the lens. The background is a clean, modern studio with soft lighting. The image conveys reliability, experience, and authority in the design field." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDPnXYt_r4bZAcDy9Lxk4ZvhCoJ9GmFWSv1Tuq5x8IftB_LGegDbck4vz3Fi2Nfrmt-fTwUnknAccyFecjNFJHUCZF1ww4MAKg52Elpn_YoI1mw1yrjufLPJcoXenBwVVWitAoLVXyKcSrRwKN89oIIWbKpEHPQNVMfSt3dMNPt0z8imQ_OHULcMOCjuEXlCafFuQcx_kEevlREjWcbybbzCpzT4TuWwGBnoaNJeN1MUxJJKzUO2awKCA"/>
+</div>
+<span class="text-body-sm text-on-surface-variant">Arthur Vance</span>
+</div>
+<div class="flex items-center justify-between mt-auto">
+<div class="flex items-center text-tertiary">
+<span class="material-symbols-outlined text-sm filled-icon">star</span>
+<span class="text-label-md font-bold ml-1">4.6</span>
+<span class="text-on-surface-variant text-[11px] ml-1">(420)</span>
+</div>
+<div class="flex items-baseline gap-1">
+<span class="text-headline-sm text-on-surface">$59.99</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Course Card 6 -->
+<div class="bg-surface-container-lowest border border-outline-variant rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-all group cursor-pointer hover:-translate-y-1">
+<div class="relative h-48 overflow-hidden">
+<img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" data-alt="A clean, clinical presentation of cloud infrastructure diagrams on multiple screens in a dimly lit, high-tech server room. Neon blue and deep indigo lighting highlights the complexity and scale. The scene looks professional, secure, and technologically advanced, suitable for a high-level IT certification course." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBV4RBbI2HNC517IgRlLkhqdHdejbAiOwXEB6WrX4cJvDLY59R6VUfV-cXaePyCO5o3umqB9EUz0iUjodReoc-4ZOMXwJwJz_FE1bknwWmcAAvV7SS3ATFAPqC-1SUdM4GiFW0pOIN5IckVHYKqNCpCMto8lC1yWzGtm9w4ONvHxtCZSL8E9gHpg4x3fpfC1YM7GLv_i2n8pgr7V7QCv2eCdr7fknPGnptGy30znt7j--5VrxTKODvo-Q"/>
+<div class="absolute top-3 left-3 flex gap-2">
+<span class="bg-tertiary text-on-tertiary text-[10px] px-2 py-1 rounded font-bold uppercase tracking-wider">Expert</span>
+</div>
+</div>
+<div class="p-lg">
+<div class="flex items-center gap-2 mb-sm">
+<span class="px-2 py-0.5 bg-primary/10 text-primary text-[10px] font-bold rounded-full">IT &amp; Software</span>
+<span class="text-on-surface-variant text-[10px] font-medium uppercase tracking-widest">• 34h 10m</span>
+</div>
+<h3 class="font-headline-sm text-headline-sm mb-sm group-hover:text-primary transition-colors line-clamp-2">AWS Certified Solutions Architect Professional</h3>
+<div class="flex items-center gap-2 mb-md">
+<div class="w-6 h-6 rounded-full overflow-hidden bg-surface-container">
+<img class="w-full h-full object-cover" data-alt="Portrait of a South Asian male instructor in his 30s, wearing a smart casual tech-style zip-up jacket. He has a confident, expert expression. The background is a blurred office with glass partitions and soft warm indoor lighting. Professional corporate style photography for an online learning platform." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDiMB-HsHxP-YLt-Ihan1aYBXGMaSCKnHO2IsOmwJnuSWOQv5bi-0hHT7-ifSPDqkH6TNbxlRK94cGixMCilLh5GdLt_xWudF_92RCndgKPMZdU_hOTA4efmBC5hPbK1EIoTJ5l5HuRpnA01PesXFnJOlI2vP8KqOOg4W3gdvI_54ak6AeDg3-tAv3n9kAqT_wnrPfHxLFcsInGs2Y14LgljvaV7tPe9TFD-g1bEud7cKaioSRJNuQ-8g"/>
+</div>
+<span class="text-body-sm text-on-surface-variant">Rajiv Kumar</span>
+</div>
+<div class="flex items-center justify-between mt-auto">
+<div class="flex items-center text-tertiary">
+<span class="material-symbols-outlined text-sm filled-icon">star</span>
+<span class="text-label-md font-bold ml-1">5.0</span>
+<span class="text-on-surface-variant text-[11px] ml-1">(158)</span>
+</div>
+<div class="flex items-baseline gap-1">
+<span class="text-headline-sm text-on-surface">$199.99</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Pagination -->
+<div class="mt-xxl flex justify-center items-center gap-sm">
+<button class="p-2 rounded-lg border border-outline-variant hover:bg-surface-container-high transition-colors">
+<span class="material-symbols-outlined">chevron_left</span>
+</button>
+<button class="w-10 h-10 rounded-lg bg-primary text-on-primary font-bold">1</button>
+<button class="w-10 h-10 rounded-lg hover:bg-surface-container-high transition-colors font-medium">2</button>
+<button class="w-10 h-10 rounded-lg hover:bg-surface-container-high transition-colors font-medium">3</button>
+<span class="px-2">...</span>
+<button class="w-10 h-10 rounded-lg hover:bg-surface-container-high transition-colors font-medium">42</button>
+<button class="p-2 rounded-lg border border-outline-variant hover:bg-surface-container-high transition-colors">
+<span class="material-symbols-outlined">chevron_right</span>
+</button>
+</div>
+</div>
+</div>
+</main>
+<!-- Footer -->
+<footer class="bg-surface-container-high dark:bg-inverse-surface border-t border-outline-variant">
+<div class="w-full py-xl px-lg max-w-container-max mx-auto flex flex-col md:flex-row justify-between gap-xl">
+<div class="max-w-xs">
+<span class="font-headline-sm text-headline-sm font-bold text-primary dark:text-primary-fixed-dim">EduStream</span>
+<p class="mt-md text-body-sm text-on-surface-variant">Elevating modern education through streamlined learning experiences and expert-led content. Join thousands of students today.</p>
+</div>
+<div class="grid grid-cols-2 sm:grid-cols-3 gap-xl">
+<div>
+<h5 class="font-label-md text-label-md font-bold text-on-surface mb-md uppercase tracking-wider">Company</h5>
+<nav class="flex flex-col gap-sm">
+<a class="text-body-sm text-on-surface-variant hover:underline decoration-primary transition-all" href="#">About</a>
+<a class="text-body-sm text-on-surface-variant hover:underline decoration-primary transition-all" href="#">Careers</a>
+<a class="text-body-sm text-on-surface-variant hover:underline decoration-primary transition-all" href="#">Help</a>
+</nav>
+</div>
+<div>
+<h5 class="font-label-md text-label-md font-bold text-on-surface mb-md uppercase tracking-wider">Learn</h5>
+<nav class="flex flex-col gap-sm">
+<a class="text-body-sm text-on-surface-variant hover:underline decoration-primary transition-all" href="#">Categories</a>
+<a class="text-body-sm text-on-surface-variant hover:underline decoration-primary transition-all" href="#">All Courses</a>
+<a class="text-body-sm text-on-surface-variant hover:underline decoration-primary transition-all" href="#">Certificates</a>
+</nav>
+</div>
+<div>
+<h5 class="font-label-md text-label-md font-bold text-on-surface mb-md uppercase tracking-wider">Legal</h5>
+<nav class="flex flex-col gap-sm">
+<a class="text-body-sm text-on-surface-variant hover:underline decoration-primary transition-all" href="#">Terms</a>
+<a class="text-body-sm text-on-surface-variant hover:underline decoration-primary transition-all" href="#">Privacy</a>
+</nav>
+</div>
+</div>
+</div>
+<div class="w-full py-lg px-lg max-w-container-max mx-auto border-t border-outline-variant flex flex-col md:flex-row justify-between items-center gap-md">
+<p class="text-body-sm text-on-surface-variant">© 2024 EduStream LMS. All rights reserved.</p>
+<div class="flex gap-lg">
+<a class="text-on-surface-variant hover:text-primary transition-colors" href="#"><span class="material-symbols-outlined">public</span></a>
+<a class="text-on-surface-variant hover:text-primary transition-colors" href="#"><span class="material-symbols-outlined">share</span></a>
+<a class="text-on-surface-variant hover:text-primary transition-colors" href="#"><span class="material-symbols-outlined">alternate_email</span></a>
+</div>
+</div>
+</footer>
+<!-- Interactive Filter Script -->
+<script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const rangeInput = document.querySelector('input[type="range"]');
+            const rangeDisplay = document.querySelectorAll('.flex.justify-between.mt-sm span');
+            
+            if (rangeInput && rangeDisplay.length > 1) {
+                rangeInput.addEventListener('input', (e) => {
+                    const val = e.target.value;
+                    rangeDisplay[1].textContent = `$${Math.round(val * 5)}+`;
+                });
+            }
+
+            // Simple search interaction
+            const searchInput = document.querySelector('input[placeholder="Search courses..."]');
+            if (searchInput) {
+                searchInput.addEventListener('focus', () => {
+                    searchInput.parentElement.classList.add('ring-2', 'ring-primary');
+                });
+                searchInput.addEventListener('blur', () => {
+                    searchInput.parentElement.classList.remove('ring-2', 'ring-primary');
+                });
+            }
+
+            // Card hover lift effect (already handled by tailwind classes, adding console log for demo)
+            const cards = document.querySelectorAll('.group.cursor-pointer');
+            cards.forEach(card => {
+                card.addEventListener('mouseenter', () => {
+                    // Logic for custom hover sounds or micro-animations could go here
+                });
+            });
+        });
+    </script>
+</body></html>

@@ -836,9 +836,10 @@ export default function LandingPage({ initialCourses, initialCategories, initial
           </p>
         </div>
 
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(320px, 1fr))", gap: 26 }}>
+        <div className="bento-grid" style={{ gap: 24, marginTop: 0 }}>
           {/* 1. Self-Learning Card */}
           <div
+            className="bento-card bento-card-accent-emerald"
             style={{
               borderRadius: 20,
               padding: 30,
@@ -915,6 +916,7 @@ export default function LandingPage({ initialCourses, initialCategories, initial
 
           {/* 2. Online Live Class Card */}
           <div
+            className="bento-card bento-card-accent-indigo"
             style={{
               borderRadius: 20,
               padding: 30,
@@ -992,6 +994,7 @@ export default function LandingPage({ initialCourses, initialCategories, initial
 
           {/* 3. Offline Workshop Card */}
           <div
+            className="bento-card bento-card-accent-purple"
             style={{
               borderRadius: 20,
               padding: 30,
@@ -2380,7 +2383,7 @@ export default function LandingPage({ initialCourses, initialCategories, initial
           <div>
             <h4 style={{ fontSize: "0.92rem", fontWeight: 700, color: "var(--text-primary)", marginBottom: 14 }}>Akses Pengguna</h4>
             <div style={{ display: "flex", flexDirection: "column", gap: 8, fontSize: "0.82rem" }}>
-              <Link href="/dashboard" style={{ color: "inherit", textDecoration: "none" }}>Login Peserta Mandiri</Link>
+              <Link href="/dashboard" style={{ color: "inherit", textDecoration: "none" }}>Login Peserta</Link>
               <a href="#kontak" onClick={(e) => { e.preventDefault(); const el = document.getElementById("kontak"); if (el) el.scrollIntoView({ behavior: "smooth" }); }} style={{ color: "inherit", textDecoration: "none" }}>Hubungi Kami (Contact Us)</a>
               <Link href="/dashboard" style={{ color: "inherit", textDecoration: "none" }}>Portal Instruktur & Asesor</Link>
             </div>

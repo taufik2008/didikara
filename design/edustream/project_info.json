@@ -1,0 +1,248 @@
+{
+  "createTime": "2026-07-26T11:40:53.973850Z",
+  "designTheme": {
+    "bodyFont": "INTER",
+    "bodyFontFamily": "Inter",
+    "colorMode": "LIGHT",
+    "colorVariant": "FIDELITY",
+    "customColor": "#4f46e5",
+    "designMd": "---\nname: EduStream Design System\ncolors:\n  surface: '#f8f9ff'\n  surface-dim: '#cbdbf5'\n  surface-bright: '#f8f9ff'\n  surface-container-lowest: '#ffffff'\n  surface-container-low: '#eff4ff'\n  surface-container: '#e5eeff'\n  surface-container-high: '#dce9ff'\n  surface-container-highest: '#d3e4fe'\n  on-surface: '#0b1c30'\n  on-surface-variant: '#464555'\n  inverse-surface: '#213145'\n  inverse-on-surface: '#eaf1ff'\n  outline: '#777587'\n  outline-variant: '#c7c4d8'\n  surface-tint: '#4d44e3'\n  primary: '#3525cd'\n  on-primary: '#ffffff'\n  primary-container: '#4f46e5'\n  on-primary-container: '#dad7ff'\n  inverse-primary: '#c3c0ff'\n  secondary: '#006a61'\n  on-secondary: '#ffffff'\n  secondary-container: '#86f2e4'\n  on-secondary-container: '#006f66'\n  tertiary: '#684000'\n  on-tertiary: '#ffffff'\n  tertiary-container: '#885500'\n  on-tertiary-container: '#ffd4a4'\n  error: '#ba1a1a'\n  on-error: '#ffffff'\n  error-container: '#ffdad6'\n  on-error-container: '#93000a'\n  primary-fixed: '#e2dfff'\n  primary-fixed-dim: '#c3c0ff'\n  on-primary-fixed: '#0f0069'\n  on-primary-fixed-variant: '#3323cc'\n  secondary-fixed: '#89f5e7'\n  secondary-fixed-dim: '#6bd8cb'\n  on-secondary-fixed: '#00201d'\n  on-secondary-fixed-variant: '#005049'\n  tertiary-fixed: '#ffddb8'\n  tertiary-fixed-dim: '#ffb95f'\n  on-tertiary-fixed: '#2a1700'\n  on-tertiary-fixed-variant: '#653e00'\n  background: '#f8f9ff'\n  on-background: '#0b1c30'\n  surface-variant: '#d3e4fe'\ntypography:\n  display-lg:\n    fontFamily: Inter\n    fontSize: 48px\n    fontWeight: '700'\n    lineHeight: '1.1'\n    letterSpacing: -0.02em\n  headline-lg:\n    fontFamily: Inter\n    fontSize: 32px\n    fontWeight: '600'\n    lineHeight: '1.2'\n    letterSpacing: -0.01em\n  headline-lg-mobile:\n    fontFamily: Inter\n    fontSize: 24px\n    fontWeight: '600'\n    lineHeight: '1.2'\n  headline-md:\n    fontFamily: Inter\n    fontSize: 24px\n    fontWeight: '600'\n    lineHeight: '1.3'\n  headline-sm:\n    fontFamily: Inter\n    fontSize: 20px\n    fontWeight: '600'\n    lineHeight: '1.4'\n  body-lg:\n    fontFamily: Inter\n    fontSize: 18px\n    fontWeight: '400'\n    lineHeight: '1.6'\n  body-md:\n    fontFamily: Inter\n    fontSize: 16px\n    fontWeight: '400'\n    lineHeight: '1.5'\n  body-sm:\n    fontFamily: Inter\n    fontSize: 14px\n    fontWeight: '400'\n    lineHeight: '1.5'\n  label-md:\n    fontFamily: Inter\n    fontSize: 14px\n    fontWeight: '500'\n    lineHeight: '1'\n    letterSpacing: 0.01em\n  label-sm:\n    fontFamily: Inter\n    fontSize: 12px\n    fontWeight: '600'\n    lineHeight: '1'\nrounded:\n  sm: 0.25rem\n  DEFAULT: 0.5rem\n  md: 0.75rem\n  lg: 1rem\n  xl: 1.5rem\n  full: 9999px\nspacing:\n  base: 4px\n  xs: 4px\n  sm: 8px\n  md: 16px\n  lg: 24px\n  xl: 40px\n  xxl: 64px\n  container-max: 1280px\n  gutter: 24px\n  margin-mobile: 16px\n---\n\n## Brand & Style\nThe brand personality is characterized by **academic reliability** blended with **modern efficiency**. This design system targets adult learners, corporate trainees, and educators who require a high-focus environment that minimizes cognitive load. \n\nThe visual style is **Corporate Modern**, prioritizing clarity and structured information hierarchy. It avoids unnecessary decorative elements, opting instead for functional whitespace and a \"calm\" UI that recedes to let the educational content take center stage. The emotional goal is to evoke a sense of progress, competence, and intellectual clarity.\n\n## Colors\nThe palette is rooted in a professional **Deep Indigo** primary, used for high-intent actions and navigation landmarks. **Soft Teal** acts as a semantic secondary color, specifically reserved for positive reinforcement—such as course completion, progress bars, and success states.\n\n**Slate Grays** form the neutral foundation, providing high legibility for long-form reading without the harshness of pure black. Backgrounds should utilize a very light slate tint to distinguish the page from pure white \"Surface\" cards. An optional Amber tertiary is reserved for alerts or \"Action Required\" states to ensure they are distinct from the primary brand color.\n\n## Typography\nThis design system utilizes **Inter** exclusively to leverage its exceptional legibility and systematic weight distribution. \n\n- **Headlines:** Use tighter letter-spacing and Semi-Bold weights to create a strong visual anchor for modules and lessons.\n- **Body Text:** Optimized for long-form reading with a generous 1.5 - 1.6 line-height. `body-md` is the standard for lesson content.\n- **Labels:** Used for metadata (e.g., \"15 mins remaining,\" \"Level: Intermediate\"). `label-sm` utilizes an uppercase style to provide visual variety without introducing a second typeface.\n\n## Layout & Spacing\nThe layout follows a **Fixed Grid** model on desktop to prevent line lengths from becoming illegible on wide monitors. Content should be centered with a maximum width of 1280px.\n\n- **Grid:** A 12-column system is used for dashboards, while a centered 8-column layout is preferred for reading-heavy course pages to reduce eye strain.\n- **Rhythm:** Spacing follows a linear 4px/8px base. Use `xl` (40px) to separate major sections and `md` (16px) for internal component padding.\n- **Mobile:** Margins shrink to 16px. Vertical stacking is mandatory for all card-based layouts.\n\n## Elevation & Depth\nDepth is conveyed through **Tonal Layering** and **Ambient Shadows**. \n\n1. **Level 0 (Background):** Slate-50 (#F8FAFC).\n2. **Level 1 (Cards/Content):** White surface with a 1px border (#E2E8F0) and a very soft, diffused shadow (Offset: 0, 1px; Blur: 3px; Opacity: 0.05).\n3. **Level 2 (Interactive/Hover):** When a user interacts with a course card, the shadow should expand slightly (Blur: 12px; Opacity: 0.1) and the element should lift 2px.\n4. **Level 3 (Modals/Popovers):** High-contrast shadow with a slight Indigo tint to the shadow color to maintain brand harmony.\n\nAvoid heavy blacks in shadows; use tinted Slates to keep the interface feeling \"airy\" and light.\n\n## Shapes\nThe shape language is **Rounded**, utilizing a standard 8px (0.5rem) radius for most UI components. This softens the professional tone, making the learning environment feel more approachable.\n\n- **Small Components:** Checkboxes and small tags use 4px (Soft).\n- **Standard Components:** Buttons, Input Fields, and Course Cards use 8px (Rounded).\n- **Large Components:** Educational banners or featured hero sections use 16px (Rounded-LG) to create a clear visual distinction.\n\n## Components\n- **Buttons:** Primary buttons use a solid Indigo fill with white text. Secondary buttons use a Slate-100 background or an Indigo outline. Maintain a minimum height of 44px for accessibility.\n- **Progress Bars:** Use a Soft Teal fill against a Slate-200 track. The bar should have a height of 8px and fully rounded ends.\n- **Input Fields:** Use a 1px Slate-300 border that transitions to a 2px Indigo border on focus. Include clear placeholder text in Slate-400.\n- **Course Cards:** Must include a thumbnail, a progress indicator, a headline-sm title, and a \"Continue\" primary button.\n- **Chips/Badges:** Used for difficulty levels (e.g., \"Beginner\") and categories. These use a low-opacity background of the primary color with high-contrast text.\n- **Navigation:** A vertical side-nav is recommended for the student dashboard to allow for deep nesting of course modules and lessons.",
+    "font": "INTER",
+    "headlineFont": "INTER",
+    "headlineFontFamily": "Inter",
+    "labelFont": "INTER",
+    "labelFontFamily": "Inter",
+    "namedColors": {
+      "background": "#f8f9ff",
+      "error": "#ba1a1a",
+      "error_container": "#ffdad6",
+      "inverse_on_surface": "#eaf1ff",
+      "inverse_primary": "#c3c0ff",
+      "inverse_surface": "#213145",
+      "on_background": "#0b1c30",
+      "on_error": "#ffffff",
+      "on_error_container": "#93000a",
+      "on_primary": "#ffffff",
+      "on_primary_container": "#dad7ff",
+      "on_primary_fixed": "#0f0069",
+      "on_primary_fixed_variant": "#3323cc",
+      "on_secondary": "#ffffff",
+      "on_secondary_container": "#006f66",
+      "on_secondary_fixed": "#00201d",
+      "on_secondary_fixed_variant": "#005049",
+      "on_surface": "#0b1c30",
+      "on_surface_variant": "#464555",
+      "on_tertiary": "#ffffff",
+      "on_tertiary_container": "#ffd4a4",
+      "on_tertiary_fixed": "#2a1700",
+      "on_tertiary_fixed_variant": "#653e00",
+      "outline": "#777587",
+      "outline_variant": "#c7c4d8",
+      "primary": "#3525cd",
+      "primary_container": "#4f46e5",
+      "primary_fixed": "#e2dfff",
+      "primary_fixed_dim": "#c3c0ff",
+      "secondary": "#006a61",
+      "secondary_container": "#86f2e4",
+      "secondary_fixed": "#89f5e7",
+      "secondary_fixed_dim": "#6bd8cb",
+      "surface": "#f8f9ff",
+      "surface_bright": "#f8f9ff",
+      "surface_container": "#e5eeff",
+      "surface_container_high": "#dce9ff",
+      "surface_container_highest": "#d3e4fe",
+      "surface_container_low": "#eff4ff",
+      "surface_container_lowest": "#ffffff",
+      "surface_dim": "#cbdbf5",
+      "surface_tint": "#4d44e3",
+      "surface_variant": "#d3e4fe",
+      "tertiary": "#684000",
+      "tertiary_container": "#885500",
+      "tertiary_fixed": "#ffddb8",
+      "tertiary_fixed_dim": "#ffb95f"
+    },
+    "overrideNeutralColor": "#64748b",
+    "overridePrimaryColor": "#4f46e5",
+    "overrideSecondaryColor": "#0d9488",
+    "overrideTertiaryColor": "#f59e0b",
+    "roundness": "ROUND_EIGHT",
+    "spacing": {
+      "base": "4px",
+      "container-max": "1280px",
+      "gutter": "24px",
+      "lg": "24px",
+      "margin-mobile": "16px",
+      "md": "16px",
+      "sm": "8px",
+      "xl": "40px",
+      "xs": "4px",
+      "xxl": "64px"
+    },
+    "spacingScale": 2,
+    "typography": {
+      "body-lg": {
+        "fontFamily": "Inter",
+        "fontSize": "18px",
+        "fontWeight": "400",
+        "lineHeight": "1.6"
+      },
+      "body-md": {
+        "fontFamily": "Inter",
+        "fontSize": "16px",
+        "fontWeight": "400",
+        "lineHeight": "1.5"
+      },
+      "body-sm": {
+        "fontFamily": "Inter",
+        "fontSize": "14px",
+        "fontWeight": "400",
+        "lineHeight": "1.5"
+      },
+      "display-lg": {
+        "fontFamily": "Inter",
+        "fontSize": "48px",
+        "fontWeight": "700",
+        "letterSpacing": "-0.02em",
+        "lineHeight": "1.1"
+      },
+      "headline-lg": {
+        "fontFamily": "Inter",
+        "fontSize": "32px",
+        "fontWeight": "600",
+        "letterSpacing": "-0.01em",
+        "lineHeight": "1.2"
+      },
+      "headline-lg-mobile": {
+        "fontFamily": "Inter",
+        "fontSize": "24px",
+        "fontWeight": "600",
+        "lineHeight": "1.2"
+      },
+      "headline-md": {
+        "fontFamily": "Inter",
+        "fontSize": "24px",
+        "fontWeight": "600",
+        "lineHeight": "1.3"
+      },
+      "headline-sm": {
+        "fontFamily": "Inter",
+        "fontSize": "20px",
+        "fontWeight": "600",
+        "lineHeight": "1.4"
+      },
+      "label-md": {
+        "fontFamily": "Inter",
+        "fontSize": "14px",
+        "fontWeight": "500",
+        "letterSpacing": "0.01em",
+        "lineHeight": "1"
+      },
+      "label-sm": {
+        "fontFamily": "Inter",
+        "fontSize": "12px",
+        "fontWeight": "600",
+        "lineHeight": "1"
+      }
+    }
+  },
+  "deviceType": "DESKTOP",
+  "metadata": {
+    "userRole": "OWNER"
+  },
+  "name": "projects/13975546247825708098",
+  "origin": "STITCH",
+  "projectType": "TEXT_TO_UI_PRO",
+  "screenInstances": [
+    {
+      "height": 1387,
+      "id": "19eaf50c3e044ce69771ec86bcc03534",
+      "sourceScreen": "projects/13975546247825708098/screens/19eaf50c3e044ce69771ec86bcc03534",
+      "width": 1280,
+      "x": 1798,
+      "y": 3623
+    },
+    {
+      "height": 1034,
+      "id": "1d47b29cdc97423a993b8c19ee560663",
+      "sourceScreen": "projects/13975546247825708098/screens/1d47b29cdc97423a993b8c19ee560663",
+      "width": 1280,
+      "x": 5056
+    },
+    {
+      "height": 1478,
+      "id": "20a74591f4f44012a242dd775022a4af",
+      "sourceScreen": "projects/13975546247825708098/screens/20a74591f4f44012a242dd775022a4af",
+      "width": 1280,
+      "x": 2368
+    },
+    {
+      "height": 1439,
+      "id": "30e1e044564d4b81894b764d258fe0a0",
+      "sourceScreen": "projects/13975546247825708098/screens/30e1e044564d4b81894b764d258fe0a0",
+      "width": 1280,
+      "y": 3623
+    },
+    {
+      "height": 884,
+      "id": "4d8d286a65c74d78a91f426da280f130",
+      "sourceScreen": "projects/13975546247825708098/screens/4d8d286a65c74d78a91f426da280f130",
+      "width": 390,
+      "y": 5318
+    },
+    {
+      "height": 1070,
+      "id": "5229ba2c1ae342fe95ae920bec444816",
+      "sourceScreen": "projects/13975546247825708098/screens/5229ba2c1ae342fe95ae920bec444816",
+      "width": 390,
+      "x": 1344,
+      "y": 3623
+    },
+    {
+      "height": 1024,
+      "id": "570ce09a9dc84a82a3cea25dfbc35f99",
+      "isResized": true,
+      "sourceScreen": "projects/13975546247825708098/screens/570ce09a9dc84a82a3cea25dfbc35f99",
+      "width": 1280,
+      "x": 1024
+    },
+    {
+      "height": 540,
+      "id": "assets_1a624f7c246849bf8de39f450f3c6318",
+      "sourceAsset": "assets/1a624f7c246849bf8de39f450f3c6318",
+      "type": "DESIGN_SYSTEM_INSTANCE",
+      "width": 960
+    },
+    {
+      "height": 1714,
+      "id": "df19b6fe401a466a829a876d8e5adc84",
+      "sourceScreen": "projects/13975546247825708098/screens/df19b6fe401a466a829a876d8e5adc84",
+      "width": 1280,
+      "x": 3712
+    },
+    {
+      "height": 1024,
+      "id": "e37cdf934f154aeeaf9fe86735acc49d",
+      "sourceScreen": "projects/13975546247825708098/screens/e37cdf934f154aeeaf9fe86735acc49d",
+      "width": 1280,
+      "x": 3142,
+      "y": 3623
+    }
+  ],
+  "sharingSettings": {
+    "accessType": "RESTRICTED",
+    "permissions": [
+      {
+        "email": "mohamad.taufik2008@gmail.com",
+        "id": "120977972958",
+        "role": "OWNER"
+      }
+    ]
+  },
+  "thumbnailScreenshot": {
+    "downloadUrl": "https://lh3.googleusercontent.com/aida/ALJJyrCXRR0XNRKbu63568TGorXSd-PAgMHpHiTdAhcI9CmOqQzMvvpLTHtcfPBm_BY0TBL02KvLSWk8DqqRKmSwLDJp2TUlHpwJxsp17NmYg1W59nYwtwmAyDwKjQPNvSVLed_EAj_3zm7wcKwyeEzKTEZIEZhZGP3WjfMOz9aScDCctBVM3dHRbsjO38-v6By-Kg1Otg4AoxGHdvkMUzFrYYcx6ZDagjr62e-ut42TCQQYcnvNKLnTleX2LVd1",
+    "name": "projects/13975546247825708098/screens/1d47b29cdc97423a993b8c19ee560663/fileEntries/screenshot"
+  },
+  "title": "Modern LMS Platform",
+  "updateTime": "2026-11-15T03:19:44.027329Z",
+  "visibility": "PRIVATE"
+}

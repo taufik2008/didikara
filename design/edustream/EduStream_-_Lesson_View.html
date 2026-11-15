@@ -1,0 +1,419 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>EduStream - Lesson Player</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "inverse-surface": "#213145",
+                        "error-container": "#ffdad6",
+                        "on-secondary-fixed": "#00201d",
+                        "on-tertiary-fixed-variant": "#653e00",
+                        "background": "#f8f9ff",
+                        "surface-container-low": "#eff4ff",
+                        "surface-tint": "#4d44e3",
+                        "surface": "#f8f9ff",
+                        "on-background": "#0b1c30",
+                        "surface-dim": "#cbdbf5",
+                        "secondary-container": "#86f2e4",
+                        "on-surface": "#0b1c30",
+                        "on-primary": "#ffffff",
+                        "on-tertiary-fixed": "#2a1700",
+                        "secondary-fixed": "#89f5e7",
+                        "on-tertiary": "#ffffff",
+                        "inverse-on-surface": "#eaf1ff",
+                        "tertiary-container": "#885500",
+                        "primary-fixed-dim": "#c3c0ff",
+                        "surface-bright": "#f8f9ff",
+                        "surface-container": "#e5eeff",
+                        "primary-fixed": "#e2dfff",
+                        "secondary-fixed-dim": "#6bd8cb",
+                        "surface-container-lowest": "#ffffff",
+                        "error": "#ba1a1a",
+                        "tertiary": "#684000",
+                        "surface-container-highest": "#d3e4fe",
+                        "on-secondary-container": "#006f66",
+                        "tertiary-fixed": "#ffddb8",
+                        "on-secondary": "#ffffff",
+                        "primary": "#3525cd",
+                        "surface-variant": "#d3e4fe",
+                        "primary-container": "#4f46e5",
+                        "on-error": "#ffffff",
+                        "tertiary-fixed-dim": "#ffb95f",
+                        "on-primary-fixed": "#0f0069",
+                        "on-tertiary-container": "#ffd4a4",
+                        "on-secondary-fixed-variant": "#005049",
+                        "on-primary-container": "#dad7ff",
+                        "on-surface-variant": "#464555",
+                        "on-primary-fixed-variant": "#3323cc",
+                        "secondary": "#006a61",
+                        "on-error-container": "#93000a",
+                        "outline-variant": "#c7c4d8",
+                        "outline": "#777587",
+                        "inverse-primary": "#c3c0ff",
+                        "surface-container-high": "#dce9ff"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "gutter": "24px",
+                        "base": "4px",
+                        "margin-mobile": "16px",
+                        "lg": "24px",
+                        "xl": "40px",
+                        "container-max": "1280px",
+                        "sm": "8px",
+                        "xxl": "64px",
+                        "xs": "4px",
+                        "md": "16px"
+                    },
+                    "fontFamily": {
+                        "headline-md": ["Inter"],
+                        "body-sm": ["Inter"],
+                        "body-md": ["Inter"],
+                        "label-md": ["Inter"],
+                        "body-lg": ["Inter"],
+                        "headline-lg": ["Inter"],
+                        "display-lg": ["Inter"],
+                        "headline-lg-mobile": ["Inter"],
+                        "label-sm": ["Inter"],
+                        "headline-sm": ["Inter"]
+                    },
+                    "fontSize": {
+                        "headline-md": ["24px", {"lineHeight": "1.3", "fontWeight": "600"}],
+                        "body-sm": ["14px", {"lineHeight": "1.5", "fontWeight": "400"}],
+                        "body-md": ["16px", {"lineHeight": "1.5", "fontWeight": "400"}],
+                        "label-md": ["14px", {"lineHeight": "1", "letterSpacing": "0.01em", "fontWeight": "500"}],
+                        "body-lg": ["18px", {"lineHeight": "1.6", "fontWeight": "400"}],
+                        "headline-lg": ["32px", {"lineHeight": "1.2", "letterSpacing": "-0.01em", "fontWeight": "600"}],
+                        "display-lg": ["48px", {"lineHeight": "1.1", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                        "headline-lg-mobile": ["24px", {"lineHeight": "1.2", "fontWeight": "600"}],
+                        "label-sm": ["12px", {"lineHeight": "1", "fontWeight": "600"}],
+                        "headline-sm": ["20px", {"lineHeight": "1.4", "fontWeight": "600"}]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            vertical-align: middle;
+        }
+        .video-aspect {
+            aspect-ratio: 16 / 9;
+        }
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .custom-shadow {
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+        }
+        .lesson-active {
+            background-color: #4f46e5;
+            color: #ffffff;
+        }
+    </style>
+</head>
+<body class="bg-background text-on-surface font-body-md selection:bg-primary-container selection:text-on-primary-container overflow-hidden h-screen flex flex-col">
+<!-- TopNavBar (Shared Component Context) -->
+<header class="bg-surface border-b border-outline-variant z-50 shadow-sm">
+<div class="flex justify-between items-center w-full px-lg max-w-container-max mx-auto h-16">
+<div class="flex items-center gap-xl">
+<span class="font-headline-md text-headline-md font-bold text-primary">EduStream</span>
+<nav class="hidden md:flex gap-lg">
+<a class="font-label-md text-label-md text-on-surface-variant font-medium hover:text-primary transition-colors" href="#">Course Categories</a>
+<a class="font-label-md text-label-md text-primary font-bold border-b-2 border-primary" href="#">My Learning</a>
+</nav>
+</div>
+<div class="flex items-center gap-md">
+<button class="p-base rounded-full hover:bg-surface-container-highest transition-colors">
+<span class="material-symbols-outlined text-on-surface-variant">notifications</span>
+</button>
+<div class="h-8 w-8 rounded-full bg-surface-container-high border border-outline-variant overflow-hidden">
+<img class="object-cover w-full h-full" data-alt="A high-quality portrait of a professional adult student in a modern educational setting. The lighting is soft and natural, emphasizing a bright, clean, corporate light-mode UI aesthetic. The background is a blurred office environment with soft blue and white tones, reflecting the EduStream brand identity of competence and academic reliability." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCqT3va0JWqPZBFr09fEkyxQZ4CrQfd3lsUIqizRClf-4K8qVVDsEA08oyvM-1mIgIgM4JCDjjtdFGkILfX2ltELHojeBxDEmDpBavbJKH58SqQotQbCDE2LkYF5VDr3lsuYkGAkAMsYvxHfozyq4J_UMd8_rGXWluC6GrtejFBYBRVN7wJLgZEWbs1EoRd5e5d3VIcgJmNvyrrrk0q1nFrkvlmoadjwlOuYzSBhIn2MhwKJIcDkhr8Gg"/>
+</div>
+</div>
+</div>
+</header>
+<!-- Main Player Layout -->
+<main class="flex-1 flex flex-col md:flex-row overflow-hidden max-w-container-max mx-auto w-full">
+<!-- Video & Content Area (Canvas) -->
+<div class="flex-1 overflow-y-auto no-scrollbar bg-surface-container-lowest">
+<!-- Video Player -->
+<div class="relative bg-on-background video-aspect group">
+<div class="absolute inset-0 flex items-center justify-center">
+<img class="w-full h-full object-cover opacity-80" data-alt="A cinematic 16:9 frame of a high-end educational video. An expert instructor is standing in a minimalist studio with soft-focus books and tech in the background. The color palette consists of calming blues, whites, and deep indigos. Overlay graphics like code snippets and diagrams are elegantly displayed to the side. The overall mood is focused, modern, and intellectually stimulating." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCexH54DHF0pxvYRxhJ0ivgrKjzgpaqa0BdiEFDP81zP1wZuUxGu47l15ek0xUh6g6AaAwZWATz-3Z-UYKtKY8_qVYVDG65qiY7_HOEJ7zw-qTRsWR22tSwvj49mTPP6q5FkAio9LKS6XnJ8SRIae9zeh9CPnGVs-cbnOCw05CMTV7qeLuh99tryTvVGVVL8uNKwsf5q7byB4as-4zUpTPOny7V4L_l5zwhLBb2TTsq47caW5tWB-zTIg"/>
+<button class="absolute z-10 p-xl rounded-full bg-primary/90 text-on-primary hover:bg-primary transition-all hover:scale-105 active:scale-95">
+<span class="material-symbols-outlined text-[48px]">play_arrow</span>
+</button>
+</div>
+<!-- Player Controls Overlay (Simplified) -->
+<div class="absolute bottom-0 w-full p-md bg-gradient-to-t from-black/60 to-transparent flex items-center gap-md">
+<span class="material-symbols-outlined text-white cursor-pointer">pause</span>
+<div class="flex-1 h-1.5 bg-white/30 rounded-full relative overflow-hidden">
+<div class="absolute left-0 top-0 h-full bg-primary w-1/3 rounded-full"></div>
+</div>
+<span class="text-white text-label-sm">12:45 / 45:00</span>
+<span class="material-symbols-outlined text-white cursor-pointer">settings</span>
+<span class="material-symbols-outlined text-white cursor-pointer">fullscreen</span>
+</div>
+</div>
+<!-- Lesson Info & Tabs -->
+<div class="p-lg">
+<div class="flex flex-col md:flex-row md:items-center justify-between gap-md mb-xl">
+<div>
+<span class="text-label-md text-primary font-bold tracking-wider mb-xs block">MODULE 2: CORE ARCHITECTURE</span>
+<h1 class="font-headline-lg text-headline-lg text-on-background">04. Deep Dive into Component Lifecycle</h1>
+</div>
+<div class="flex gap-sm">
+<button class="flex items-center gap-sm px-md py-sm rounded-lg border border-outline text-on-surface-variant font-label-md hover:bg-surface-container transition-all active:scale-95">
+<span class="material-symbols-outlined">chevron_left</span> Previous
+                        </button>
+<button class="flex items-center gap-sm px-md py-sm rounded-lg bg-primary text-on-primary font-label-md hover:bg-primary-container transition-all active:scale-95">
+                            Next Lesson <span class="material-symbols-outlined">chevron_right</span>
+</button>
+</div>
+</div>
+<!-- Tabs Section -->
+<div class="border-b border-outline-variant mb-lg flex gap-xl">
+<button class="pb-md font-label-md border-b-2 border-primary text-primary font-bold" id="tab-material" onclick="switchTab('material')">Course Material</button>
+<button class="pb-md font-label-md border-b-2 border-transparent text-on-surface-variant hover:text-on-surface transition-all" id="tab-notes" onclick="switchTab('notes')">Notes</button>
+<button class="pb-md font-label-md border-b-2 border-transparent text-on-surface-variant hover:text-on-surface transition-all" id="tab-discussion" onclick="switchTab('discussion')">Discussion</button>
+</div>
+<!-- Tab Content: Course Material -->
+<div class="space-y-lg animate-in fade-in duration-300" id="content-material">
+<div class="grid md:grid-cols-2 gap-lg">
+<div class="p-md rounded-xl border border-outline-variant bg-surface hover:shadow-md transition-all cursor-pointer flex items-center gap-md">
+<div class="w-12 h-12 rounded-lg bg-surface-container-high flex items-center justify-center">
+<span class="material-symbols-outlined text-primary">description</span>
+</div>
+<div class="flex-1">
+<p class="font-label-md font-bold text-on-surface">Lifecycle_CheatSheet.pdf</p>
+<p class="text-label-sm text-on-surface-variant">PDF • 2.4 MB</p>
+</div>
+<span class="material-symbols-outlined text-outline">download</span>
+</div>
+<div class="p-md rounded-xl border border-outline-variant bg-surface hover:shadow-md transition-all cursor-pointer flex items-center gap-md">
+<div class="w-12 h-12 rounded-lg bg-surface-container-high flex items-center justify-center">
+<span class="material-symbols-outlined text-secondary">code</span>
+</div>
+<div class="flex-1">
+<p class="font-label-md font-bold text-on-surface">Exercise_Files.zip</p>
+<p class="text-label-sm text-on-surface-variant">ZIP • 15.1 MB</p>
+</div>
+<span class="material-symbols-outlined text-outline">download</span>
+</div>
+</div>
+<div class="prose prose-slate max-w-none">
+<p class="text-body-md text-on-surface-variant leading-relaxed">
+                            In this lesson, we cover the intricate stages of the component lifecycle, specifically focusing on the mounting, updating, and unmounting phases. You'll learn how to optimize performance by managing side effects effectively using hooks and lifecycle methods.
+                        </p>
+</div>
+</div>
+<!-- Tab Content: Notes (Hidden by default) -->
+<div class="hidden animate-in fade-in duration-300" id="content-notes">
+<div class="bg-surface-container-low p-lg rounded-xl border border-outline-variant">
+<textarea class="w-full bg-transparent border-none focus:ring-0 text-body-md text-on-surface placeholder:text-outline-variant min-h-[200px]" placeholder="Type your personal notes here for this lesson..."></textarea>
+<div class="flex justify-between items-center mt-md pt-md border-t border-outline-variant">
+<p class="text-label-sm text-outline">Auto-saved 2 mins ago</p>
+<button class="bg-secondary px-lg py-sm rounded-lg text-on-secondary font-label-md">Save Note</button>
+</div>
+</div>
+</div>
+<!-- Tab Content: Discussion -->
+<div class="hidden animate-in fade-in duration-300 space-y-lg" id="content-discussion">
+<div class="flex gap-md">
+<div class="h-10 w-10 rounded-full bg-primary-container text-on-primary-container flex items-center justify-center shrink-0">
+<span class="text-label-md">JD</span>
+</div>
+<div class="flex-1">
+<input class="w-full border-b border-outline-variant focus:border-primary py-sm bg-transparent focus:ring-0 outline-none transition-all" placeholder="Ask a question about this lesson..." type="text"/>
+</div>
+</div>
+<!-- Discussion Item -->
+<div class="space-y-md">
+<div class="flex gap-md">
+<div class="h-10 w-10 rounded-full bg-surface-container-highest overflow-hidden shrink-0">
+<img class="object-cover w-full h-full" data-alt="A portrait of a male educator or student with a friendly and engaged expression. The image is professional, with clean lighting and a neutral, modern background that fits the academic and corporate EduStream aesthetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuA5JpNZb12wDlTMrx-_9bO5sWeQqlEFRr5760aPSucX2kxh3WqbdR2n2cTVqhZN8MCyy7DytbT7l9to5JHLltSNbRD4B6NDyi8fWo0_W2xskmBoItQ69w3xWdXmkAAgRiaaY6_TRrkPurJemyVDqRkmp-O5XAwpvRToOmt5bK5EsOA3RrdOtv3CSZn2hrWu5FIyipktrD1C7byp6GBQntzG48NfMKMsEiUTyalsdDcVQh3sGylWmrSo4g"/>
+</div>
+<div class="flex-1 space-y-xs">
+<div class="flex items-center gap-sm">
+<span class="font-label-md font-bold text-on-surface">Sarah Mitchell</span>
+<span class="text-label-sm text-outline">3 hours ago</span>
+</div>
+<p class="text-body-md text-on-surface-variant">Could you clarify why the unmounting phase is critical for cleaning up event listeners? I missed the first few minutes.</p>
+<div class="flex items-center gap-md mt-sm">
+<button class="flex items-center gap-xs text-label-sm text-outline hover:text-primary transition-colors">
+<span class="material-symbols-outlined text-[18px]">thumb_up</span> 12
+                                    </button>
+<button class="text-label-sm text-outline hover:text-primary transition-colors">Reply</button>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Course Curriculum Sidebar -->
+<aside class="w-full md:w-80 lg:w-96 bg-surface-container border-l border-outline-variant flex flex-col h-full">
+<div class="p-lg border-b border-outline-variant bg-surface">
+<h2 class="font-headline-sm text-headline-sm text-on-surface">Course Curriculum</h2>
+<div class="flex items-center gap-sm mt-sm">
+<div class="flex-1 h-2 bg-outline-variant rounded-full overflow-hidden">
+<div class="h-full bg-secondary w-[42%]"></div>
+</div>
+<span class="text-label-sm text-on-surface-variant font-bold">42%</span>
+</div>
+</div>
+<div class="flex-1 overflow-y-auto custom-shadow no-scrollbar">
+<!-- Section 1 -->
+<div class="curriculum-section">
+<button class="w-full flex items-center justify-between p-md bg-surface-container-high border-b border-outline-variant hover:bg-surface-container-highest transition-colors" onclick="toggleSection('sec-1')">
+<div class="text-left">
+<p class="text-label-sm text-outline uppercase font-bold tracking-tighter">Module 1</p>
+<p class="font-label-md text-on-surface font-bold">Introduction &amp; Setup</p>
+</div>
+<span class="material-symbols-outlined text-on-surface-variant transition-transform" id="icon-sec-1">expand_more</span>
+</button>
+<div class="hidden" id="sec-1">
+<!-- Lesson Items -->
+<a class="flex items-center gap-md px-md py-lg border-b border-outline-variant bg-surface-container-low group hover:bg-surface-container transition-all" href="#">
+<span class="material-symbols-outlined text-secondary" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+<div class="flex-1">
+<p class="text-label-md font-medium text-on-surface">01. Course Overview</p>
+<p class="text-label-sm text-outline">05:20</p>
+</div>
+</a>
+<a class="flex items-center gap-md px-md py-lg border-b border-outline-variant bg-surface-container-low group hover:bg-surface-container transition-all" href="#">
+<span class="material-symbols-outlined text-secondary" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+<div class="flex-1">
+<p class="text-label-md font-medium text-on-surface">02. Setting up the Env</p>
+<p class="text-label-sm text-outline">12:45</p>
+</div>
+</a>
+</div>
+</div>
+<!-- Section 2 -->
+<div class="curriculum-section">
+<button class="w-full flex items-center justify-between p-md bg-surface-container-high border-b border-outline-variant hover:bg-surface-container-highest transition-colors" onclick="toggleSection('sec-2')">
+<div class="text-left">
+<p class="text-label-sm text-outline uppercase font-bold tracking-tighter">Module 2</p>
+<p class="font-label-md text-on-surface font-bold">Core Architecture</p>
+</div>
+<span class="material-symbols-outlined text-on-surface-variant" id="icon-sec-2">expand_less</span>
+</button>
+<div class="block" id="sec-2">
+<a class="flex items-center gap-md px-md py-lg border-b border-outline-variant bg-surface-container-low group hover:bg-surface-container transition-all" href="#">
+<span class="material-symbols-outlined text-secondary" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+<div class="flex-1">
+<p class="text-label-md font-medium text-on-surface">03. Project Foundations</p>
+<p class="text-label-sm text-outline">18:10</p>
+</div>
+</a>
+<a class="flex items-center gap-md px-md py-lg border-b border-outline-variant lesson-active relative" href="#">
+<div class="absolute left-0 top-0 w-1 h-full bg-white"></div>
+<span class="material-symbols-outlined text-white">play_circle</span>
+<div class="flex-1">
+<p class="text-label-md font-bold">04. Component Lifecycle</p>
+<p class="text-label-sm opacity-80">45:00</p>
+</div>
+</a>
+<a class="flex items-center gap-md px-md py-lg border-b border-outline-variant bg-surface-container-low group hover:bg-surface-container transition-all" href="#">
+<span class="material-symbols-outlined text-outline">circle</span>
+<div class="flex-1">
+<p class="text-label-md font-medium text-on-surface">05. Prop Drilling &amp; Context</p>
+<p class="text-label-sm text-outline">22:30</p>
+</div>
+</a>
+</div>
+</div>
+<!-- Section 3 -->
+<div class="curriculum-section">
+<button class="w-full flex items-center justify-between p-md bg-surface-container-high border-b border-outline-variant hover:bg-surface-container-highest transition-colors" onclick="toggleSection('sec-3')">
+<div class="text-left">
+<p class="text-label-sm text-outline uppercase font-bold tracking-tighter">Module 3</p>
+<p class="font-label-md text-on-surface font-bold">Advanced Patterns</p>
+</div>
+<span class="material-symbols-outlined text-on-surface-variant" id="icon-sec-3">expand_more</span>
+</button>
+<div class="hidden" id="sec-3">
+<a class="flex items-center gap-md px-md py-lg border-b border-outline-variant bg-surface-container-low group hover:bg-surface-container transition-all opacity-60" href="#">
+<span class="material-symbols-outlined text-outline">lock</span>
+<div class="flex-1">
+<p class="text-label-md font-medium text-on-surface">06. Higher Order Components</p>
+<p class="text-label-sm text-outline">35:00</p>
+</div>
+</a>
+</div>
+</div>
+</div>
+</aside>
+</main>
+<!-- Footer Area (Success Status) -->
+<footer class="bg-surface-container-high border-t border-outline-variant p-sm flex justify-between items-center px-lg shrink-0">
+<p class="text-label-sm text-on-surface-variant">Next Auto-Unlock: <span class="font-bold">24h 12m</span></p>
+<div class="flex items-center gap-sm">
+<span class="text-label-sm font-bold text-secondary">Academic Reliability Verified</span>
+<span class="material-symbols-outlined text-secondary text-[16px]" style="font-variation-settings: 'FILL' 1;">verified</span>
+</div>
+</footer>
+<script>
+        function switchTab(tab) {
+            // Hide all content
+            document.getElementById('content-material').classList.add('hidden');
+            document.getElementById('content-notes').classList.add('hidden');
+            document.getElementById('content-discussion').classList.add('hidden');
+            
+            // Remove active styles from all buttons
+            const tabs = ['material', 'notes', 'discussion'];
+            tabs.forEach(t => {
+                const btn = document.getElementById('tab-' + t);
+                btn.classList.remove('border-primary', 'text-primary', 'font-bold');
+                btn.classList.add('border-transparent', 'text-on-surface-variant');
+            });
+
+            // Show selected content
+            document.getElementById('content-' + tab).classList.remove('hidden');
+            
+            // Add active styles to selected button
+            const activeBtn = document.getElementById('tab-' + tab);
+            activeBtn.classList.remove('border-transparent', 'text-on-surface-variant');
+            activeBtn.classList.add('border-primary', 'text-primary', 'font-bold');
+        }
+
+        function toggleSection(id) {
+            const el = document.getElementById(id);
+            const icon = document.getElementById('icon-' + id);
+            if (el.classList.contains('hidden')) {
+                el.classList.remove('hidden');
+                el.classList.add('block');
+                icon.innerText = 'expand_less';
+            } else {
+                el.classList.remove('block');
+                el.classList.add('hidden');
+                icon.innerText = 'expand_more';
+            }
+        }
+
+        // Simple scale interaction for buttons
+        document.querySelectorAll('button').forEach(btn => {
+            btn.addEventListener('mousedown', () => btn.classList.add('scale-95'));
+            btn.addEventListener('mouseup', () => btn.classList.remove('scale-95'));
+            btn.addEventListener('mouseleave', () => btn.classList.remove('scale-95'));
+        });
+    </script>
+</body></html>

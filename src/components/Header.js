@@ -26,7 +26,7 @@ export default function Header() {
         <button
           type="button"
           onClick={toggleSidebar}
-          className="header-icon-btn"
+          className="header-icon-btn sidebar-toggle-btn"
           title="Buka/Tutup Sidebar"
           aria-label="Toggle Sidebar">
           <PanelLeft size={18} />
@@ -69,7 +69,7 @@ export default function Header() {
           {theme === "light" ? <Moon size={16} /> : <Sun size={16} />}
         </button>
 
-        <div style={{ borderRadius: 20, fontWeight: 600, fontSize: "0.75rem", padding: "4px 12px", backgroundColor: badge.bg, color: badge.color, border: `1px solid ${badge.color}33`, display: "flex", alignItems: "center" }}>
+        <div className="header-db-badge" style={{ borderRadius: 20, fontWeight: 600, fontSize: "0.75rem", padding: "4px 12px", backgroundColor: badge.bg, color: badge.color, border: `1px solid ${badge.color}33`, display: "flex", alignItems: "center" }}>
           <span style={{ width: 6, height: 6, borderRadius: "50%", backgroundColor: badge.dot, marginRight: 6, display: "inline-block" }}></span>
           {badge.text}
         </div>
@@ -83,7 +83,7 @@ export default function Header() {
           <span style={{ fontSize: "0.85rem", fontWeight: 500 }}>{currentUser?.fullname}</span>
           {currentUser?.role && (
             <span className={`badge-role badge-role-${currentUser.role}`} style={{ fontSize: "0.68rem", padding: "2px 7px", borderRadius: 5, fontWeight: 700 }}>
-              {currentUser.roleLabel || (currentUser.role === "admin" ? "Platform Admin" : currentUser.role === "instructor" ? "Instruktur" : currentUser.role === "corporate" ? "HR Manager" : currentUser.role === "government" ? "Kepala Biro SDM" : "Peserta")}
+              {currentUser.role === "student" ? "Peserta" : (currentUser.roleLabel || (currentUser.role === "admin" ? "Platform Admin" : currentUser.role === "instructor" ? "Instruktur" : currentUser.role === "corporate" ? "HR Manager" : currentUser.role === "government" ? "Kepala Biro SDM" : "Peserta"))}
             </span>
           )}
         </div>

@@ -47,7 +47,7 @@ export async function POST(request) {
     if (role && role !== "student") {
       console.warn(`[REGISTER] Permintaan peran "${role}" dari ${email} diabaikan.`);
     }
-    const roleLabels = { student: "Peserta Mandiri", corporate: "HR Manager", government: "Kepala Biro SDM", admin: "Platform Admin" };
+    const roleLabels = { student: "Peserta", corporate: "HR Manager", government: "Kepala Biro SDM", admin: "Platform Admin" };
     const initials = fullname.split(" ").map(w => w[0]).join("").substring(0, 2).toUpperCase();
 
     await query(`

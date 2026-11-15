@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Checkout | EduStream</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            display: inline-block;
+            line-height: 1;
+            text-transform: none;
+            letter-spacing: normal;
+            word-wrap: normal;
+            white-space: nowrap;
+            direction: ltr;
+        }
+        body {
+            font-family: 'Inter', sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+        .step-transition {
+            transition: transform 0.3s ease-in-out, opacity 0.3s ease-in-out;
+        }
+    </style>
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                      "surface-dim": "#cbdbf5",
+                      "on-secondary": "#ffffff",
+                      "tertiary-fixed": "#ffddb8",
+                      "on-tertiary-container": "#ffd4a4",
+                      "surface-variant": "#d3e4fe",
+                      "secondary-fixed-dim": "#6bd8cb",
+                      "on-primary-fixed": "#0f0069",
+                      "on-tertiary": "#ffffff",
+                      "surface-bright": "#f8f9ff",
+                      "inverse-on-surface": "#eaf1ff",
+                      "inverse-primary": "#c3c0ff",
+                      "secondary-fixed": "#89f5e7",
+                      "error": "#ba1a1a",
+                      "on-primary-fixed-variant": "#3323cc",
+                      "on-primary-container": "#dad7ff",
+                      "on-primary": "#ffffff",
+                      "on-tertiary-fixed-variant": "#653e00",
+                      "tertiary-fixed-dim": "#ffb95f",
+                      "on-secondary-fixed": "#00201d",
+                      "surface-container-low": "#eff4ff",
+                      "primary-fixed-dim": "#c3c0ff",
+                      "error-container": "#ffdad6",
+                      "background": "#f8f9ff",
+                      "on-background": "#0b1c30",
+                      "tertiary-container": "#885500",
+                      "outline-variant": "#c7c4d8",
+                      "primary-container": "#4f46e5",
+                      "primary": "#3525cd",
+                      "surface": "#f8f9ff",
+                      "on-secondary-fixed-variant": "#005049",
+                      "secondary-container": "#86f2e4",
+                      "on-tertiary-fixed": "#2a1700",
+                      "on-surface": "#0b1c30",
+                      "surface-container-highest": "#d3e4fe",
+                      "on-secondary-container": "#006f66",
+                      "primary-fixed": "#e2dfff",
+                      "on-surface-variant": "#464555",
+                      "secondary": "#006a61",
+                      "outline": "#777587",
+                      "on-error": "#ffffff",
+                      "inverse-surface": "#213145",
+                      "surface-container-high": "#dce9ff",
+                      "surface-container": "#e5eeff",
+                      "on-error-container": "#93000a",
+                      "tertiary": "#684000",
+                      "surface-container-lowest": "#ffffff",
+                      "surface-tint": "#4d44e3"
+              },
+              "borderRadius": {
+                      "DEFAULT": "0.25rem",
+                      "lg": "0.5rem",
+                      "xl": "0.75rem",
+                      "full": "9999px"
+              },
+              "spacing": {
+                      "xs": "4px",
+                      "xxl": "64px",
+                      "md": "16px",
+                      "lg": "24px",
+                      "xl": "40px",
+                      "margin-mobile": "16px",
+                      "gutter": "24px",
+                      "container-max": "1280px",
+                      "sm": "8px",
+                      "base": "4px"
+              },
+              "fontFamily": {
+                      "label-md": ["Inter"],
+                      "body-sm": ["Inter"],
+                      "headline-sm": ["Inter"],
+                      "display-lg": ["Inter"],
+                      "label-sm": ["Inter"],
+                      "headline-lg": ["Inter"],
+                      "headline-lg-mobile": ["Inter"],
+                      "body-md": ["Inter"],
+                      "body-lg": ["Inter"],
+                      "headline-md": ["Inter"]
+              },
+              "fontSize": {
+                      "label-md": ["14px", {"lineHeight": "1", "letterSpacing": "0.01em", "fontWeight": "500"}],
+                      "body-sm": ["14px", {"lineHeight": "1.5", "fontWeight": "400"}],
+                      "headline-sm": ["20px", {"lineHeight": "1.4", "fontWeight": "600"}],
+                      "display-lg": ["48px", {"lineHeight": "1.1", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                      "label-sm": ["12px", {"lineHeight": "1", "fontWeight": "600"}],
+                      "headline-lg": ["32px", {"lineHeight": "1.2", "letterSpacing": "-0.01em", "fontWeight": "600"}],
+                      "headline-lg-mobile": ["24px", {"lineHeight": "1.2", "fontWeight": "600"}],
+                      "body-md": ["16px", {"lineHeight": "1.5", "fontWeight": "400"}],
+                      "body-lg": ["18px", {"lineHeight": "1.6", "fontWeight": "400"}],
+                      "headline-md": ["24px", {"lineHeight": "1.3", "fontWeight": "600"}]
+              }
+            },
+          },
+        }
+      </script>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background text-on-background min-h-screen pb-24">
+<!-- TopAppBar Navigation Shell -->
+<header class="fixed top-0 w-full z-50 bg-surface shadow-sm flex justify-between items-center px-margin-mobile h-14">
+<div class="flex items-center gap-4">
+<button class="active:scale-95 transition-transform p-1 -ml-1 text-on-surface" onclick="history.back()">
+<span class="material-symbols-outlined">arrow_back</span>
+</button>
+<h1 class="font-headline-sm text-headline-sm font-bold text-primary">Checkout</h1>
+</div>
+<div class="w-8 h-8 rounded-full overflow-hidden border border-outline-variant bg-surface-container">
+<img class="w-full h-full object-cover" data-alt="A professional studio portrait of a corporate educator in their mid-30s with a friendly expression. The lighting is bright and clean, characteristic of a high-end corporate training platform. The background is a soft, out-of-focus modern office space with indigo and white color accents, maintaining the brand's academic reliability and modern efficiency." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDKjqZpfr3apb7aRQUjd_Jt_ZGT2O1NnQetGrgVrbI98gG-A35u3wn0Y7EwJkEHn-4QekBF8gPUsY9LAIwuSIqKE7_BpXSi7im7DVJIDc65pdYOMbY8Y747OwsIA8spG5jLCiu-1hUpHqGCsz1F52mU5f2sLFFjwUcsVRxAPoapxKMsHXUgrkGCUp20UpLpBmS45q9dDrwPzY9JLfVIpzPJ_JNMZdcxOyofwskuDDkk1CmHZ2abTTleug"/>
+</div>
+</header>
+<main class="pt-20 px-margin-mobile max-w-lg mx-auto">
+<!-- Step Indicator -->
+<div class="flex items-center justify-between mb-xl px-2">
+<div class="flex flex-col items-center gap-2">
+<div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center text-on-primary font-label-md text-label-md" id="dot-1">1</div>
+<span class="font-label-sm text-label-sm text-primary">Billing</span>
+</div>
+<div class="flex-grow h-[2px] bg-outline-variant mx-4 mt-[-18px]">
+<div class="h-full bg-primary transition-all duration-500 w-0" id="progress-bar"></div>
+</div>
+<div class="flex flex-col items-center gap-2">
+<div class="w-8 h-8 rounded-full bg-surface-container-high border-2 border-outline-variant flex items-center justify-center text-on-surface-variant font-label-md text-label-md" id="dot-2">2</div>
+<span class="font-label-sm text-label-sm text-on-surface-variant">Payment</span>
+</div>
+</div>
+<!-- Step 1: Billing Details -->
+<div class="step-transition" id="step-1">
+<h2 class="font-headline-md text-headline-md mb-md">Billing Details</h2>
+<div class="space-y-md">
+<div class="space-y-xs">
+<label class="block font-label-md text-label-md text-on-surface-variant ml-1">Full Name</label>
+<input class="w-full h-12 px-md rounded-lg border border-outline bg-surface focus:border-2 focus:border-primary outline-none transition-all font-body-md text-body-md" placeholder="John Doe" type="text"/>
+</div>
+<div class="space-y-xs">
+<label class="block font-label-md text-label-md text-on-surface-variant ml-1">Email Address</label>
+<input class="w-full h-12 px-md rounded-lg border border-outline bg-surface focus:border-2 focus:border-primary outline-none transition-all font-body-md text-body-md" placeholder="john.doe@example.com" type="email"/>
+</div>
+<div class="space-y-xs">
+<label class="block font-label-md text-label-md text-on-surface-variant ml-1">Street Address</label>
+<input class="w-full h-12 px-md rounded-lg border border-outline bg-surface focus:border-2 focus:border-primary outline-none transition-all font-body-md text-body-md" placeholder="123 Academic Way" type="text"/>
+</div>
+<div class="grid grid-cols-2 gap-md">
+<div class="space-y-xs">
+<label class="block font-label-md text-label-md text-on-surface-variant ml-1">City</label>
+<input class="w-full h-12 px-md rounded-lg border border-outline bg-surface focus:border-2 focus:border-primary outline-none transition-all font-body-md text-body-md" placeholder="Cambridge" type="text"/>
+</div>
+<div class="space-y-xs">
+<label class="block font-label-md text-label-md text-on-surface-variant ml-1">Postal Code</label>
+<input class="w-full h-12 px-md rounded-lg border border-outline bg-surface focus:border-2 focus:border-primary outline-none transition-all font-body-md text-body-md" placeholder="CB1 2QA" type="text"/>
+</div>
+</div>
+</div>
+<button class="w-full mt-xl h-14 bg-primary text-on-primary rounded-xl font-headline-sm text-headline-sm shadow-md active:scale-[0.98] transition-all flex items-center justify-center gap-2" onclick="goToStep(2)">
+                Continue to Payment
+                <span class="material-symbols-outlined">arrow_forward</span>
+</button>
+</div>
+<!-- Step 2: Payment Method (Hidden by default) -->
+<div class="step-transition hidden opacity-0 translate-x-4" id="step-2">
+<h2 class="font-headline-md text-headline-md mb-md">Payment Method</h2>
+<div class="space-y-md">
+<!-- Payment Options -->
+<div class="flex flex-col gap-sm">
+<button class="payment-option w-full flex items-center justify-between p-md rounded-xl border-2 border-primary bg-primary-container/10 transition-all" id="pay-card" onclick="selectPayment('card')">
+<div class="flex items-center gap-md">
+<span class="material-symbols-outlined text-primary">credit_card</span>
+<span class="font-body-lg text-body-lg font-semibold text-primary">Credit / Debit Card</span>
+</div>
+<div class="w-5 h-5 rounded-full border-2 border-primary flex items-center justify-center">
+<div class="w-2.5 h-2.5 bg-primary rounded-full"></div>
+</div>
+</button>
+<button class="payment-option w-full flex items-center justify-between p-md rounded-xl border-2 border-outline-variant bg-surface transition-all" id="pay-paypal" onclick="selectPayment('paypal')">
+<div class="flex items-center gap-md">
+<span class="material-symbols-outlined text-on-surface-variant">account_balance_wallet</span>
+<span class="font-body-lg text-body-lg font-semibold text-on-surface-variant">PayPal</span>
+</div>
+<div class="w-5 h-5 rounded-full border-2 border-outline-variant"></div>
+</button>
+</div>
+<!-- Card Details Form -->
+<div class="space-y-md pt-4" id="card-form">
+<div class="space-y-xs">
+<label class="block font-label-md text-label-md text-on-surface-variant ml-1">Card Number</label>
+<div class="relative">
+<input class="w-full h-12 pl-md pr-12 rounded-lg border border-outline bg-surface focus:border-2 focus:border-primary outline-none transition-all font-body-md text-body-md" placeholder="0000 0000 0000 0000" type="text"/>
+<span class="material-symbols-outlined absolute right-3 top-3 text-outline">credit_card</span>
+</div>
+</div>
+<div class="grid grid-cols-2 gap-md">
+<div class="space-y-xs">
+<label class="block font-label-md text-label-md text-on-surface-variant ml-1">Expiry Date</label>
+<input class="w-full h-12 px-md rounded-lg border border-outline bg-surface focus:border-2 focus:border-primary outline-none transition-all font-body-md text-body-md" placeholder="MM / YY" type="text"/>
+</div>
+<div class="space-y-xs">
+<label class="block font-label-md text-label-md text-on-surface-variant ml-1">CVV</label>
+<input class="w-full h-12 px-md rounded-lg border border-outline bg-surface focus:border-2 focus:border-primary outline-none transition-all font-body-md text-body-md" placeholder="***" type="password"/>
+</div>
+</div>
+</div>
+</div>
+<button class="w-full mt-xl text-primary font-label-md text-label-md flex items-center justify-center gap-2 active:opacity-70" onclick="goToStep(1)">
+<span class="material-symbols-outlined text-[18px]">arrow_back</span>
+                Back to Billing Details
+            </button>
+</div>
+<!-- Order Summary Section (Collapsible) -->
+<div class="mt-xl border-t border-outline-variant pt-md">
+<button class="w-full flex items-center justify-between py-sm" onclick="toggleSummary()">
+<div class="flex items-center gap-sm">
+<span class="font-headline-sm text-headline-sm">Order Summary</span>
+<span class="material-symbols-outlined transition-transform duration-300" id="summary-chevron">expand_more</span>
+</div>
+<span class="font-headline-sm text-headline-sm text-primary">$250.40</span>
+</button>
+<div class="overflow-hidden transition-all duration-300 max-h-0" id="summary-content">
+<div class="space-y-sm py-md text-on-surface-variant font-body-sm text-body-sm">
+<div class="flex justify-between">
+<span>Corporate Management Essentials</span>
+<span>$210.00</span>
+</div>
+<div class="flex justify-between">
+<span>Advanced Data Structures (Certificate)</span>
+<span>$40.40</span>
+</div>
+<div class="flex justify-between border-t border-outline-variant pt-sm font-semibold text-on-surface">
+<span>Total Due</span>
+<span>$250.40</span>
+</div>
+</div>
+</div>
+</div>
+</main>
+<!-- Fixed Bottom Action -->
+<div class="fixed bottom-0 left-0 w-full p-margin-mobile bg-surface border-t border-outline-variant z-40">
+<div class="max-w-lg mx-auto">
+<button class="w-full h-14 bg-primary text-on-primary rounded-xl font-headline-sm text-headline-sm shadow-md active:scale-[0.98] transition-all flex items-center justify-center gap-2">
+                Complete Payment
+                <span class="material-symbols-outlined">lock</span>
+</button>
+<p class="text-center text-label-sm text-on-surface-variant mt-sm">Secured by 256-bit SSL Encryption</p>
+</div>
+</div>
+<script>
+        let currentStep = 1;
+
+        function goToStep(step) {
+            const step1 = document.getElementById('step-1');
+            const step2 = document.getElementById('step-2');
+            const dot2 = document.getElementById('dot-2');
+            const progBar = document.getElementById('progress-bar');
+
+            if (step === 2) {
+                step1.classList.add('opacity-0', '-translate-x-4');
+                setTimeout(() => {
+                    step1.classList.add('hidden');
+                    step2.classList.remove('hidden');
+                    setTimeout(() => {
+                        step2.classList.remove('opacity-0', 'translate-x-4');
+                    }, 50);
+                }, 300);
+                dot2.classList.replace('bg-surface-container-high', 'bg-primary');
+                dot2.classList.replace('text-on-surface-variant', 'text-on-primary');
+                dot2.classList.replace('border-outline-variant', 'border-primary');
+                progBar.style.width = '100%';
+            } else {
+                step2.classList.add('opacity-0', 'translate-x-4');
+                setTimeout(() => {
+                    step2.classList.add('hidden');
+                    step1.classList.remove('hidden');
+                    setTimeout(() => {
+                        step1.classList.remove('opacity-0', '-translate-x-4');
+                    }, 50);
+                }, 300);
+                dot2.classList.replace('bg-primary', 'bg-surface-container-high');
+                dot2.classList.replace('text-on-primary', 'text-on-surface-variant');
+                dot2.classList.replace('border-primary', 'border-outline-variant');
+                progBar.style.width = '0%';
+            }
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function selectPayment(type) {
+            const cardBtn = document.getElementById('pay-card');
+            const paypalBtn = document.getElementById('pay-paypal');
+            const cardForm = document.getElementById('card-form');
+
+            if (type === 'card') {
+                cardBtn.classList.add('border-primary', 'bg-primary-container/10');
+                cardBtn.classList.remove('border-outline-variant', 'bg-surface');
+                cardBtn.querySelector('.material-symbols-outlined').classList.add('text-primary');
+                cardBtn.querySelector('span:not(.material-symbols-outlined)').classList.add('text-primary');
+                cardBtn.querySelector('.rounded-full').innerHTML = '<div class="w-2.5 h-2.5 bg-primary rounded-full"></div>';
+                cardBtn.querySelector('.rounded-full').classList.add('border-primary');
+
+                paypalBtn.classList.remove('border-primary', 'bg-primary-container/10');
+                paypalBtn.classList.add('border-outline-variant', 'bg-surface');
+                paypalBtn.querySelector('.material-symbols-outlined').classList.replace('text-primary', 'text-on-surface-variant');
+                paypalBtn.querySelector('span:not(.material-symbols-outlined)').classList.replace('text-primary', 'text-on-surface-variant');
+                paypalBtn.querySelector('.rounded-full').innerHTML = '';
+                paypalBtn.querySelector('.rounded-full').classList.replace('border-primary', 'border-outline-variant');
+                
+                cardForm.classList.remove('hidden');
+            } else {
+                paypalBtn.classList.add('border-primary', 'bg-primary-container/10');
+                paypalBtn.classList.remove('border-outline-variant', 'bg-surface');
+                paypalBtn.querySelector('.material-symbols-outlined').classList.add('text-primary');
+                paypalBtn.querySelector('span:not(.material-symbols-outlined)').classList.add('text-primary');
+                paypalBtn.querySelector('.rounded-full').innerHTML = '<div class="w-2.5 h-2.5 bg-primary rounded-full"></div>';
+                paypalBtn.querySelector('.rounded-full').classList.add('border-primary');
+
+                cardBtn.classList.remove('border-primary', 'bg-primary-container/10');
+                cardBtn.classList.add('border-outline-variant', 'bg-surface');
+                cardBtn.querySelector('.material-symbols-outlined').classList.add('text-on-surface-variant');
+                cardBtn.querySelector('span:not(.material-symbols-outlined)').classList.replace('text-primary', 'text-on-surface-variant');
+                cardBtn.querySelector('.rounded-full').innerHTML = '';
+                cardBtn.querySelector('.rounded-full').classList.replace('border-primary', 'border-outline-variant');
+
+                cardForm.classList.add('hidden');
+            }
+        }
+
+        let summaryOpen = false;
+        function toggleSummary() {
+            const content = document.getElementById('summary-content');
+            const chevron = document.getElementById('summary-chevron');
+            summaryOpen = !summaryOpen;
+            
+            if (summaryOpen) {
+                content.style.maxHeight = '200px';
+                chevron.style.transform = 'rotate(180deg)';
+            } else {
+                content.style.maxHeight = '0';
+                chevron.style.transform = 'rotate(0deg)';
+            }
+        }
+    </script>
+</body></html>
