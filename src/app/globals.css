@@ -1158,26 +1158,201 @@ header {
     margin-bottom: 24px;
 }
 
+/* 🏷️ Proportional & Clean Category Filter Chips */
+.category-chips-container {
+    position: relative;
+    display: flex;
+    align-items: center;
+    margin-bottom: 18px;
+    width: 100%;
+}
+
+.category-chips-track {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    overflow-x: auto;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+    scroll-behavior: smooth;
+    padding: 4px 2px;
+    width: 100%;
+    -webkit-overflow-scrolling: touch;
+}
+
+.category-chips-track::-webkit-scrollbar {
+    display: none;
+}
+
+.category-scroll-btn {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-primary);
+    cursor: pointer;
+    z-index: 10;
+    transition: all 0.2s ease;
+}
+
+.category-scroll-btn:hover {
+    background: var(--primary);
+    color: #ffffff;
+    border-color: var(--primary);
+    transform: translateY(-50%) scale(1.08);
+}
+
+.category-scroll-left {
+    left: -12px;
+}
+
+.category-scroll-right {
+    right: -12px;
+}
+
+.category-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    padding: 6px 13px;
+    border-radius: var(--radius-sm, 8px);
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    color: var(--text-secondary);
+    font-size: 0.78rem;
+    font-weight: 600;
+    white-space: nowrap;
+    cursor: pointer;
+    flex-shrink: 0;
+    transition: all 0.18s ease;
+    user-select: none;
+}
+
+.category-chip:hover {
+    border-color: #67a6db;
+    color: var(--text-primary);
+    background: rgba(103, 166, 219, 0.08);
+}
+
+.category-chip.active {
+    background: var(--primary) !important;
+    color: #ffffff !important;
+    border-color: var(--primary) !important;
+    box-shadow: 0 2px 8px rgba(24, 37, 72, 0.2);
+}
+
+.category-chip-count {
+    padding: 1px 6px;
+    border-radius: 6px;
+    font-size: 0.68rem;
+    font-weight: 700;
+    background: rgba(0, 0, 0, 0.08);
+    color: var(--text-muted);
+    transition: all 0.18s ease;
+}
+
+.category-chip.active .category-chip-count {
+    background: rgba(255, 255, 255, 0.25);
+    color: #ffffff;
+}
+
+[data-theme="light"] .category-chip {
+    background: #ffffff;
+    border-color: #cbd5e1;
+    color: #334155;
+}
+
+[data-theme="light"] .category-chip:hover {
+    border-color: #2b5c8d;
+    color: #182548;
+    background: #f8fafc;
+}
+
+[data-theme="light"] .category-chip.active {
+    background: #182548 !important;
+    color: #ffffff !important;
+    border-color: #182548 !important;
+}
+
+[data-theme="light"] .category-chip.active .category-chip-count {
+    background: rgba(255, 255, 255, 0.25);
+    color: #ffffff;
+}
+
+[data-theme="light"] .category-scroll-btn {
+    background: #ffffff;
+    border-color: #cbd5e1;
+    color: #182548;
+}
+
+[data-theme="light"] .category-scroll-btn:hover {
+    background: #182548;
+    color: #ffffff;
+    border-color: #182548;
+}
+
 .filter-pills {
     display: flex;
     gap: 8px;
+    overflow-x: auto;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+}
+.filter-pills::-webkit-scrollbar {
+    display: none;
 }
 
 .filter-pill {
-    padding: 8px 16px;
-    background: rgba(255, 255, 255, 0.03);
+    padding: 6px 13px;
+    background: rgba(255, 255, 255, 0.04);
     border: 1px solid var(--border-color);
-    border-radius: 20px;
+    border-radius: var(--radius-sm, 8px);
     color: var(--text-secondary);
-    font-size: 0.85rem;
+    font-size: 0.78rem;
+    font-weight: 600;
     cursor: pointer;
+    white-space: nowrap;
     transition: all 0.2s;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    flex-shrink: 0;
+}
+
+.filter-pill:hover {
+    border-color: #67a6db;
+    color: var(--text-primary);
 }
 
 .filter-pill.active {
     background: var(--primary);
     color: white;
     border-color: var(--primary);
+}
+
+[data-theme="light"] .filter-pill {
+    background: #ffffff;
+    border-color: #cbd5e1;
+    color: #334155;
+}
+
+[data-theme="light"] .filter-pill:hover {
+    border-color: #2b5c8d;
+    color: #182548;
+}
+
+[data-theme="light"] .filter-pill.active {
+    background: #182548;
+    color: #ffffff;
+    border-color: #182548;
 }
 
 /* Instructor Snippet in Course Cards */
@@ -1275,8 +1450,9 @@ header {
 
 [data-theme="light"] .instructor-showcase-card:hover,
 [data-theme="light"] .instructor-showcase-card.active {
-    background: #fff7ed;
-    border-color: #ea580c;
+    background: #f0f7ff;
+    border-color: #2b5c8d;
+    box-shadow: 0 2px 8px rgba(43, 92, 141, 0.15);
 }
 
 .course-grid {

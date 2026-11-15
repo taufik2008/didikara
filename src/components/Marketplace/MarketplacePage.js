@@ -1,6 +1,6 @@
 "use client";
-import { useState, useMemo, useEffect } from "react";
-import { Clock, BarChart2, Star, BookOpen, Lock, UserCheck, Search, Award, Sparkles, X, ChevronRight, CheckCircle, Check, Crown, Users, Building2, ShieldCheck, Zap, Gift, Tv, MapPin, Video, Calendar } from "lucide-react";
+import { useState, useMemo, useEffect, useRef, useCallback } from "react";
+import { Clock, BarChart2, Star, BookOpen, Lock, UserCheck, Search, Award, Sparkles, X, ChevronLeft, ChevronRight, CheckCircle, Check, Crown, Users, Building2, ShieldCheck, Zap, Gift, Tv, MapPin, Video, Calendar } from "lucide-react";
 import { useApp } from "@/context/AppContext";
 
 export default function MarketplacePage() {
@@ -82,6 +82,34 @@ export default function MarketplacePage() {
   });
   const [instructorModal, setInstructorModal] = useState(null); // instructor obj | null
   const [expandedCourses, setExpandedCourses] = useState({});
+
+  // 🏷️ Scroll controller track kategori agar proporsional, rapi, dan tidak bertumpuk banyak baris
+  const categoryTrackRef = useRef(null);
+  const [canScrollLeft, setCanScrollLeft] = useState(false);
+  const [canScrollRight, setCanScrollRight] = useState(false);
+
+  const checkCategoryScroll = useCallback(() => {
+    const el = categoryTrackRef.current;
+    if (!el) return;
+    setCanScrollLeft(el.scrollLeft > 4);
+    setCanScrollRight(el.scrollLeft + el.clientWidth < el.scrollWidth - 4);
+  }, []);
+
+  const scrollCategoryTrack = (direction) => {
+    if (categoryTrackRef.current) {
+      categoryTrackRef.current.scrollBy({
+        left: direction === "left" ? -220 : 220,
+        behavior: "smooth"
+      });
+      setTimeout(checkCategoryScroll, 350);
+    }
+  };
+
+  useEffect(() => {
+    checkCategoryScroll();
+    window.addEventListener("resize", checkCategoryScroll);
+    return () => window.removeEventListener("resize", checkCategoryScroll);
+  }, [checkCategoryScroll, categories]);
 
   const toggleExpandDesc = (courseId) => {
     setExpandedCourses(prev => ({
@@ -222,6 +250,17 @@ export default function MarketplacePage() {
       online: onlineCount,
       offline: offlineCount,
     };
+  }, [courses]);
+
+  // Jumlah program pelatihan per kategori
+  const categoryCounts = useMemo(() => {
+    const counts = { all: courses.length };
+    courses.forEach(c => {
+      if (c.category) {
+        counts[c.category] = (counts[c.category] || 0) + 1;
+      }
+    });
+    return counts;
   }, [courses]);
 
   // Filter kursus berdasarkan model belajar, kategori, instruktur, level, harga, rating, dan kata kunci
@@ -400,8 +439,23 @@ export default function MarketplacePage() {
           </div>
         </div>
 
-        {/* Bottom Row: Quick Filters (Tingkat, Harga, Rating, Result Count) */}
+        {/* Bottom Row: Quick Filters (Kategori, Tingkat, Harga, Rating, Result Count) */}
         <div style={{ display: "flex", alignItems: "center", flexWrap: "wrap", gap: 10, paddingTop: 10, borderTop: "1px solid var(--border-color)" }}>
+          <select
+            value={filterCategory}
+            onChange={e => setFilterCategory(e.target.value)}
+            style={{
+              padding: "6px 10px", borderRadius: 8, background: "var(--bg-tertiary)",
+              border: "1px solid var(--border-color)", color: "var(--text-primary)", fontSize: "0.78rem", cursor: "pointer"
+            }}>
+            <option value="all">Semua Kategori ({courses.length})</option>
+            {categories.map(c => (
+              <option key={c.key} value={c.key}>
+                {c.name} ({categoryCounts[c.key] || 0})
+              </option>
+            ))}
+          </select>
+
           <select
             value={selectedLevel}
             onChange={e => setSelectedLevel(e.target.value)}
@@ -457,17 +511,58 @@ export default function MarketplacePage() {
         </div>
       </div>
 
-      {/* Category Pills (Jika tab category aktif) */}
+      {/* 🏷️ Category Filter Chips Bar (Proporsional, Rapi, Bersih & Horizontal Scrollable) */}
       {activeFilterTab === "category" && (
-        <div className="filter-pills" style={{ marginBottom: 20 }}>
-          {["all", ...categories.map(c => c.key)].map(cat => {
-            const catObj = categories.find(c => c.key === cat);
-            return (
-              <button type="button" key={cat} className={`filter-pill ${filterCategory === cat ? 'active' : ''}`} onClick={() => setFilterCategory(cat)}>
-                {cat === 'all' ? 'Semua Kategori' : (catObj ? catObj.name : cat)}
-              </button>
-            );
-          })}
+        <div className="category-chips-container" style={{ position: "relative", marginBottom: 18 }}>
+          {canScrollLeft && (
+            <button
+              type="button"
+              onClick={() => scrollCategoryTrack("left")}
+              className="category-scroll-btn category-scroll-left"
+              title="Geser kategori ke kiri"
+              aria-label="Geser kategori ke kiri"
+            >
+              <ChevronLeft size={14} />
+            </button>
+          )}
+
+          <div
+            ref={categoryTrackRef}
+            onScroll={checkCategoryScroll}
+            className="category-chips-track filter-pills"
+          >
+            {["all", ...categories.map(c => c.key)].map(cat => {
+              const catObj = categories.find(c => c.key === cat);
+              const label = cat === 'all' ? 'Semua Kategori' : (catObj ? catObj.name : cat);
+              const count = categoryCounts[cat] || (cat === 'all' ? courses.length : 0);
+              const isActive = filterCategory === cat;
+
+              return (
+                <button
+                  type="button"
+                  key={cat}
+                  className={`filter-pill category-chip ${isActive ? 'active' : ''}`}
+                  onClick={() => setFilterCategory(cat)}
+                  title={`${label} (${count} program pelatihan)`}
+                >
+                  <span className="category-chip-label">{label}</span>
+                  <span className="category-chip-count">{count}</span>
+                </button>
+              );
+            })}
+          </div>
+
+          {canScrollRight && (
+            <button
+              type="button"
+              onClick={() => scrollCategoryTrack("right")}
+              className="category-scroll-btn category-scroll-right"
+              title="Geser kategori ke kanan"
+              aria-label="Geser kategori ke kanan"
+            >
+              <ChevronRight size={14} />
+            </button>
+          )}
         </div>
       )}
 
