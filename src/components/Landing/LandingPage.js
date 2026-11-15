@@ -264,14 +264,16 @@ export default function LandingPage({ initialCourses, initialCategories, initial
     <div style={{ minHeight: "100vh", backgroundColor: "var(--bg-primary)", color: "var(--text-primary)" }}>
       {/* ── NAVBAR ── */}
       <header
+        className="landing-header"
         style={{
           position: "sticky",
           top: 0,
           zIndex: 50,
           backdropFilter: "blur(16px)",
           WebkitBackdropFilter: "blur(16px)",
-          backgroundColor: "var(--bg-glass)",
-          borderBottom: "1px solid var(--border-color)",
+          backgroundColor: "#182548",
+          borderBottom: "1px solid rgba(103, 166, 219, 0.25)",
+          boxShadow: "0 4px 20px -2px rgba(16, 24, 43, 0.4)",
           transition: "all 0.2s ease"
         }}
       >
@@ -331,12 +333,13 @@ export default function LandingPage({ initialCourses, initialCategories, initial
             <div>
               <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
                 <span
+                  className="brand-name"
                   style={{
                     fontFamily: "var(--font-heading)",
                     fontSize: "1.35rem",
                     fontWeight: 800,
                     letterSpacing: "-0.03em",
-                    color: "var(--text-primary)"
+                    color: "#ffffff"
                   }}
                 >
                   {brandName}
@@ -346,16 +349,16 @@ export default function LandingPage({ initialCourses, initialCategories, initial
                     fontSize: "0.68rem",
                     padding: "2px 6px",
                     borderRadius: 4,
-                    background: "var(--accent-badge-bg)",
-                    color: "var(--text-accent)",
+                    background: "rgba(103, 166, 219, 0.2)",
+                    color: "#67a6db",
                     fontWeight: 700,
-                    border: "1px solid var(--accent-badge-border)"
+                    border: "1px solid rgba(103, 166, 219, 0.4)"
                   }}
                 >
                   NASIONAL
                 </span>
               </div>
-              <div style={{ fontSize: "0.72rem", color: "var(--text-muted)", marginTop: -2 }}>
+              <div className="brand-tagline" style={{ fontSize: "0.72rem", color: "#cbd5e1", marginTop: -2 }}>
                 {brandTagline}
               </div>
             </div>
@@ -369,7 +372,7 @@ export default function LandingPage({ initialCourses, initialCategories, initial
               gap: 26,
               fontSize: "0.9rem",
               fontWeight: 500,
-              color: "var(--text-secondary)"
+              color: "#e2e8f0"
             }}
             className="desktop-nav"
           >
@@ -380,7 +383,7 @@ export default function LandingPage({ initialCourses, initialCategories, initial
                 const el = document.getElementById("model-belajar");
                 if (el) el.scrollIntoView({ behavior: "smooth" });
               }}
-              style={{ color: "inherit", textDecoration: "none", transition: "color 0.2s" }}
+              style={{ color: "#e2e8f0", textDecoration: "none", transition: "color 0.2s" }}
               className="nav-link"
             >
               3 Model Belajar
@@ -392,10 +395,10 @@ export default function LandingPage({ initialCourses, initialCategories, initial
                 const el = document.getElementById("katalog");
                 if (el) el.scrollIntoView({ behavior: "smooth" });
               }}
-              style={{ color: "inherit", textDecoration: "none", transition: "color 0.2s" }}
+              style={{ color: "#e2e8f0", textDecoration: "none", transition: "color 0.2s" }}
               className="nav-link"
             >
-              Katalog Kursus
+              Katalog Pelatihan
             </a>
 
             <a
@@ -456,9 +459,9 @@ export default function LandingPage({ initialCourses, initialCategories, initial
                 width: 38,
                 height: 38,
                 borderRadius: 10,
-                border: "1px solid var(--border-color)",
-                background: "var(--bg-card)",
-                color: "var(--text-secondary)",
+                border: "1px solid rgba(255, 255, 255, 0.25)",
+                background: "rgba(255, 255, 255, 0.12)",
+                color: "#ffffff",
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "center",
@@ -478,15 +481,15 @@ export default function LandingPage({ initialCourses, initialCategories, initial
                   display: "flex",
                   alignItems: "center",
                   gap: 10,
-                  padding: "8px 16px",
+                  padding: "8px 18px",
                   borderRadius: 10,
-                  background: "var(--primary-gradient)",
-                  color: "#fff",
-                  fontWeight: 600,
+                  background: "linear-gradient(135deg, #2b5c8d 0%, #67a6db 100%)",
+                  color: "#ffffff",
+                  fontWeight: 700,
                   fontSize: "0.88rem",
-                  border: "none",
+                  border: "1px solid rgba(103, 166, 219, 0.4)",
                   cursor: "pointer",
-                  boxShadow: "var(--shadow-md)"
+                  boxShadow: "0 4px 14px rgba(0,0,0,0.25)"
                 }}
               >
                 <span>Buka Dashboard</span>
@@ -499,12 +502,13 @@ export default function LandingPage({ initialCourses, initialCategories, initial
                   style={{
                     padding: "8px 16px",
                     borderRadius: 10,
-                    border: "1px solid var(--border-color)",
-                    background: "var(--bg-card)",
-                    color: "var(--text-primary)",
+                    border: "1px solid rgba(255, 255, 255, 0.3)",
+                    background: "rgba(255, 255, 255, 0.1)",
+                    color: "#ffffff",
                     fontWeight: 600,
                     fontSize: "0.88rem",
-                    cursor: "pointer"
+                    cursor: "pointer",
+                    transition: "all 0.2s"
                   }}
                 >
                   Masuk
@@ -514,13 +518,13 @@ export default function LandingPage({ initialCourses, initialCategories, initial
                   style={{
                     padding: "8px 18px",
                     borderRadius: 10,
-                    background: "var(--primary-gradient)",
-                    color: "#fff",
-                    fontWeight: 600,
+                    background: "linear-gradient(135deg, #edb63f 0%, #d99b26 100%)",
+                    color: "#0f172a",
+                    fontWeight: 700,
                     fontSize: "0.88rem",
                     border: "none",
                     cursor: "pointer",
-                    boxShadow: "var(--shadow-md)"
+                    boxShadow: "0 4px 14px rgba(237, 182, 63, 0.35)"
                   }}
                 >
                   Mulai Belajar
@@ -1009,9 +1013,9 @@ export default function LandingPage({ initialCourses, initialCategories, initial
               <div style={{ fontSize: "0.8rem", fontWeight: 700, color: "var(--primary)", textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: 6 }}>
                 Katalog Materi & Pilihan Format
               </div>
-              <h2 style={{ fontSize: "2rem", fontWeight: 800 }}>Daftar Kursus Berdasarkan Model Belajar</h2>
+              <h2 style={{ fontSize: "2rem", fontWeight: 800 }}>Daftar Pelatihan Berdasarkan Model Belajar</h2>
               <p style={{ color: "var(--text-secondary)", fontSize: "0.95rem", marginTop: 4 }}>
-                Saring kursus berdasarkan format Self-Learning (Belajar Mandiri), Kelas Online Live, atau Workshop Tatap Muka.
+                Saring program pelatihan berdasarkan format Self-Learning (Belajar Mandiri), Kelas Online Live, atau Workshop Tatap Muka.
               </p>
             </div>
 
@@ -1961,12 +1965,14 @@ export default function LandingPage({ initialCourses, initialCategories, initial
 
       {/* ── FOOTER ── */}
       <footer
+        className="landing-footer"
         style={{
-          borderTop: "1px solid var(--border-color)",
-          backgroundColor: "var(--bg-secondary)",
+          borderTop: "1px solid rgba(103, 166, 219, 0.25)",
+          backgroundColor: "#182548",
+          background: "linear-gradient(180deg, #182548 0%, #10182b 100%)",
           padding: "50px 24px 30px 24px",
           fontSize: "0.85rem",
-          color: "var(--text-secondary)"
+          color: "#cbd5e1"
         }}
       >
         <div
@@ -2018,36 +2024,36 @@ export default function LandingPage({ initialCourses, initialCategories, initial
                   <Sparkles size={18} />
                 </div>
               )}
-              <span style={{ fontSize: "1.2rem", fontWeight: 800, color: "var(--text-primary)" }}>
+              <span style={{ fontSize: "1.2rem", fontWeight: 800, color: "#ffffff" }}>
                 {brandName}
               </span>
             </div>
-            <p style={{ lineHeight: 1.6, fontSize: "0.82rem", color: "var(--text-muted)" }}>
+            <p style={{ lineHeight: 1.6, fontSize: "0.82rem", color: "#cbd5e1" }}>
               {brandTagline}
             </p>
           </div>
 
           <div>
-            <h4 style={{ fontSize: "0.92rem", fontWeight: 700, color: "var(--text-primary)", marginBottom: 14 }}>Model Belajar</h4>
+            <h4 style={{ fontSize: "0.92rem", fontWeight: 700, color: "#ffffff", marginBottom: 14 }}>Model Belajar</h4>
             <div style={{ display: "flex", flexDirection: "column", gap: 8, fontSize: "0.82rem" }}>
-              <a href="#katalog" onClick={() => setSelectedLearningType("self_learning")} style={{ color: "inherit", textDecoration: "none" }}>
+              <a href="#katalog" onClick={() => setSelectedLearningType("self_learning")} style={{ color: "#cbd5e1", textDecoration: "none" }}>
                 🟢 Self-Learning (Belajar Mandiri)
               </a>
-              <a href="#katalog" onClick={() => setSelectedLearningType("online")} style={{ color: "inherit", textDecoration: "none" }}>
+              <a href="#katalog" onClick={() => setSelectedLearningType("online")} style={{ color: "#cbd5e1", textDecoration: "none" }}>
                 🔵 Online Class (Live Webinar)
               </a>
-              <a href="#katalog" onClick={() => setSelectedLearningType("offline")} style={{ color: "inherit", textDecoration: "none" }}>
+              <a href="#katalog" onClick={() => setSelectedLearningType("offline")} style={{ color: "#cbd5e1", textDecoration: "none" }}>
                 🟣 Offline Workshop (Tatap Muka)
               </a>
             </div>
           </div>
 
           <div>
-            <h4 style={{ fontSize: "0.92rem", fontWeight: 700, color: "var(--text-primary)", marginBottom: 14 }}>Akses Pengguna</h4>
+            <h4 style={{ fontSize: "0.92rem", fontWeight: 700, color: "#ffffff", marginBottom: 14 }}>Akses Pengguna</h4>
             <div style={{ display: "flex", flexDirection: "column", gap: 8, fontSize: "0.82rem" }}>
-              <Link href="/dashboard" style={{ color: "inherit", textDecoration: "none" }}>Login Peserta</Link>
-              <a href="#kontak" onClick={(e) => { e.preventDefault(); const el = document.getElementById("kontak"); if (el) el.scrollIntoView({ behavior: "smooth" }); }} style={{ color: "inherit", textDecoration: "none" }}>Hubungi Kami (Contact Us)</a>
-              <Link href="/dashboard" style={{ color: "inherit", textDecoration: "none" }}>Portal Instruktur & Asesor</Link>
+              <Link href="/dashboard" style={{ color: "#cbd5e1", textDecoration: "none" }}>Login Peserta</Link>
+              <a href="#kontak" onClick={(e) => { e.preventDefault(); const el = document.getElementById("kontak"); if (el) el.scrollIntoView({ behavior: "smooth" }); }} style={{ color: "#cbd5e1", textDecoration: "none" }}>Hubungi Kami (Contact Us)</a>
+              <Link href="/dashboard" style={{ color: "#cbd5e1", textDecoration: "none" }}>Portal Instruktur & Asesor</Link>
             </div>
           </div>
         </div>
@@ -2057,25 +2063,25 @@ export default function LandingPage({ initialCourses, initialCategories, initial
             maxWidth: 1240,
             margin: "0 auto",
             paddingTop: 24,
-            borderTop: "1px solid var(--border-color)",
+            borderTop: "1px solid rgba(255, 255, 255, 0.15)",
             display: "flex",
             flexWrap: "wrap",
             alignItems: "center",
             justifyContent: "space-between",
             gap: 12,
             fontSize: "0.78rem",
-            color: "var(--text-muted)"
+            color: "#94a3b8"
           }}
         >
           <div>&copy; 2026 DIDIKARA Platform Nasional. Hak Cipta Dilindungi Undang-Undang.</div>
           <div style={{ display: "flex", gap: 16 }}>
-            <Link href="/legal/syarat-ketentuan" style={{ color: "inherit", textDecoration: "none", transition: "color 0.2s ease" }}>
+            <Link href="/legal/syarat-ketentuan" style={{ color: "#cbd5e1", textDecoration: "none", transition: "color 0.2s ease" }}>
               Ketentuan Layanan
             </Link>
-            <Link href="/legal/privasi" style={{ color: "inherit", textDecoration: "none", transition: "color 0.2s ease" }}>
+            <Link href="/legal/privasi" style={{ color: "#cbd5e1", textDecoration: "none", transition: "color 0.2s ease" }}>
               Kebijakan Privasi
             </Link>
-            <span>Standar Akreditasi BNSP</span>
+            <span style={{ color: "#cbd5e1" }}>Standar Akreditasi BNSP</span>
           </div>
         </div>
       </footer>

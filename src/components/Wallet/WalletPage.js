@@ -383,7 +383,7 @@ export default function WalletPage() {
             <div className="glass-card" style={{ padding: 32, textAlign: "center" }}>
               <CreditCard size={40} style={{ color: "var(--text-muted)", marginBottom: 12 }} />
               <p style={{ color: "var(--text-muted)", fontSize: "0.85rem" }}>Belum ada transaksi.</p>
-              <p style={{ color: "var(--text-muted)", fontSize: "0.75rem", marginTop: 4 }}>Beli kursus di halaman Marketplace untuk memulai.</p>
+              <p style={{ color: "var(--text-muted)", fontSize: "0.75rem", marginTop: 4 }}>Daftar pelatihan di menu Katalog Pelatihan untuk memulai.</p>
             </div>
           )}
 

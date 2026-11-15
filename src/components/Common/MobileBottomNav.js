@@ -31,7 +31,7 @@ export default function MobileBottomNav() {
     },
     {
       id: "marketplace",
-      label: "Katalog",
+      label: "Pelatihan",
       icon: Compass,
       path: "/marketplace",
       isActive: pathname === "/marketplace",

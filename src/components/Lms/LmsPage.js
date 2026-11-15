@@ -1119,7 +1119,7 @@ Didikara - Platform Pelatihan & Sertifikasi Profesional
                 onClick={() => setActivePage("marketplace-page")}
                 style={{ width: "auto", padding: "12px 24px" }}
               >
-                Kembali ke Marketplace
+                Kembali ke Katalog Pelatihan
               </button>
             </div>
           </div>
@@ -1134,8 +1134,8 @@ Didikara - Platform Pelatihan & Sertifikasi Profesional
         <div style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", height: "100%", padding: 40, textAlign: "center" }}>
           <PlayCircle size={64} style={{ color: "var(--text-muted)", marginBottom: 16 }} />
           <h3>Tidak Ada Kelas Aktif</h3>
-          <p style={{ color: "var(--text-secondary)", maxWidth: 400, marginTop: 8, marginBottom: 24 }}>Silakan beli atau daftar kelas di menu Marketplace Pelatihan terlebih dahulu.</p>
-          <button className="btn btn-primary" onClick={() => setActivePage("marketplace-page")} style={{ width: "auto" }}>Buka Marketplace</button>
+          <p style={{ color: "var(--text-secondary)", maxWidth: 400, marginTop: 8, marginBottom: 24 }}>Silakan pilih atau daftar program di menu Katalog Pelatihan terlebih dahulu.</p>
+          <button className="btn btn-primary" onClick={() => setActivePage("marketplace-page")} style={{ width: "auto" }}>Buka Katalog Pelatihan</button>
         </div>
       </main>
     );

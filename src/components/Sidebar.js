@@ -1,5 +1,5 @@
 "use client";
-import { Cpu, LayoutDashboard, ShoppingBag, PlayCircle, Wallet, Compass, Settings, LogOut, ChevronLeft, ChevronRight } from "lucide-react";
+import { Cpu, LayoutDashboard, BookOpen, PlayCircle, Wallet, Compass, Settings, LogOut, ChevronLeft, ChevronRight } from "lucide-react";
 import { useApp } from "@/context/AppContext";
 import { canAccessPage } from "@/lib/permissions";
 
@@ -13,7 +13,7 @@ export default function Sidebar() {
 
   const menuItems = [
     { page: "dashboard-page",   icon: LayoutDashboard, label: "Dashboard" },
-    { page: "marketplace-page", icon: ShoppingBag,     label: "Marketplace Pelatihan" },
+    { page: "marketplace-page", icon: BookOpen,        label: "Katalog Pelatihan" },
     { page: "lms-page",         icon: PlayCircle,      label: "Kelas Aktif" },
     { page: "wallet-page",      icon: Wallet,          label: "Digital Wallet" },
     { page: "ai-planner-page",  icon: Compass,         label: "AI Portal Perencanaan" },

@@ -285,7 +285,7 @@ export default function DashboardPage() {
                   Jelajahi berbagai program pelatihan untuk meningkatkan kompetensi Anda.
                 </p>
                 <button className="btn btn-primary" style={{ width: "auto", padding: "6px 14px", fontSize: "0.75rem", margin: "4px auto" }} onClick={() => setActivePage("marketplace-page")}>
-                  Buka Marketplace Pelatihan
+                  Buka Katalog Pelatihan
                 </button>
               </div>
             )}
