@@ -66,6 +66,38 @@ export default function DashboardPage() {
     return () => { if (radarInstance) radarInstance.destroy(); };
   }, [currentUser, JSON.stringify(activeSkills)]);
 
+  // Menentukan kursus yang sedang aktif berjalan untuk kartu Lanjutkan Belajar
+  const resumeCourse = useMemo(() => {
+    if (!currentUser || !enrolledCourses || enrolledCourses.length === 0) return null;
+    if (activeCourse && enrolledCourses.includes(activeCourse.id)) return activeCourse;
+    const found = courses.find(c => enrolledCourses.includes(c.id));
+    return found || null;
+  }, [currentUser, courses, enrolledCourses, activeCourse]);
+
+  const resumeProgress = useMemo(() => {
+    if (!resumeCourse) return { total: 0, done: 0, pct: 0, nextLesson: "", nextIdx: 0 };
+    const lessons = [];
+    (resumeCourse.modules || []).forEach(m => {
+      (m.lessons || []).forEach(l => {
+        lessons.push(typeof l === "string" ? l : (l.title || "Materi"));
+      });
+    });
+    const total = lessons.length > 0 ? lessons.length : (resumeCourse.lessonsCount || 8);
+    const doneIndices = completedLessons[resumeCourse.id] || [];
+    const done = Math.min(doneIndices.length, total);
+    const pct = total > 0 ? Math.round((done / total) * 100) : 0;
+
+    let nextIdx = 0;
+    for (let i = 0; i < total; i++) {
+      if (!doneIndices.includes(i)) {
+        nextIdx = i;
+        break;
+      }
+    }
+    const nextLesson = lessons[nextIdx] || lessons[0] || "Materi Pembelajaran";
+    return { total, done, pct, nextLesson, nextIdx };
+  }, [resumeCourse, completedLessons]);
+
   if (!currentUser) return null;
 
   const currentSkills = activeSkills.map((_, idx) => currentUser.competencies?.current?.[idx] ?? 50);
@@ -208,7 +240,7 @@ export default function DashboardPage() {
           <div className="stat-icon" style={{ backgroundColor: "rgba(37, 99, 235, 0.15)", color: "var(--primary)" }}><Clock size={20} /></div>
           <div>
             <div style={{ fontSize: "0.75rem", color: "var(--text-secondary)" }}>Waktu Belajar</div>
-            <div className="stat-number">{currentUser.stats.hours} Jam</div>
+            <div className="stat-number">{currentUser?.stats?.hours ?? 0} Jam</div>
           </div>
         </div>
         <div className="stat-card glass-card">
@@ -229,7 +261,7 @@ export default function DashboardPage() {
           <div className="stat-icon" style={{ backgroundColor: "rgba(6, 182, 212, 0.15)", color: "var(--info)" }}><BarChart2 size={20} /></div>
           <div>
             <div style={{ fontSize: "0.75rem", color: "var(--text-secondary)" }}>Level Akses</div>
-            <div className="stat-number">{currentUser.stats.competency}</div>
+            <div className="stat-number">{currentUser?.stats?.competency ?? "Standar"}</div>
           </div>
         </div>
       </div>
