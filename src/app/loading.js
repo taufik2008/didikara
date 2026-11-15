@@ -19,7 +19,7 @@ export default function RootLoading() {
           height: "44px",
           borderRadius: "50%",
           border: "3.5px solid rgba(249, 115, 22, 0.2)",
-          borderTopColor: "var(--primary, #2563eb)",
+          borderTopColor: "var(--primary, #182548)",
           animation: "spin 0.8s linear infinite",
         }}
       />

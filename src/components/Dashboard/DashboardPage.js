@@ -36,8 +36,8 @@ export default function DashboardPage() {
             label: 'Kompetensi Saat Ini',
             data: currentSkills,
             fill: true,
-            backgroundColor: 'rgba(37, 99, 235, 0.2)',
-            borderColor: 'rgb(99, 102, 241)',
+            backgroundColor: 'rgba(24, 37, 72, 0.25)',
+            borderColor: '#182548',
             pointBackgroundColor: 'rgb(99, 102, 241)',
             pointBorderColor: '#fff',
             pointHoverBackgroundColor: '#fff',
@@ -46,8 +46,8 @@ export default function DashboardPage() {
             label: 'Target Jabatan',
             data: targetSkills,
             fill: true,
-            backgroundColor: 'rgba(251, 146, 60, 0.1)',
-            borderColor: 'rgba(251, 146, 60, 0.8)',
+            backgroundColor: 'rgba(103, 166, 219, 0.15)',
+            borderColor: '#67a6db',
             pointBackgroundColor: 'rgba(251, 146, 60, 1)',
             pointBorderColor: '#fff',
             pointHoverBackgroundColor: '#fff',
@@ -116,7 +116,7 @@ export default function DashboardPage() {
           </div>
           <p style={{ color: "var(--text-secondary)", fontSize: "0.9rem" }}>Siap meningkatkan kompetensi nasional Anda hari ini? Mari jelajahi program baru.</p>
         </div>
-        <button className="btn btn-primary" onClick={() => setActivePage("marketplace-page")} style={{ width: "auto" }}>
+        <button className="btn btn-primary" onClick={() => setActivePage("marketplace-page")} style={{ width: "auto", background: "#edb63f", color: "#0f172a", border: "none", fontWeight: 700 }}>
           <span>Jelajahi Pelatihan</span><Search size={16} />
         </button>
       </div>
@@ -166,9 +166,9 @@ export default function DashboardPage() {
             </div>
 
             {recommendedCourse ? (
-              <div className="glass-card" style={{ padding: 16, border: "1px solid rgba(37, 99, 235, 0.25)", backgroundColor: "rgba(37, 99, 235, 0.05)", borderRadius: 8 }}>
+              <div className="glass-card" style={{ padding: 16, border: "1px solid rgba(24, 37, 72, 0.15)", backgroundColor: "rgba(24, 37, 72, 0.04)", borderRadius: 8 }}>
                 <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 6 }}>
-                  <span style={{ fontSize: "0.65rem", padding: "2px 6px", borderRadius: 4, backgroundColor: "rgba(37, 99, 235, 0.2)", color: "#93c5fd", fontWeight: 600 }}>REKOMENDASI AI: {primaryGap.name}</span>
+                  <span style={{ fontSize: "0.65rem", padding: "2px 6px", borderRadius: 4, backgroundColor: "rgba(24, 37, 72, 0.1)", color: "#182548", fontWeight: 600 }}>REKOMENDASI AI: {primaryGap.name}</span>
                   <span style={{ fontSize: "0.7rem", color: "var(--text-muted)" }}>{recommendedCourse.duration || "-"}</span>
                 </div>
                 <h4 style={{ fontSize: "0.85rem", fontWeight: 600, color: "var(--text-primary)", margin: "4px 0" }}>{recommendedCourse.title}</h4>

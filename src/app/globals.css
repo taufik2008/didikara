@@ -1,37 +1,36 @@
 /* AI LMS Custom Stylesheet - Premium Design System */
 
 :root {
-    --bg-primary: #0a0f1d;
-    --bg-secondary: #121829;
-    --bg-tertiary: #1b233a;
-    --bg-card: rgba(20, 28, 48, 0.7);
-    --bg-glass: rgba(18, 24, 41, 0.75);
+    --bg-primary: #10182b;
+    --bg-secondary: #182548;
+    --bg-tertiary: #1f2c4b;
+    --bg-card: rgba(24, 37, 72, 0.75);
+    --bg-glass: rgba(24, 37, 72, 0.85);
     
-    --primary: #2563eb;
-    --primary-hover: #1d4ed8;
-    --primary-gradient: linear-gradient(135deg, #2563eb 0%, #4f46e5 100%);
-    --gov-gradient: linear-gradient(135deg, #1e3a8a 0%, #0d9488 100%);
-    --accent-gradient: linear-gradient(135deg, #ec4899 0%, #f43f5e 100%);
+    --primary: #182548;
+    --primary-hover: #101a35;
+    --primary-blue: #2b5c8d;
+    --primary-soft: #67a6db;
+    --primary-gradient: linear-gradient(135deg, #182548 0%, #2b5c8d 100%);
+    --gov-gradient: linear-gradient(135deg, #182548 0%, #0d9488 100%);
+    --accent-gradient: linear-gradient(135deg, #2b5c8d 0%, #67a6db 100%);
     
     --text-primary: #f8fafc;
     --text-secondary: #94a3b8;
     --text-muted: #64748b;
-    --text-accent: #60a5fa;
+    --text-accent: #67a6db;
     --text-accent-hover: #93c5fd;
-    --accent-badge-bg: rgba(37, 99, 235, 0.15);
+    --accent-badge-bg: rgba(43, 92, 141, 0.2);
     --accent-badge-text: #93c5fd;
-    --accent-badge-border: rgba(37, 99, 235, 0.35);
+    --accent-badge-border: rgba(103, 166, 219, 0.35);
     
-    --border-color: rgba(255, 255, 255, 0.08);
-    --border-glow: rgba(37, 99, 235, 0.2);
+    --border-color: rgba(255, 255, 255, 0.09);
+    --border-glow: rgba(43, 92, 141, 0.35);
     
     --success: #10b981;
-    /* Kuning, bukan amber: amber (#f59e0b) terlalu dekat dengan --primary oranye
-       sehingga status peringatan sulit dibedakan dari aksen brand. Amber tetap
-       dipakai sebagai warna "emas" (bintang rating, XP, status menunggu). */
-    --warning: #eab308;
+    --warning: #edb63f;
     --danger: #ef4444;
-    --info: #06b6d4;
+    --info: #67a6db;
     
     --font-heading: 'Outfit', sans-serif;
     --font-body: 'Inter', sans-serif;
@@ -40,49 +39,51 @@
     --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
     --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
     --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.15), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
-    --shadow-glow: 0 0 20px rgba(37, 99, 235, 0.15);
+    --shadow-glow: 0 0 20px rgba(24, 37, 72, 0.35);
 }
 
 [data-theme="light"] {
-    --bg-primary: #f1f5f9;
+    --bg-primary: #f4f5f9;
     --bg-secondary: #ffffff;
-    --bg-tertiary: #e2e8f0;
-    --bg-card: rgba(255, 255, 255, 0.92);
-    --bg-glass: rgba(255, 255, 255, 0.85);
+    --bg-tertiary: #e9ecf5;
+    --bg-card: #ffffff;
+    --bg-glass: rgba(255, 255, 255, 0.92);
     
-    --primary: #2563eb;
-    --primary-hover: #1d4ed8;
-    --primary-gradient: linear-gradient(135deg, #2563eb 0%, #4f46e5 100%);
-    --gov-gradient: linear-gradient(135deg, #1d4ed8 0%, #0f766e 100%);
-    --accent-gradient: linear-gradient(135deg, #db2777 0%, #e11d48 100%);
+    --primary: #182548;
+    --primary-hover: #101a35;
+    --primary-blue: #2b5c8d;
+    --primary-soft: #67a6db;
+    --primary-gradient: linear-gradient(135deg, #182548 0%, #2b5c8d 100%);
+    --gov-gradient: linear-gradient(135deg, #182548 0%, #0d9488 100%);
+    --accent-gradient: linear-gradient(135deg, #2b5c8d 0%, #67a6db 100%);
     
     --text-primary: #0f172a;
     --text-secondary: #334155;
-    --text-muted: #475569;
-    --text-accent: #2563eb;
-    --text-accent-hover: #1d4ed8;
-    --accent-badge-bg: #eff6ff;
-    --accent-badge-text: #1d4ed8;
-    --accent-badge-border: #93c5fd;
+    --text-muted: #64748b;
+    --text-accent: #182548;
+    --text-accent-hover: #2b5c8d;
+    --accent-badge-bg: #eef4fb;
+    --accent-badge-text: #182548;
+    --accent-badge-border: #cbd5e1;
     
-    --border-color: rgba(203, 213, 225, 0.95);
-    --border-glow: rgba(37, 99, 235, 0.25);
+    --border-color: #e2e8f0;
+    --border-glow: rgba(24, 37, 72, 0.2);
     
     --success: #059669;
-    --warning: #d97706;
+    --warning: #edb63f;
     --danger: #dc2626;
-    --info: #0284c7;
+    --info: #67a6db;
     
     --shadow-sm: 0 1px 3px 0 rgba(0, 0, 0, 0.06);
     --shadow-md: 0 4px 8px -1px rgba(0, 0, 0, 0.08), 0 2px 4px -1px rgba(0, 0, 0, 0.04);
     --shadow-lg: 0 12px 20px -3px rgba(0, 0, 0, 0.09), 0 4px 8px -2px rgba(0, 0, 0, 0.04);
     --shadow-xl: 0 24px 35px -5px rgba(0, 0, 0, 0.12), 0 10px 15px -5px rgba(0, 0, 0, 0.03);
-    --shadow-glow: 0 0 20px rgba(37, 99, 235, 0.2);
+    --shadow-glow: 0 0 20px rgba(24, 37, 72, 0.2);
 }
 
 [data-theme="light"] body {
     color: #0f172a;
-    background-color: #f1f5f9;
+    background-color: #f4f5f9;
 }
 
 [data-theme="light"] p,
@@ -196,24 +197,25 @@
 }
 
 [data-theme="light"] .sidebar {
-    background: #ffffff !important;
-    border-right: 1px solid #cbd5e1 !important;
+    background: #19233d !important;
+    border-right: 1px solid rgba(255, 255, 255, 0.08) !important;
 }
 
 [data-theme="light"] .menu-item {
-    color: #475569;
+    color: #94a3b8;
 }
 
 [data-theme="light"] .menu-item:hover {
-    color: #0f172a;
-    background: #f1f5f9;
+    color: #ffffff;
+    background: rgba(255, 255, 255, 0.08);
 }
 
 [data-theme="light"] .menu-item.active {
-    background: #fff7ed;
-    color: #ea580c;
-    border-left: 3px solid #ea580c;
-    font-weight: 700;
+    background: #e4b943 !important;
+    color: #0f172a !important;
+    font-weight: 700 !important;
+    border-radius: 8px !important;
+    border-left: none !important;
 }
 
 [data-theme="light"] .filter-pill {
@@ -868,7 +870,9 @@ select option {
 .sidebar {
     width: 260px;
     height: 100%;
-    border-right: 1px solid var(--border-color);
+    border-right: 1px solid rgba(255, 255, 255, 0.08);
+    background: #19233d;
+    color: #f8fafc;
     padding: 24px 16px;
     display: flex;
     flex-direction: column;

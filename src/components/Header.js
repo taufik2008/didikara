@@ -62,7 +62,7 @@ export default function Header() {
           style={{
             background: theme === "light" ? "rgba(37, 99, 235, 0.12)" : "rgba(255,255,255,0.06)",
             color: theme === "light" ? "var(--primary)" : "#fde047",
-            border: `1px solid ${theme === "light" ? "rgba(37, 99, 235, 0.3)" : "rgba(255,255,255,0.12)"}`,
+            border: `1px solid ${theme === "light" ? "rgba(24, 37, 72, 0.2)" : "rgba(255,255,255,0.12)"}`,
           }}
           title={theme === "light" ? "Beralih ke Mode Gelap" : "Beralih ke Mode Terang"}
           aria-label="Ganti Tema">

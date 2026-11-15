@@ -2,7 +2,7 @@ import "./globals.css";
 import { AppProvider } from "@/context/AppContext";
 
 export const viewport = {
-  themeColor: "#2563eb",
+  themeColor: "#182548",
   width: "device-width",
   initialScale: 1,
   viewportFit: "cover",
@@ -33,7 +33,7 @@ export default function RootLayout({ children }) {
     <html lang="id">
       <head>
         <link rel="manifest" href="/manifest.json" />
-        <meta name="theme-color" content="#2563eb" />
+        <meta name="theme-color" content="#182548" />
         <meta name="apple-mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
         <link rel="apple-touch-icon" href="/icon-192.png" />
