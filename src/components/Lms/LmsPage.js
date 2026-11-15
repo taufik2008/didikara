@@ -162,6 +162,8 @@ function CurriculumNav({
 // ── Main LmsPage ──────────────────────────────────────────────────────────────
 export default function LmsPage() {
   const [isFullscreen, setIsFullscreen] = useState(false);
+  const [cinemaMode, setCinemaMode] = useState(false);
+  const [hideCurriculumInCinema, setHideCurriculumInCinema] = useState(false);
   const playerRef = useRef(null);
 
   /**
@@ -202,6 +204,17 @@ export default function LmsPage() {
       document.removeEventListener("webkitfullscreenchange", sync);
     };
   }, []);
+
+  // Keyboard shortcut: Esc to exit cinemaMode (jika tidak sedang fullscreen)
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if (e.key === "Escape" && cinemaMode && !isFullscreen) {
+        setCinemaMode(false);
+      }
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [cinemaMode, isFullscreen]);
   const {
     enrolledCourses, enrollmentsLoaded, activeCourse, activeLessonIndex, flatLessons, activeLmsTab, completedLessons,
     videoPlaying, videoProgress, videoTime, uploadStatus, attendanceLog, checkedIn,
@@ -1175,7 +1188,7 @@ Didikara - Platform Pelatihan & Sertifikasi Profesional
         </div>
       )}
 
-      <div className="lms-container with-sidebar">
+      <div className={`lms-container ${cinemaMode ? "cinema-mode" : "with-sidebar"}`}>
         <div className="lms-player-side">
           <div className={`video-container ${isFullscreen ? "is-fullscreen" : ""}`} ref={playerRef}>
             <VideoPlayerV2
@@ -1190,17 +1203,43 @@ Didikara - Platform Pelatihan & Sertifikasi Profesional
               isFullscreen={isFullscreen}
             />
           </div>
-          {/* Fullscreen toggle — selalu tampil saat ada lesson aktif */}
+          {/* Player Mode Toolbar: Cinema Mode & Fullscreen */}
           {activeLesson && (
-            <button
-              type="button"
-              onClick={toggleFullscreen}
-              className="btn-fullscreen-toggle"
-              title={isFullscreen ? "Keluar dari mode layar penuh" : "Tampilkan materi dalam mode layar penuh"}
-            >
-              <MonitorPlay size={16}/>
-              <span>{isFullscreen ? "Keluar Fullscreen" : "Buka Fullscreen"}</span>
-            </button>
+            <div style={{ display: "flex", alignItems: "center", gap: 8, marginTop: 10, flexWrap: "wrap" }}>
+              <button
+                type="button"
+                onClick={() => setCinemaMode(prev => !prev)}
+                className={`btn-cinema-toggle ${cinemaMode ? "active" : ""}`}
+                title={cinemaMode ? "Kembali ke tampilan standar (2 kolom)" : "Mode Bioskop (Layar Lebar & Fokus Belajar)"}
+              >
+                <Film size={15} />
+                <span>{cinemaMode ? "Keluar Mode Bioskop" : "Mode Bioskop"}</span>
+              </button>
+
+              {cinemaMode && (
+                <button
+                  type="button"
+                  onClick={() => setHideCurriculumInCinema(prev => !prev)}
+                  className="btn btn-secondary"
+                  style={{ width: "auto", padding: "6px 12px", fontSize: "0.78rem", display: "inline-flex", alignItems: "center", gap: 6 }}
+                  title="Sembunyikan/Tampilkan Daftar Modul dalam Mode Bioskop"
+                >
+                  <BookOpen size={14} />
+                  <span>{hideCurriculumInCinema ? "Tampilkan Modul" : "Fokus Murni (Sembunyi Modul)"}</span>
+                </button>
+              )}
+
+              <button
+                type="button"
+                onClick={toggleFullscreen}
+                className="btn-fullscreen-toggle"
+                style={{ marginLeft: "auto" }}
+                title={isFullscreen ? "Keluar dari mode layar penuh" : "Tampilkan materi dalam mode layar penuh"}
+              >
+                <MonitorPlay size={16}/>
+                <span>{isFullscreen ? "Keluar Fullscreen" : "Buka Fullscreen"}</span>
+              </button>
+            </div>
           )}
 
           {/* Kendali eksplisit atas kemajuan belajar. Sebelumnya penyelesaian
@@ -2683,17 +2722,19 @@ Didikara - Platform Pelatihan & Sertifikasi Profesional
 
         </div>
 
-        <CurriculumNav
-          activeCourse={activeCourse}
-          courses={courses}
-          enrolledCourses={enrolledCourses}
-          activeLessonIndex={activeLessonIndex}
-          completedLessons={completedLessons}
-          dbLessonProgress={dbLessonProgress}
-          lockedModules={lockedModules}
-          handleSelectLesson={handleSelectLesson}
-          handleOpenClass={handleOpenClass}
-        />
+        {(!cinemaMode || !hideCurriculumInCinema) && (
+          <CurriculumNav
+            activeCourse={activeCourse}
+            courses={courses}
+            enrolledCourses={enrolledCourses}
+            activeLessonIndex={activeLessonIndex}
+            completedLessons={completedLessons}
+            dbLessonProgress={dbLessonProgress}
+            lockedModules={lockedModules}
+            handleSelectLesson={handleSelectLesson}
+            handleOpenClass={handleOpenClass}
+          />
+        )}
       </div>
 
       {pwaInstallPrompt && !pwaInstalled && (

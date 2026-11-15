@@ -1,11 +1,11 @@
 "use client";
-import { useEffect, useRef } from "react";
-import { Clock, BookOpen, Award, BarChart2, Search, Cpu, Compass } from "lucide-react";
+import { useEffect, useRef, useMemo } from "react";
+import { Clock, BookOpen, Award, BarChart2, Search, Cpu, Compass, Play, PlayCircle, ArrowRight } from "lucide-react";
 import Chart from "chart.js/auto";
 import { useApp } from "@/context/AppContext";
 
 export default function DashboardPage() {
-  const { currentUser, courses, enrolledCourses, certificates, setActivePage, setActiveCourse, setActiveLessonIndex, radarCanvasRef, competencySkills = [], handleOpenClass, isSubscribed, setShowSubscriptionModal } = useApp();
+  const { currentUser, courses = [], enrolledCourses = [], certificates = [], setActivePage, setActiveCourse, setActiveLessonIndex, radarCanvasRef, competencySkills = [], handleOpenClass, isSubscribed, setShowSubscriptionModal, completedLessons = {}, activeCourse = null } = useApp();
   const radarCanvasRefLocal = useRef(null);
   const radarRef = radarCanvasRef || radarCanvasRefLocal;
 
@@ -120,6 +120,88 @@ export default function DashboardPage() {
           <span>Jelajahi Pelatihan</span><Search size={16} />
         </button>
       </div>
+
+      {/* 🚀 Hero Card: Lanjutkan Belajar (Resume Learning) */}
+      {resumeCourse ? (
+        <div className="resume-learning-card glass-card">
+          <div className="resume-learning-content">
+            <div className="resume-learning-header">
+              <div className="resume-learning-badge">
+                <Play size={11} style={{ fill: "currentColor" }} />
+                <span>LANJUTKAN BELAJAR</span>
+              </div>
+              {resumeCourse.category && (
+                <span className="resume-learning-category">{resumeCourse.category}</span>
+              )}
+              <div className="resume-learning-progress-text">
+                <span className="resume-pct-number">{resumeProgress.pct}%</span>
+                <span className="resume-pct-sub">({resumeProgress.done}/{resumeProgress.total} Materi Selesai)</span>
+              </div>
+            </div>
+
+            <div className="resume-learning-body">
+              <div className="resume-learning-info">
+                <h3 className="resume-course-title">{resumeCourse.title}</h3>
+                <div className="resume-next-lesson">
+                  <PlayCircle size={15} className="resume-next-icon" />
+                  <span className="resume-next-label">Materi Lanjutan:</span>
+                  <span className="resume-next-title">{resumeProgress.nextLesson}</span>
+                </div>
+              </div>
+
+              <div className="resume-learning-action">
+                <button
+                  type="button"
+                  className="btn btn-primary resume-action-btn"
+                  onClick={() => handleOpenClass(resumeCourse.id)}
+                >
+                  <span>Lanjutkan Belajar</span>
+                  <ArrowRight size={15} />
+                </button>
+              </div>
+            </div>
+
+            <div className="resume-progress-track">
+              <div
+                className="resume-progress-fill"
+                style={{ width: `${Math.max(4, resumeProgress.pct)}%` }}
+              />
+            </div>
+          </div>
+        </div>
+      ) : (
+        <div className="resume-learning-card glass-card" style={{ padding: "18px 22px" }}>
+          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: 14 }}>
+            <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+              <div style={{
+                width: 44, height: 44, borderRadius: 10,
+                backgroundColor: "rgba(103, 166, 219, 0.15)",
+                display: "flex", alignItems: "center", justifyContent: "center",
+                color: "var(--text-accent)"
+              }}>
+                <BookOpen size={22} />
+              </div>
+              <div>
+                <h4 style={{ margin: "0 0 3px 0", fontSize: "0.95rem", fontWeight: 700, color: "var(--text-primary)" }}>
+                  Mulai Perjalanan Belajar Anda di DIDIKARA
+                </h4>
+                <p style={{ margin: 0, fontSize: "0.8rem", color: "var(--text-secondary)" }}>
+                  Pilih dari puluhan modul pelatihan terakreditasi untuk akselerasi kompetensi Anda.
+                </p>
+              </div>
+            </div>
+            <button
+              type="button"
+              className="btn btn-primary"
+              onClick={() => setActivePage("marketplace-page")}
+              style={{ width: "auto", padding: "8px 16px", fontSize: "0.8rem", fontWeight: 700, display: "inline-flex", alignItems: "center", gap: 6 }}
+            >
+              <span>Jelajahi Pelatihan</span>
+              <ArrowRight size={14} />
+            </button>
+          </div>
+        </div>
+      )}
 
       <div className="stats-row">
         <div className="stat-card glass-card">
