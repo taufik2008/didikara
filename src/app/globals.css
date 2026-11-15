@@ -213,6 +213,14 @@
 [data-theme="light"] .sidebar {
     background: #19233d !important;
     border-right: 1px solid rgba(255, 255, 255, 0.08) !important;
+    color: #f8fafc !important;
+}
+
+[data-theme="light"] .sidebar .avatar {
+    background: linear-gradient(135deg, #2b5c8d 0%, #4f80b5 100%) !important;
+    color: #ffffff !important;
+    border: 1.5px solid rgba(255, 255, 255, 0.25) !important;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.25);
 }
 
 .sidebar .brand-name,
@@ -1066,6 +1074,7 @@ header {
     height: 28px;
     border-radius: 50%;
     background: var(--primary-gradient);
+    color: #ffffff !important;
     display: flex;
     align-items: center;
     justify-content: center;

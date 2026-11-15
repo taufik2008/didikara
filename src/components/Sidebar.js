@@ -89,11 +89,23 @@ export default function Sidebar() {
           marginBottom: 12, backgroundColor: "transparent", border: "none", padding: 0,
           justifyContent: sidebarCollapsed ? "center" : "flex-start"
         }}>
-          <div className="avatar" title={currentUser?.fullname}>{currentUser?.avatar}</div>
+          <div
+            className="avatar"
+            style={{
+              color: "#ffffff",
+              fontWeight: 700,
+              background: "linear-gradient(135deg, #2b5c8d 0%, #4f80b5 100%)",
+              border: "1.5px solid rgba(255, 255, 255, 0.25)",
+              boxShadow: "0 2px 6px rgba(0, 0, 0, 0.25)"
+            }}
+            title={currentUser?.fullname}
+          >
+            {currentUser?.avatar || "SA"}
+          </div>
           {!sidebarCollapsed && (
             <div style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
-              <div style={{ fontSize: "0.85rem", fontWeight: 600, color: "#ffffff" }}>{currentUser?.fullname}</div>
-              <div style={{ fontSize: "0.7rem", color: "#94a3b8" }}>{currentUser?.role === "student" ? "Peserta" : (currentUser?.roleLabel || "Peserta")}</div>
+              <div style={{ fontSize: "0.85rem", fontWeight: 700, color: "#ffffff", lineHeight: 1.2 }}>{currentUser?.fullname}</div>
+              <div style={{ fontSize: "0.72rem", color: "#cbd5e1", lineHeight: 1.3, marginTop: 2 }}>{currentUser?.role === "student" ? "Peserta" : (currentUser?.roleLabel || "Peserta")}</div>
             </div>
           )}
         </div>
