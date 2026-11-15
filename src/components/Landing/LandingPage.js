@@ -619,7 +619,7 @@ export default function LandingPage({ initialCourses, initialCategories, initial
           overflow: "hidden",
           padding: "64px 24px 76px 24px",
           borderBottom: "1px solid var(--border-color)",
-          background: "radial-gradient(ellipse at 50% -20%, rgba(249, 115, 22, 0.18), transparent 70%)"
+          background: "radial-gradient(ellipse at 50% -20%, rgba(37, 99, 235, 0.22), transparent 70%)"
         }}
       >
         <div style={{ maxWidth: 1140, margin: "0 auto", textAlign: "center" }}>
@@ -2022,7 +2022,7 @@ export default function LandingPage({ initialCourses, initialCategories, initial
                     fontSize: "1.5rem",
                     fontWeight: 800,
                     marginBottom: 16,
-                    boxShadow: "0 4px 14px rgba(249, 115, 22, 0.25)"
+                    boxShadow: "0 4px 14px rgba(37, 99, 235, 0.25)"
                   }}
                 >
                   {typeof inst.avatar === "string" && !inst.avatar.startsWith("http") && !inst.avatar.startsWith("/") && inst.avatar.length <= 4
@@ -2138,7 +2138,7 @@ export default function LandingPage({ initialCourses, initialCategories, initial
                 </div>
 
                 <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
-                  <div style={{ width: 36, height: 36, borderRadius: 8, background: "rgba(249, 115, 22, 0.15)", display: "flex", alignItems: "center", justifyContent: "center", color: "#fb923c" }}>
+                  <div style={{ width: 36, height: 36, borderRadius: 8, background: "rgba(37, 99, 235, 0.15)", display: "flex", alignItems: "center", justifyContent: "center", color: "#60a5fa" }}>
                     🕒
                   </div>
                   <div>
@@ -2780,7 +2780,7 @@ export default function LandingPage({ initialCourses, initialCategories, initial
                               fontSize: "1.6rem",
                               fontWeight: 800,
                               flexShrink: 0,
-                              boxShadow: "0 4px 14px rgba(249, 115, 22, 0.25)"
+                              boxShadow: "0 4px 14px rgba(37, 99, 235, 0.25)"
                             }}
                           >
                             {inst.avatar || inst.name.slice(0, 2).toUpperCase()}

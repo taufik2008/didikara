@@ -85,7 +85,7 @@ export default function GlobalError({ error, reset }) {
               style={{
                 padding: "10px 24px",
                 borderRadius: "10px",
-                background: "linear-gradient(135deg, #f97316 0%, #fb923c 100%)",
+                background: "linear-gradient(135deg, #2563eb 0%, #4f46e5 100%)",
                 color: "#ffffff",
                 border: "none",
                 fontWeight: 700,

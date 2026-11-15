@@ -36,7 +36,7 @@ export default function DashboardPage() {
             label: 'Kompetensi Saat Ini',
             data: currentSkills,
             fill: true,
-            backgroundColor: 'rgba(249, 115, 22, 0.2)',
+            backgroundColor: 'rgba(37, 99, 235, 0.2)',
             borderColor: 'rgb(99, 102, 241)',
             pointBackgroundColor: 'rgb(99, 102, 241)',
             pointBorderColor: '#fff',
@@ -106,7 +106,7 @@ export default function DashboardPage() {
                 type="button"
                 onClick={() => setShowSubscriptionModal(true)}
                 style={{
-                  background: "rgba(249, 115, 22, 0.15)", border: "1px solid rgba(249, 115, 22, 0.4)",
+                  background: "rgba(37, 99, 235, 0.15)", border: "1px solid rgba(37, 99, 235, 0.4)",
                   color: "var(--primary)", padding: "3px 10px", borderRadius: 20, fontSize: "0.75rem",
                   fontWeight: 700, cursor: "pointer", transition: "all 0.2s ease"
                 }}>
@@ -123,7 +123,7 @@ export default function DashboardPage() {
 
       <div className="stats-row">
         <div className="stat-card glass-card">
-          <div className="stat-icon" style={{ backgroundColor: "rgba(249, 115, 22, 0.15)", color: "var(--primary)" }}><Clock size={20} /></div>
+          <div className="stat-icon" style={{ backgroundColor: "rgba(37, 99, 235, 0.15)", color: "var(--primary)" }}><Clock size={20} /></div>
           <div>
             <div style={{ fontSize: "0.75rem", color: "var(--text-secondary)" }}>Waktu Belajar</div>
             <div className="stat-number">{currentUser.stats.hours} Jam</div>
@@ -166,9 +166,9 @@ export default function DashboardPage() {
             </div>
 
             {recommendedCourse ? (
-              <div className="glass-card" style={{ padding: 16, border: "1px solid rgba(249, 115, 22, 0.25)", backgroundColor: "rgba(249, 115, 22, 0.05)", borderRadius: 8 }}>
+              <div className="glass-card" style={{ padding: 16, border: "1px solid rgba(37, 99, 235, 0.25)", backgroundColor: "rgba(37, 99, 235, 0.05)", borderRadius: 8 }}>
                 <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 6 }}>
-                  <span style={{ fontSize: "0.65rem", padding: "2px 6px", borderRadius: 4, backgroundColor: "rgba(249, 115, 22, 0.2)", color: "#fed7aa", fontWeight: 600 }}>REKOMENDASI AI: {primaryGap.name}</span>
+                  <span style={{ fontSize: "0.65rem", padding: "2px 6px", borderRadius: 4, backgroundColor: "rgba(37, 99, 235, 0.2)", color: "#93c5fd", fontWeight: 600 }}>REKOMENDASI AI: {primaryGap.name}</span>
                   <span style={{ fontSize: "0.7rem", color: "var(--text-muted)" }}>{recommendedCourse.duration || "-"}</span>
                 </div>
                 <h4 style={{ fontSize: "0.85rem", fontWeight: 600, color: "var(--text-primary)", margin: "4px 0" }}>{recommendedCourse.title}</h4>

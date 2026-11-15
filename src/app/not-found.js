@@ -34,7 +34,7 @@ export default function RootNotFound() {
             fontWeight: 900,
             lineHeight: 1,
             marginBottom: "12px",
-            background: "var(--primary-gradient, linear-gradient(135deg, #f97316 0%, #fb923c 100%))",
+            background: "var(--primary-gradient, linear-gradient(135deg, #2563eb 0%, #4f46e5 100%))",
             WebkitBackgroundClip: "text",
             WebkitTextFillColor: "transparent",
             fontFamily: "var(--font-heading, 'Outfit', sans-serif)",
@@ -80,7 +80,7 @@ export default function RootNotFound() {
             style={{
               padding: "10px 22px",
               borderRadius: "10px",
-              background: "var(--primary-gradient, linear-gradient(135deg, #f97316 0%, #fb923c 100%))",
+              background: "var(--primary-gradient, linear-gradient(135deg, #2563eb 0%, #4f46e5 100%))",
               color: "#ffffff",
               textDecoration: "none",
               fontWeight: 700,

@@ -111,7 +111,7 @@ export default function RootError({ error, reset }) {
             style={{
               padding: "10px 20px",
               borderRadius: "10px",
-              background: "var(--primary-gradient, linear-gradient(135deg, #f97316 0%, #fb923c 100%))",
+              background: "var(--primary-gradient, linear-gradient(135deg, #2563eb 0%, #4f46e5 100%))",
               color: "#ffffff",
               border: "none",
               fontWeight: 700,
