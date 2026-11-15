@@ -16,6 +16,8 @@ export default function LoginPage() {
         const redirect = params.get("redirect");
         if (redirect) {
           router.push(redirect);
+        } else {
+          router.push("/dashboard");
         }
       }
     });
@@ -645,12 +647,44 @@ export default function LoginPage() {
                 </button>
               </form>
 
-              <div className="prefilled-hint">
-                Gunakan akun uji coba cepat:{" "}
-                <button type="button" onClick={handlePrefill}
-                  style={{ background:"none", border:"none", padding:0, font:"inherit", color:"inherit", cursor:"pointer", textDecoration:"underline" }}>
-                  Isi Otomatis
-                </button>
+              <div style={{ marginTop: 20, paddingTop: 16, borderTop: "1px solid var(--border-color)" }}>
+                <div style={{ fontSize: "0.78rem", color: "var(--text-secondary)", marginBottom: 8, fontWeight: 700, display: "flex", alignItems: "center", gap: 6 }}>
+                  <span>⚡ Akun Uji Coba Cepat (Klik untuk Isi):</span>
+                </div>
+                <div style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
+                  {[
+                    { label: "🎓 Peserta", email: "peserta@ailms.id" },
+                    { label: "👨‍🏫 Instruktur", email: "budi.santoso@didikara.id" },
+                    { label: "🛡️ Admin", email: "admin@digidaya.tech" },
+                    { label: "🏢 HR Korporat", email: "hr@company.com" },
+                    { label: "🏛️ Biro SDM ASN", email: "gov@kemenkeu.go.id" },
+                  ].map(item => (
+                    <button
+                      key={item.email}
+                      type="button"
+                      onClick={() => {
+                        setLoginEmail(item.email);
+                        setLoginPassword("password123");
+                      }}
+                      style={{
+                        padding: "5px 10px",
+                        borderRadius: 6,
+                        fontSize: "0.74rem",
+                        fontWeight: 600,
+                        border: "1px solid var(--border-color)",
+                        background: loginEmail === item.email ? "var(--primary)" : "var(--bg-tertiary)",
+                        color: loginEmail === item.email ? "#ffffff" : "var(--text-secondary)",
+                        cursor: "pointer",
+                        transition: "all 0.15s ease"
+                      }}
+                    >
+                      {item.label}
+                    </button>
+                  ))}
+                </div>
+                <div style={{ fontSize: "0.72rem", color: "var(--text-muted)", marginTop: 8 }}>
+                  Kata sandi semua akun demo: <strong style={{ color: "var(--primary-soft, #67a6db)" }}>password123</strong>
+                </div>
               </div>
             </>
           )}

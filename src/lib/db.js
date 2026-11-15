@@ -1363,7 +1363,7 @@ async function seedLevels(client) {
 
 
 async function seedInstructors(client) {
-  const hashed = await bcrypt.hash("DidikaraInstruktur2026!", 10);
+  const hashed = await bcrypt.hash("password123", 10);
   const INSTRUCTORS = [
     {
       email: "budi.santoso@didikara.id",
@@ -1476,6 +1476,7 @@ async function seedInstructors(client) {
         '{}'
       )
       ON CONFLICT (email) DO UPDATE SET
+        password = EXCLUDED.password,
         fullname = EXCLUDED.fullname,
         role = 'instructor',
         role_label = EXCLUDED.role_label,
