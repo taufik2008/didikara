@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useRef, useState, useCallback } from "react";
+import { useEffect, useRef, useState, useCallback, useMemo } from "react";
 import { Plus, BookOpen, Edit2, Trash2, Search, CheckSquare, Square, Award, BarChart2, Download, TrendingUp, Users, FileText, ShieldCheck, Building2, Zap, Calendar, Video, Bot, Target, Star, PieChart, CreditCard, CheckCircle, Clock, XCircle, AlertCircle, RefreshCw, Settings2, Mail } from "lucide-react";
 import Chart from "chart.js/auto";
 import { useApp } from "@/context/AppContext";

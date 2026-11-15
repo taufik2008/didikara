@@ -1051,7 +1051,8 @@ Didikara - Platform Pelatihan & Sertifikasi Profesional
               }}
               style={{ width: "auto", padding: "12px 24px", fontWeight: 700, display: "flex", alignItems: "center", gap: 8 }}
             >
-              Hubungi Kami via WhatsApp
+              <MessageCircle size={16} />
+              <span>Konsultasi Program Pelatihan</span>
             </button>
             <button
               type="button"

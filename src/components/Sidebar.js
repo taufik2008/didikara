@@ -35,7 +35,7 @@ export default function Sidebar() {
               </div>
             )}
             {!sidebarCollapsed && (
-              <span className="brand-name" style={{ fontSize: "1.25rem", whiteSpace: "nowrap", letterSpacing: "-0.02em", color: "var(--text-primary)", fontWeight: 800 }}>{brandName}</span>
+              <span className="brand-name" style={{ fontSize: "1.25rem", whiteSpace: "nowrap", letterSpacing: "-0.02em", color: "#ffffff", fontWeight: 800 }}>{brandName}</span>
             )}
           </div>
           {!sidebarCollapsed && (
@@ -92,8 +92,8 @@ export default function Sidebar() {
           <div className="avatar" title={currentUser?.fullname}>{currentUser?.avatar}</div>
           {!sidebarCollapsed && (
             <div style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
-              <div style={{ fontSize: "0.85rem", fontWeight: 600 }}>{currentUser?.fullname}</div>
-              <div style={{ fontSize: "0.7rem", color: "var(--text-muted)" }}>{currentUser?.role === "student" ? "Peserta" : (currentUser?.roleLabel || "Peserta")}</div>
+              <div style={{ fontSize: "0.85rem", fontWeight: 600, color: "#ffffff" }}>{currentUser?.fullname}</div>
+              <div style={{ fontSize: "0.7rem", color: "#94a3b8" }}>{currentUser?.role === "student" ? "Peserta" : (currentUser?.roleLabel || "Peserta")}</div>
             </div>
           )}
         </div>

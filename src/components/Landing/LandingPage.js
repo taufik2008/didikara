@@ -128,9 +128,6 @@ export default function LandingPage({ initialCourses, initialCategories, initial
   const [activeModalTab, setActiveModalTab] = useState("silabus"); // 'silabus' | 'paket' | 'overview' | 'instruktur'
   const [selectedModalTier, setSelectedModalTier] = useState("self_learning"); // 'self_learning' | 'online' | 'offline'
 
-  // Interactive Demo Quiz State
-  const [demoQuizAnswer, setDemoQuizAnswer] = useState(null);
-  const [demoQuizSubmitted, setDemoQuizSubmitted] = useState(false);
 
   // FAQ Accordion State
   const [openFaqIndex, setOpenFaqIndex] = useState(0);
@@ -220,73 +217,6 @@ export default function LandingPage({ initialCourses, initialCategories, initial
     return Array.from(map.values());
   }, [courses]);
 
-  // Demo Quiz Data - diambil dinamis dari kursus database yang memiliki kuis
-  const demoQuiz = useMemo(() => {
-    for (const c of courses || []) {
-      if (Array.isArray(c.quiz) && c.quiz.length > 0) {
-        const q = c.quiz[0];
-        if (q && q.q && Array.isArray(q.options) && typeof q.correct === "number") {
-          return {
-            courseTitle: c.title,
-            question: q.q,
-            options: q.options,
-            correct: q.correct,
-            explanation: `Materi evaluasi ini diambil langsung dari kurikulum kursus "${c.title}".`
-          };
-        }
-      }
-    }
-    return null;
-  }, [courses]);
-
-  // Preview Course & Lessons untuk simulator LMS interaktif di landing page
-  const previewCourse = useMemo(() => {
-    return (
-      courses?.find(
-        (c) =>
-          Array.isArray(c.modules) &&
-          c.modules.length > 0 &&
-          Array.isArray(c.modules[0].lessons) &&
-          c.modules[0].lessons.length > 0
-      ) || courses?.[0] || null
-    );
-  }, [courses]);
-
-  const previewVideoEmbed = useMemo(() => {
-    const lesson = previewCourse?.modules?.[0]?.lessons?.[0];
-    if (!lesson?.url) return null;
-    let url = lesson.url;
-    if (url.includes("youtube.com/watch?v=")) {
-      return url.replace("watch?v=", "embed/");
-    }
-    if (url.includes("youtu.be/")) {
-      return url.replace("youtu.be/", "www.youtube.com/embed/");
-    }
-    return url;
-  }, [previewCourse]);
-
-  const previewLessons = useMemo(() => {
-    const list = previewCourse?.modules?.[0]?.lessons || [];
-    if (list.length > 0) {
-      return list.slice(0, 4).map((l, i) => ({
-        title: l.title || `Pelajaran ${i + 1}`,
-        type: l.type || "video",
-        dur: l.type === "video" ? "Video" : "Dokumen",
-        active: i === 0
-      }));
-    }
-    return [];
-  }, [previewCourse]);
-
-  const handleDemoQuizSelect = (index) => {
-    setDemoQuizAnswer(index);
-    setDemoQuizSubmitted(true);
-  };
-
-  const handleResetQuiz = () => {
-    setDemoQuizAnswer(null);
-    setDemoQuizSubmitted(false);
-  };
 
   const calculateTotalLessons = (course) => {
     if (!course?.modules) return 0;
@@ -467,18 +397,7 @@ export default function LandingPage({ initialCourses, initialCategories, initial
             >
               Katalog Kursus
             </a>
-            <a
-              href="#demo-materi"
-              onClick={(e) => {
-                e.preventDefault();
-                const el = document.getElementById("demo-materi");
-                if (el) el.scrollIntoView({ behavior: "smooth" });
-              }}
-              style={{ color: "inherit", textDecoration: "none", transition: "color 0.2s" }}
-              className="nav-link"
-            >
-              Simulasi Materi
-            </a>
+
             <a
               href="#keunggulan"
               onClick={(e) => {
@@ -1612,263 +1531,6 @@ export default function LandingPage({ initialCourses, initialCategories, initial
         </div>
       </section>
 
-      {/* ── INTERACTIVE LIVE LEARNING PREVIEW & DEMO (#demo-materi) ── */}
-      <section id="demo-materi" style={{ padding: "80px 24px", maxWidth: 1240, margin: "0 auto" }}>
-        <div style={{ textAlign: "center", marginBottom: 48 }}>
-          <div style={{ fontSize: "0.8rem", fontWeight: 700, color: "var(--info)", textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: 6 }}>
-            Pengalaman Belajar Interaktif
-          </div>
-          <h2 style={{ fontSize: "2.1rem", fontWeight: 800, marginBottom: 12 }}>Pratinjau Materi &amp; Simulasi Ujian</h2>
-          <p style={{ color: "var(--text-secondary)", fontSize: "0.95rem", maxWidth: 660, margin: "0 auto" }}>
-            Rasakan langsung antarmuka pembelajaran di DIDIKARA: mulai dari pemutar materi video terstruktur, slide modul, hingga kuis uji pemahaman otomatis.
-          </p>
-        </div>
-
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(320px, 1fr))", gap: 30, alignItems: "stretch" }}>
-          {/* Left: Video Player Mockup */}
-          <div
-            style={{
-              borderRadius: 20,
-              overflow: "hidden",
-              background: "var(--bg-card)",
-              border: "1px solid var(--border-color)",
-              display: "flex",
-              flexDirection: "column",
-              boxShadow: "var(--shadow-xl)"
-            }}
-          >
-            <div
-              style={{
-                padding: "14px 20px",
-                background: "var(--bg-secondary)",
-                borderBottom: "1px solid var(--border-color)",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "space-between"
-              }}
-            >
-              <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                <span style={{ width: 10, height: 10, borderRadius: "50%", background: "#ef4444", display: "inline-block" }} />
-                <span style={{ width: 10, height: 10, borderRadius: "50%", background: "#eab308", display: "inline-block" }} />
-                <span style={{ width: 10, height: 10, borderRadius: "50%", background: "#10b981", display: "inline-block" }} />
-                <span style={{ fontSize: "0.82rem", fontWeight: 600, color: "var(--text-secondary)", marginLeft: 8 }}>
-                  {previewCourse?.modules?.[0]?.title || previewCourse?.title || "Materi Pelajaran Kursus"}
-                </span>
-              </div>
-              <span
-                style={{
-                  fontSize: "0.72rem",
-                  padding: "2px 8px",
-                  borderRadius: 4,
-                  background: "rgba(16, 185, 129, 0.15)",
-                  color: "#10b981",
-                  fontWeight: 700
-                }}
-              >
-                LIVE PREVIEW
-              </span>
-            </div>
-
-            <div style={{ position: "relative", width: "100%", height: 260, backgroundColor: "#000" }}>
-              {previewVideoEmbed ? (
-                <iframe
-                  src={previewVideoEmbed}
-                  title={previewCourse?.title || "Pratinjau Materi"}
-                  style={{ width: "100%", height: "100%", border: "none" }}
-                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                  allowFullScreen
-                />
-              ) : (
-                <div style={{ width: "100%", height: "100%", display: "flex", alignItems: "center", justifyContent: "center", color: "#94a3b8", fontSize: "0.9rem" }}>
-                  Video materi akan dimuat di sini
-                </div>
-              )}
-            </div>
-
-            <div style={{ padding: "18px 20px", flex: 1, background: "var(--bg-card)" }}>
-              <div style={{ fontSize: "0.82rem", fontWeight: 700, color: "var(--text-muted)", textTransform: "uppercase", marginBottom: 12 }}>
-                Daftar Pelajaran Modul Terpilih
-              </div>
-              <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-                {previewLessons.map((l, i) => (
-                  <div
-                    key={i}
-                    style={{
-                      padding: "10px 14px",
-                      borderRadius: 10,
-                      background: l.active ? "var(--accent-badge-bg)" : "var(--bg-tertiary)",
-                      border: "1px solid",
-                      borderColor: l.active ? "var(--accent-badge-border)" : "transparent",
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "space-between",
-                      fontSize: "0.84rem"
-                    }}
-                  >
-                    <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-                      {l.type === "video" ? (
-                        <Play size={15} color={l.active ? "var(--primary)" : "var(--text-muted)"} />
-                      ) : (
-                        <FileText size={15} color="var(--info)" />
-                      )}
-                      <span style={{ fontWeight: l.active ? 700 : 500, color: l.active ? "var(--text-accent)" : "var(--text-primary)" }}>
-                        {l.title}
-                      </span>
-                    </div>
-                    <span style={{ fontSize: "0.75rem", color: "var(--text-muted)" }}>{l.dur}</span>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
-
-          {/* Right: Interactive Quiz Simulator */}
-          {demoQuiz && (
-            <div
-              style={{
-                borderRadius: 20,
-                padding: 28,
-                background: "var(--bg-card)",
-                border: "1px solid var(--border-color)",
-                display: "flex",
-                flexDirection: "column",
-                justifyContent: "space-between",
-                boxShadow: "var(--shadow-xl)"
-              }}
-            >
-              <div>
-                <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 18 }}>
-                  <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                    <HelpCircle size={20} color="var(--primary)" />
-                    <span style={{ fontSize: "0.85rem", fontWeight: 700, color: "var(--primary)", textTransform: "uppercase" }}>
-                      Simulasi Kuis Kompetensi
-                    </span>
-                  </div>
-                  <span style={{ fontSize: "0.78rem", color: "var(--text-muted)" }}>Soal Latihan #1</span>
-                </div>
-
-                <h4 style={{ fontSize: "1.1rem", fontWeight: 700, lineHeight: 1.5, marginBottom: 20 }}>
-                  {demoQuiz.question}
-                </h4>
-
-                {/* Options */}
-                <div style={{ display: "flex", flexDirection: "column", gap: 10, marginBottom: 20 }}>
-                  {demoQuiz.options.map((option, idx) => {
-                    const isSelected = demoQuizAnswer === idx;
-                    const isCorrect = idx === demoQuiz.correct;
-                    let bg = "var(--bg-tertiary)";
-                    let border = "1px solid var(--border-color)";
-                    let color = "var(--text-primary)";
-
-                    if (demoQuizSubmitted) {
-                      if (isCorrect) {
-                        bg = "rgba(16, 185, 129, 0.2)";
-                        border = "1px solid #10b981";
-                        color = "#10b981";
-                      } else if (isSelected) {
-                        bg = "rgba(239, 68, 68, 0.2)";
-                        border = "1px solid #ef4444";
-                        color = "#ef4444";
-                      }
-                    }
-
-                    return (
-                      <button
-                        key={idx}
-                        onClick={() => handleDemoQuizSelect(idx)}
-                        disabled={demoQuizSubmitted}
-                        style={{
-                          padding: "12px 16px",
-                          borderRadius: 10,
-                          background: bg,
-                          border: border,
-                          color: color,
-                          textAlign: "left",
-                          fontSize: "0.88rem",
-                          fontWeight: isSelected ? 600 : 400,
-                          cursor: demoQuizSubmitted ? "default" : "pointer",
-                          display: "flex",
-                          alignItems: "center",
-                          justifyContent: "space-between",
-                          transition: "all 0.15s ease"
-                        }}
-                      >
-                        <span>
-                          <strong style={{ marginRight: 8 }}>{String.fromCharCode(65 + idx)}.</strong> {option}
-                        </span>
-                        {demoQuizSubmitted && isCorrect && <Check size={18} color="#10b981" />}
-                        {demoQuizSubmitted && isSelected && !isCorrect && <X size={18} color="#ef4444" />}
-                      </button>
-                    );
-                  })}
-                </div>
-
-                {/* Feedback box */}
-                {demoQuizSubmitted && (
-                  <div
-                    style={{
-                      padding: 16,
-                      borderRadius: 12,
-                      background: demoQuizAnswer === demoQuiz.correct ? "rgba(16, 185, 129, 0.12)" : "rgba(239, 68, 68, 0.12)",
-                      border: `1px solid ${demoQuizAnswer === demoQuiz.correct ? "rgba(16, 185, 129, 0.3)" : "rgba(239, 68, 68, 0.3)"}`,
-                      fontSize: "0.84rem",
-                      lineHeight: 1.5,
-                      marginBottom: 16
-                    }}
-                  >
-                    <div style={{ fontWeight: 700, marginBottom: 4, color: demoQuizAnswer === demoQuiz.correct ? "#10b981" : "#ef4444" }}>
-                      {demoQuizAnswer === demoQuiz.correct ? "🎉 Jawaban Benar!" : "❌ Kurang Tepat"}
-                    </div>
-                    <p style={{ color: "var(--text-secondary)", margin: 0 }}>{demoQuiz.explanation}</p>
-                  </div>
-                )}
-              </div>
-
-              <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", paddingTop: 16, borderTop: "1px solid var(--border-color)", flexWrap: "wrap", gap: 10 }}>
-                {demoQuizSubmitted ? (
-                  <button
-                    onClick={handleResetQuiz}
-                    style={{
-                      background: "none",
-                      border: "none",
-                      color: "var(--primary)",
-                      fontSize: "0.82rem",
-                      fontWeight: 600,
-                      cursor: "pointer",
-                      padding: 0
-                    }}
-                  >
-                    Coba Ulangi Soal
-                  </button>
-                ) : (
-                  <span style={{ fontSize: "0.8rem", color: "var(--text-muted)" }}>Pilih salah satu jawaban di atas</span>
-                )}
-
-                <button
-                  onClick={() => router.push("/dashboard")}
-                  style={{
-                    padding: "8px 16px",
-                    borderRadius: 8,
-                    background: "var(--primary-gradient)",
-                    color: "#fff",
-                    border: "none",
-                    fontWeight: 600,
-                    fontSize: "0.82rem",
-                    cursor: "pointer",
-                    display: "flex",
-                    alignItems: "center",
-                    gap: 6
-                  }}
-                >
-                  <span>Akses Semua Ujian</span>
-                  <ChevronRight size={14} />
-                </button>
-              </div>
-            </div>
-          )}
-        </div>
-      </section>
-
       {/* ── KEY ADVANTAGES & AI FEATURES (#keunggulan) ── */}
       <section
         id="keunggulan"
@@ -2155,9 +1817,9 @@ export default function LandingPage({ initialCourses, initialCategories, initial
                 target="_blank"
                 rel="noopener noreferrer"
                 className="btn btn-primary"
-                style={{ width: "100%", padding: "12px", background: "#25D366", borderColor: "#25D366", color: "#fff", fontWeight: 700, textDecoration: "none", display: "inline-flex", alignItems: "center", justifyContent: "center", gap: 8, borderRadius: 10 }}
+                style={{ width: "100%", padding: "12px", background: "var(--primary-gradient)", border: "1px solid rgba(255,255,255,0.15)", color: "#fff", fontWeight: 700, textDecoration: "none", display: "inline-flex", alignItems: "center", justifyContent: "center", gap: 8, borderRadius: 10 }}
               >
-                <span>💬 Chat WhatsApp Sekarang</span>
+                <span>Konsultasi Langsung dengan Tim Ahli</span>
               </a>
             </div>
           </div>

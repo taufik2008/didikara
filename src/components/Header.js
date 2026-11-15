@@ -73,8 +73,18 @@ export default function Header() {
           <span style={{ width: 6, height: 6, borderRadius: "50%", backgroundColor: badge.dot, marginRight: 6, display: "inline-block" }}></span>
           {badge.text}
         </div>
-        <div className="partner-badge" style={{ borderRadius: 20, fontWeight: 700, letterSpacing: "-0.01em" }}>
-          <Award size={14} style={{ marginRight: 6 }} /> {brandName}
+        <div
+          className="partner-badge"
+          style={{
+            borderRadius: 20,
+            fontWeight: 700,
+            letterSpacing: "-0.01em",
+            color: theme === "light" ? "#182548" : "#ffffff",
+            backgroundColor: theme === "light" ? "rgba(24, 37, 72, 0.08)" : "rgba(255, 255, 255, 0.08)",
+            border: theme === "light" ? "1px solid rgba(24, 37, 72, 0.2)" : "1px solid rgba(255, 255, 255, 0.18)",
+          }}
+        >
+          <Award size={14} style={{ marginRight: 6, color: theme === "light" ? "#182548" : "#ffffff" }} /> {brandName}
         </div>
         <div className="user-profile-badge" style={{ display: "flex", alignItems: "center", gap: 8 }}>
           {/* Notification Center — bell dengan badge count */}

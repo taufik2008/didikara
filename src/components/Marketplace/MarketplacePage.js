@@ -294,275 +294,167 @@ export default function MarketplacePage() {
         </div>
       </div>
 
-      {/* Mode Filter: Berdasarkan Kategori vs Berdasarkan Instruktur */}
-      <div style={{ display: "flex", flexWrap: "wrap", alignItems: "center", justifyContent: "space-between", gap: 12, marginBottom: 16 }}>
-        <div style={{ display: "flex", gap: 6, background: "rgba(255,255,255,0.05)", padding: 3, borderRadius: 8, border: "1px solid var(--border-color)" }}>
-          <button
-            type="button"
-            className="filter-pill"
-            style={{
-              padding: "6px 14px", fontSize: "0.78rem", fontWeight: activeFilterTab === "category" ? 700 : 500,
-              background: activeFilterTab === "category" ? "var(--primary)" : "transparent",
-              color: activeFilterTab === "category" ? "#fff" : "var(--text-secondary)",
-              borderColor: "transparent"
-            }}
-            onClick={() => { setActiveFilterTab("category"); setSelectedInstructor("all"); }}
-          >
-            📚 Berdasarkan Kategori
-          </button>
-          <button
-            type="button"
-            className="filter-pill"
-            style={{
-              padding: "6px 14px", fontSize: "0.78rem", fontWeight: activeFilterTab === "instructor" ? 700 : 500,
-              background: activeFilterTab === "instructor" ? "var(--primary)" : "transparent",
-              color: activeFilterTab === "instructor" ? "#fff" : "var(--text-secondary)",
-              borderColor: "transparent"
-            }}
-            onClick={() => { setActiveFilterTab("instructor"); setFilterCategory("all"); }}
-          >
-            👨‍🏫 Berdasarkan Instruktur Ahli ({instructors.length})
-          </button>
+      {/* 🌟 Compact Membership & Consultation Alert Bar */}
+      <div style={{
+        display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: 12,
+        padding: "10px 18px", borderRadius: 12, background: "rgba(24, 37, 72, 0.04)",
+        border: "1px solid var(--border-color)", marginBottom: 18
+      }}>
+        <div style={{ display: "flex", alignItems: "center", gap: 10, fontSize: "0.82rem" }}>
+          <span style={{ padding: "3px 8px", borderRadius: 6, background: "rgba(37,99,235,0.12)", color: "var(--primary-blue, #2b5c8d)", fontWeight: 700, fontSize: "0.72rem" }}>
+            AKSES MEMBER
+          </span>
+          <span style={{ color: "var(--text-secondary)" }}>
+            Belajar mandiri seumur hidup &amp; kuis otomatis. Butuh workshop tatap muka? Hubungi tim kami.
+          </span>
         </div>
-
-        {/* Active Filter Indicator / Reset */}
-        {(selectedLearningType !== "all" || filterCategory !== "all" || selectedInstructor !== "all" || selectedLevel !== "all" || selectedPriceRange !== "all" || selectedMinRating !== "all" || searchQuery) && (
-          <div style={{ display: "flex", alignItems: "center", gap: 6, fontSize: "0.75rem", color: "var(--text-secondary)", flexWrap: "wrap" }}>
-            <span>Filter Aktif:</span>
-            {selectedLearningType !== "all" && (
-              <span className="badge-role" style={{
-                background: selectedLearningType === "self_learning" ? "rgba(16,185,129,0.15)" : selectedLearningType === "online" ? "rgba(59,130,246,0.15)" : "rgba(168,85,247,0.15)",
-                color: selectedLearningType === "self_learning" ? "var(--success)" : selectedLearningType === "online" ? "#60a5fa" : "#c084fc",
-                display: "inline-flex", alignItems: "center", gap: 4
-              }}>
-                Model: {selectedLearningType === "self_learning" ? "Self-Learning" : selectedLearningType === "online" ? "Online Live" : "Offline Tatap Muka"}
-                <X size={10} style={{ cursor: "pointer" }} onClick={() => setSelectedLearningType("all")} />
-              </span>
-            )}
-            {filterCategory !== "all" && (
-              <span className="badge-role badge-role-government" style={{ display: "inline-flex", alignItems: "center", gap: 4 }}>
-                Kategori: {filterCategory}
-                <X size={10} style={{ cursor: "pointer" }} onClick={() => setFilterCategory("all")} />
-              </span>
-            )}
-            {selectedInstructor !== "all" && (
-              <span className="badge-role badge-role-corporate" style={{ display: "inline-flex", alignItems: "center", gap: 4 }}>
-                Instruktur: {selectedInstructor}
-                <X size={10} style={{ cursor: "pointer" }} onClick={() => setSelectedInstructor("all")} />
-              </span>
-            )}
-            {selectedLevel !== "all" && (
-              <span className="badge-role" style={{ background: "rgba(59,130,246,0.15)", color: "#93c5fd", display: "inline-flex", alignItems: "center", gap: 4 }}>
-                Level: {selectedLevel}
-                <X size={10} style={{ cursor: "pointer" }} onClick={() => setSelectedLevel("all")} />
-              </span>
-            )}
-            {selectedPriceRange !== "all" && (
-              <span className="badge-role" style={{ background: "rgba(16,185,129,0.15)", color: "#6ee7b7", display: "inline-flex", alignItems: "center", gap: 4 }}>
-                Harga: {selectedPriceRange === "free" ? "Akses Member" : selectedPriceRange === "under500" ? "< Rp 500k" : "≥ Rp 500k"}
-                <X size={10} style={{ cursor: "pointer" }} onClick={() => setSelectedPriceRange("all")} />
-              </span>
-            )}
-            {selectedMinRating !== "all" && (
-              <span className="badge-role" style={{ background: "rgba(245,158,11,0.15)", color: "#fde68a", display: "inline-flex", alignItems: "center", gap: 4 }}>
-                Rating: ⭐ {selectedMinRating}+
-                <X size={10} style={{ cursor: "pointer" }} onClick={() => setSelectedMinRating("all")} />
-              </span>
-            )}
+        <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
+          {!isSubscribed && (
             <button
               type="button"
-              className="btn btn-secondary"
-              style={{ width: "auto", padding: "2px 8px", fontSize: "0.7rem", height: "auto" }}
-              onClick={() => { setSelectedLearningType("all"); setFilterCategory("all"); setSelectedInstructor("all"); setSelectedLevel("all"); setSelectedPriceRange("all"); setSelectedMinRating("all"); setSearchQuery(""); }}
-            >
-              Reset Semua
+              className="btn btn-primary"
+              onClick={() => setShowSubscriptionModal(true)}
+              style={{ width: "auto", padding: "6px 14px", fontSize: "0.75rem", borderRadius: 8 }}>
+              Aktivasi Member
             </button>
-          </div>
-        )}
-      </div>
-
-      {/* 🌟 All-Access Membership & B2B Corporate Banner */}
-      <div style={{
-        display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))", gap: 12, marginBottom: 20
-      }}>
-        {/* Membership Pass */}
-        <div className="glass-card" style={{
-          padding: "12px 16px", borderRadius: 10,
-          background: "linear-gradient(135deg, rgba(249,115,22,0.12), rgba(234,88,12,0.04))",
-          border: "1px solid rgba(249,115,22,0.3)", display: "flex", justifyContent: "space-between", alignItems: "center"
-        }}>
-          <div>
-            <div style={{ fontSize: "0.72rem", fontWeight: 700, color: "var(--primary)", textTransform: "uppercase" }}>
-              💎 Paket Akses Penuh (One-Time Charge)
-            </div>
-            <div style={{ fontWeight: 700, fontSize: "0.85rem", marginTop: 2 }}>
-              Akses Semua Kursus &amp; Ujian Seumur Hidup
-            </div>
-            <div style={{ fontSize: "0.72rem", color: "var(--text-muted)", marginTop: 2 }}>
-              Cukup Rp {activeMembershipPrice.toLocaleString("id-ID")} (Sekali Bayar Selamanya)
-            </div>
-          </div>
-          <button
-            type="button"
-            className="btn btn-primary"
-            onClick={() => setShowSubscriptionModal(true)}
-            style={{ width: "auto", padding: "6px 12px", fontSize: "0.72rem", whiteSpace: "nowrap" }}>
-            Mulai Langganan →
-          </button>
-        </div>
-
-        {/* Corporate Training Pass */}
-        <div className="glass-card" style={{
-          padding: "12px 16px", borderRadius: 10,
-          background: "linear-gradient(135deg, rgba(59,130,246,0.12), rgba(37,99,235,0.04))",
-          border: "1px solid rgba(59,130,246,0.3)", display: "flex", justifyContent: "space-between", alignItems: "center"
-        }}>
-          <div>
-            <div style={{ fontSize: "0.72rem", fontWeight: 700, color: "#60a5fa", textTransform: "uppercase" }}>
-              📍 Permintaan Pelatihan Offline
-            </div>
-            <div style={{ fontWeight: 700, fontSize: "0.85rem", marginTop: 2 }}>
-              Workshop Tatap Muka &amp; Pelatihan Khusus
-            </div>
-            <div style={{ fontSize: "0.72rem", color: "var(--text-muted)", marginTop: 2 }}>
-              Memerlukan pelatihan tatap muka atau pendampingan khusus? Hubungi tim kami
-            </div>
-          </div>
+          )}
           <button
             type="button"
             className="btn btn-secondary"
             onClick={() => { setCorporateSubmitted(false); setShowCorporateModal(true); }}
-            style={{ width: "auto", padding: "6px 12px", fontSize: "0.72rem", whiteSpace: "nowrap", borderColor: "rgba(168,85,247,0.4)", color: "#c084fc" }}>
-            Hubungi Kami (Contact Us)
+            style={{ width: "auto", padding: "6px 14px", fontSize: "0.75rem", borderRadius: 8 }}>
+            Konsultasi Offline
           </button>
         </div>
       </div>
 
-      {/* 🧭 Model Belajar Quick Filter Pills */}
-      <div style={{ marginBottom: 16 }}>
-        <div style={{ fontSize: "0.78rem", fontWeight: 700, color: "var(--text-secondary)", textTransform: "uppercase", letterSpacing: "0.5px", marginBottom: 8, display: "flex", alignItems: "center", gap: 6 }}>
-          <Zap size={14} style={{ color: "var(--primary)" }} />
-          Pilih Model Belajar:
-        </div>
-        <div style={{ display: "flex", gap: 8, flexWrap: "wrap", alignItems: "center" }}>
-          {[
-            { key: "all", label: "🌟 Semua Model", count: learningTypeCounts.all },
-            { key: "self_learning", label: "🟢 Self-Learning (Belajar Mandiri)", count: learningTypeCounts.self_learning },
-            { key: "online", label: "🔵 Online (Live Webinar)", count: learningTypeCounts.online },
-            { key: "offline", label: "🟣 Offline (Tatap Muka)", count: learningTypeCounts.offline },
-          ].map(tab => {
-            const isActive = selectedLearningType === tab.key;
-            return (
-              <button
-                key={tab.key}
-                type="button"
-                className={`filter-pill ${isActive ? "active" : ""}`}
-                onClick={() => setSelectedLearningType(tab.key)}
-                style={{
-                  padding: "8px 16px",
-                  fontSize: "0.82rem",
-                  fontWeight: isActive ? 700 : 500,
-                  display: "inline-flex",
-                  alignItems: "center",
-                  gap: 6,
-                  borderRadius: 8,
-                  cursor: "pointer",
-                }}
-              >
-                <span>{tab.label}</span>
-                <span style={{
-                  padding: "1px 6px",
-                  borderRadius: 12,
-                  fontSize: "0.7rem",
-                  fontWeight: 700,
-                  background: isActive ? "rgba(255,255,255,0.25)" : "var(--bg-tertiary)",
-                  color: isActive ? "#ffffff" : "var(--text-primary)",
-                  border: isActive ? "none" : "1px solid var(--border-color)",
-                }}>
-                  {tab.count}
-                </span>
-              </button>
-            );
-          })}
-        </div>
-      </div>
-
-      {/* Multi-Filter Bar: Tingkat, Harga, Rating */}
+      {/* 🧭 Unified Clean Toolbar: Model Belajar & Filter Dropdowns */}
       <div style={{
-        display: "flex", gap: 14, alignItems: "center", flexWrap: "wrap",
-        padding: "12px 18px", background: "var(--bg-card)", border: "1px solid var(--border-color)",
-        borderRadius: 14, marginBottom: 18, fontSize: "0.82rem"
+        background: "var(--bg-card)", border: "1px solid var(--border-color)",
+        borderRadius: 14, padding: "12px 16px", marginBottom: 16,
+        display: "flex", flexDirection: "column", gap: 12
       }}>
-        <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-          <span style={{ fontSize: "0.8rem", color: "var(--text-muted)", fontWeight: 600 }}>Tingkat:</span>
+        {/* Top Row: Model Belajar Segmented Tabs + View Type */}
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: 10 }}>
+          <div style={{ display: "inline-flex", background: "var(--bg-tertiary)", padding: 3, borderRadius: 10, border: "1px solid var(--border-color)", gap: 4 }}>
+            {[
+              { key: "all", label: "Semua Model", count: learningTypeCounts.all },
+              { key: "self_learning", label: "Self-Learning", count: learningTypeCounts.self_learning },
+              { key: "online", label: "Online Live", count: learningTypeCounts.online },
+              { key: "offline", label: "Offline Tatap Muka", count: learningTypeCounts.offline },
+            ].map(tab => {
+              const isActive = selectedLearningType === tab.key;
+              return (
+                <button
+                  key={tab.key}
+                  type="button"
+                  onClick={() => setSelectedLearningType(tab.key)}
+                  style={{
+                    padding: "6px 14px",
+                    fontSize: "0.78rem",
+                    fontWeight: isActive ? 700 : 500,
+                    borderRadius: 8,
+                    border: "none",
+                    cursor: "pointer",
+                    background: isActive ? "var(--primary)" : "transparent",
+                    color: isActive ? "#ffffff" : "var(--text-secondary)",
+                    display: "inline-flex",
+                    alignItems: "center",
+                    gap: 6,
+                    transition: "all 0.15s ease"
+                  }}
+                >
+                  <span>{tab.label}</span>
+                  <span style={{
+                    padding: "1px 6px",
+                    borderRadius: 10,
+                    fontSize: "0.68rem",
+                    background: isActive ? "rgba(255,255,255,0.2)" : "rgba(0,0,0,0.06)",
+                    color: isActive ? "#ffffff" : "var(--text-muted)"
+                  }}>
+                    {tab.count}
+                  </span>
+                </button>
+              );
+            })}
+          </div>
+
+          {/* Mode Switcher: Kategori vs Instruktur */}
+          <div style={{ display: "inline-flex", gap: 4 }}>
+            <button
+              type="button"
+              className={`filter-pill ${activeFilterTab === "category" ? "active" : ""}`}
+              style={{ padding: "5px 12px", fontSize: "0.75rem", borderRadius: 8 }}
+              onClick={() => { setActiveFilterTab("category"); setSelectedInstructor("all"); }}
+            >
+              Kategori
+            </button>
+            <button
+              type="button"
+              className={`filter-pill ${activeFilterTab === "instructor" ? "active" : ""}`}
+              style={{ padding: "5px 12px", fontSize: "0.75rem", borderRadius: 8 }}
+              onClick={() => { setActiveFilterTab("instructor"); setFilterCategory("all"); }}
+            >
+              Instruktur ({instructors.length})
+            </button>
+          </div>
+        </div>
+
+        {/* Bottom Row: Quick Filters (Tingkat, Harga, Rating, Result Count) */}
+        <div style={{ display: "flex", alignItems: "center", flexWrap: "wrap", gap: 10, paddingTop: 10, borderTop: "1px solid var(--border-color)" }}>
           <select
             value={selectedLevel}
             onChange={e => setSelectedLevel(e.target.value)}
             style={{
-              padding: "6px 12px",
-              borderRadius: 8,
-              background: "var(--bg-tertiary)",
-              border: "1px solid var(--border-color)",
-              color: "var(--text-primary)",
-              fontSize: "0.82rem",
-              outline: "none",
-              cursor: "pointer"
+              padding: "6px 10px", borderRadius: 8, background: "var(--bg-tertiary)",
+              border: "1px solid var(--border-color)", color: "var(--text-primary)", fontSize: "0.78rem", cursor: "pointer"
             }}>
             <option value="all">Semua Tingkat</option>
             {distinctLevels.map(lvl => (
-              <option key={lvl.key || lvl.name} value={lvl.key || lvl.name}>
-                {lvl.name || lvl.key}
-              </option>
+              <option key={lvl.key || lvl.name} value={lvl.key || lvl.name}>{lvl.name || lvl.key}</option>
             ))}
           </select>
-        </div>
 
-        <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-          <span style={{ fontSize: "0.8rem", color: "var(--text-muted)", fontWeight: 600 }}>Harga:</span>
           <select
             value={selectedPriceRange}
             onChange={e => setSelectedPriceRange(e.target.value)}
             style={{
-              padding: "6px 12px",
-              borderRadius: 8,
-              background: "var(--bg-tertiary)",
-              border: "1px solid var(--border-color)",
-              color: "var(--text-primary)",
-              fontSize: "0.82rem",
-              outline: "none",
-              cursor: "pointer"
+              padding: "6px 10px", borderRadius: 8, background: "var(--bg-tertiary)",
+              border: "1px solid var(--border-color)", color: "var(--text-primary)", fontSize: "0.78rem", cursor: "pointer"
             }}>
             <option value="all">Semua Harga</option>
             <option value="free">Akses Member</option>
             <option value="under500">&lt; Rp 500.000</option>
             <option value="above500">≥ Rp 500.000</option>
           </select>
-        </div>
 
-        <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-          <span style={{ fontSize: "0.8rem", color: "var(--text-muted)", fontWeight: 600 }}>Rating:</span>
           <select
             value={selectedMinRating}
             onChange={e => setSelectedMinRating(e.target.value)}
             style={{
-              padding: "6px 12px",
-              borderRadius: 8,
-              background: "var(--bg-tertiary)",
-              border: "1px solid var(--border-color)",
-              color: "var(--text-primary)",
-              fontSize: "0.82rem",
-              outline: "none",
-              cursor: "pointer"
+              padding: "6px 10px", borderRadius: 8, background: "var(--bg-tertiary)",
+              border: "1px solid var(--border-color)", color: "var(--text-primary)", fontSize: "0.78rem", cursor: "pointer"
             }}>
             <option value="all">Semua Rating</option>
             <option value="4.0">⭐ 4.0+</option>
             <option value="4.5">⭐ 4.5+</option>
           </select>
-        </div>
 
-        <span style={{ marginLeft: "auto", fontSize: "0.78rem", color: "var(--text-muted)", fontWeight: 600 }}>
-          Menampilkan {filteredCourses.length} dari {courses.length} program
-        </span>
+          {(selectedLearningType !== "all" || filterCategory !== "all" || selectedInstructor !== "all" || selectedLevel !== "all" || selectedPriceRange !== "all" || selectedMinRating !== "all" || searchQuery) && (
+            <button
+              type="button"
+              className="btn btn-secondary"
+              style={{ width: "auto", padding: "4px 10px", fontSize: "0.72rem", height: "auto", borderRadius: 6 }}
+              onClick={() => { setSelectedLearningType("all"); setFilterCategory("all"); setSelectedInstructor("all"); setSelectedLevel("all"); setSelectedPriceRange("all"); setSelectedMinRating("all"); setSearchQuery(""); }}
+            >
+              Reset Filter
+            </button>
+          )}
+
+          <span style={{ marginLeft: "auto", fontSize: "0.78rem", color: "var(--text-muted)", fontWeight: 500 }}>
+            Menampilkan <strong>{filteredCourses.length}</strong> dari {courses.length} program
+          </span>
+        </div>
       </div>
 
       {/* Category Pills (Jika tab category aktif) */}
@@ -1247,8 +1139,8 @@ export default function MarketplacePage() {
                     target="_blank"
                     rel="noopener noreferrer"
                     className="btn btn-primary"
-                    style={{ width: "auto", padding: "8px 18px", textDecoration: "none", background: "#25D366", borderColor: "#25D366" }}>
-                    💬 Chat WhatsApp
+                    style={{ width: "auto", padding: "8px 18px", textDecoration: "none", background: "var(--primary-gradient)", border: "1px solid rgba(255,255,255,0.15)" }}>
+                    Konsultasi Tim DIDIKARA
                   </a>
                   <button
                     type="button"
