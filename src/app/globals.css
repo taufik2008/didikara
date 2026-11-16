@@ -317,7 +317,7 @@
   width: 100%;
   height: 100%;
   object-fit: cover;
-  object-position: left 25%;
+  object-position: left 20%;
   transform: none;
   filter: none;
   display: block;
@@ -329,9 +329,9 @@
   background: linear-gradient(
     90deg,
     transparent 0%,
-    transparent 45%,
-    rgba(255, 255, 255, 0.3) 60%,
-    rgba(255, 255, 255, 0.85) 75%,
+    transparent 40%,
+    rgba(255, 255, 255, 0.3) 58%,
+    rgba(255, 255, 255, 0.88) 75%,
     #ffffff 100%
   );
   pointer-events: none;
@@ -341,9 +341,9 @@
   background: linear-gradient(
     90deg,
     transparent 0%,
-    transparent 45%,
-    rgba(16, 24, 43, 0.3) 60%,
-    rgba(16, 24, 43, 0.85) 75%,
+    transparent 40%,
+    rgba(16, 24, 43, 0.3) 58%,
+    rgba(16, 24, 43, 0.88) 75%,
     #10182b 100%
   );
 }
