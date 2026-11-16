@@ -543,48 +543,57 @@ export default function LandingPage({ initialCourses, initialCategories, initial
         style={{
           position: "relative",
           overflow: "hidden",
-          padding: "64px 24px 76px 24px",
+          padding: "76px 24px 84px 24px",
           borderBottom: "1px solid var(--border-color)",
-          background: "radial-gradient(ellipse at 50% -20%, rgba(37, 99, 235, 0.22), transparent 70%)"
+          backgroundImage: `linear-gradient(180deg, rgba(15, 23, 42, 0.82) 0%, rgba(15, 23, 42, 0.78) 45%, rgba(15, 23, 42, 0.94) 100%), url('https://images.unsplash.com/photo-1573497019940-1c28c88b4f3e?w=1920&auto=format&fit=crop&q=85')`,
+          backgroundSize: "cover",
+          backgroundPosition: "center 28%",
+          backgroundRepeat: "no-repeat",
+          color: "#ffffff"
         }}
       >
-        <div style={{ maxWidth: 1140, margin: "0 auto", textAlign: "center" }}>
+        <div style={{ maxWidth: 1140, margin: "0 auto", textAlign: "center", position: "relative", zIndex: 2 }}>
           {/* Top Tag Badge */}
           <div
             style={{
               display: "inline-flex",
               alignItems: "center",
               gap: 8,
-              padding: "6px 16px",
+              padding: "7px 18px",
               borderRadius: 30,
-              background: "var(--accent-badge-bg)",
-              border: "1px solid var(--accent-badge-border)",
-              color: "var(--text-accent)",
+              background: "rgba(30, 58, 138, 0.55)",
+              backdropFilter: "blur(8px)",
+              border: "1px solid rgba(96, 165, 250, 0.35)",
+              color: "#93c5fd",
               fontSize: "0.85rem",
               fontWeight: 600,
-              marginBottom: 22
+              marginBottom: 20
             }}
           >
-            <Sparkles size={16} />
+            <Sparkles size={16} color="#60a5fa" />
             <span>Pilihan Lengkap: Self-Learning Mandiri • Online Live • Offline Workshop</span>
           </div>
 
-          {/* Main Title */}
+          {/* Main Title (Dikecilkan & Proporsional) */}
           <h1
             style={{
-              fontSize: "clamp(2rem, 5vw, 3.3rem)",
-              lineHeight: 1.16,
+              fontSize: "clamp(1.75rem, 3.5vw, 2.45rem)",
+              lineHeight: 1.25,
               fontWeight: 800,
-              marginBottom: 20,
-              color: "var(--text-primary)"
+              letterSpacing: "-0.02em",
+              maxWidth: 860,
+              margin: "0 auto 18px auto",
+              color: "#ffffff",
+              textShadow: "0 2px 10px rgba(0, 0, 0, 0.4)"
             }}
           >
             Tingkatkan Keahlian dengan{" "}
             <span
               style={{
-                background: "var(--primary-gradient)",
+                background: "linear-gradient(135deg, #60a5fa 0%, #38bdf8 50%, #93c5fd 100%)",
                 WebkitBackgroundClip: "text",
-                WebkitTextFillColor: "transparent"
+                WebkitTextFillColor: "transparent",
+                display: "inline-block"
               }}
             >
               Metode Belajar Fleksibel
@@ -594,15 +603,151 @@ export default function LandingPage({ initialCourses, initialCategories, initial
           {/* Subtitle */}
           <p
             style={{
-              fontSize: "clamp(1rem, 2vw, 1.15rem)",
+              fontSize: "clamp(0.95rem, 1.8vw, 1.05rem)",
               lineHeight: 1.6,
-              color: "var(--text-secondary)",
-              maxWidth: 820,
-              margin: "0 auto 36px auto"
+              color: "#e2e8f0",
+              maxWidth: 740,
+              margin: "0 auto 28px auto",
+              textShadow: "0 1px 6px rgba(0, 0, 0, 0.3)"
             }}
           >
-            Sesuaikan metode belajar Anda: mulai dari <strong>Self-Learning On-Demand (Belajar Mandiri)</strong>, <strong>Kelas Online Live Webinar Interaktif</strong>, hingga <strong>Workshop Tatap Muka (Offline)</strong>.
+            Akselerasi kompetensi profesional Anda bersama instruktur praktisi berpengalaman. Pilih cara belajar yang cocok: <strong>Self-Learning On-Demand 24/7</strong>, <strong>Live Webinar Interaktif</strong>, atau <strong>Workshop Tatap Muka</strong>.
           </p>
+
+          {/* High-Converting Registration CTAs */}
+          <div
+            style={{
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              flexWrap: "wrap",
+              gap: 14,
+              marginBottom: 28
+            }}
+          >
+            <button
+              onClick={() => router.push("/dashboard?mode=register")}
+              style={{
+                padding: "13px 28px",
+                borderRadius: 12,
+                background: "linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%)",
+                color: "#ffffff",
+                fontWeight: 700,
+                fontSize: "0.98rem",
+                border: "1px solid rgba(255, 255, 255, 0.25)",
+                boxShadow: "0 8px 24px rgba(37, 99, 235, 0.45), 0 2px 6px rgba(0, 0, 0, 0.2)",
+                cursor: "pointer",
+                display: "inline-flex",
+                alignItems: "center",
+                gap: 10,
+                transition: "transform 0.15s, box-shadow 0.15s"
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.transform = "translateY(-2px)";
+                e.currentTarget.style.boxShadow = "0 12px 28px rgba(37, 99, 235, 0.6)";
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.transform = "translateY(0)";
+                e.currentTarget.style.boxShadow = "0 8px 24px rgba(37, 99, 235, 0.45)";
+              }}
+            >
+              <Sparkles size={18} />
+              <span>Daftar Sekarang — Gratis</span>
+              <ArrowRight size={18} />
+            </button>
+
+            <a
+              href="#katalog"
+              style={{
+                padding: "13px 24px",
+                borderRadius: 12,
+                background: "rgba(255, 255, 255, 0.12)",
+                backdropFilter: "blur(10px)",
+                color: "#ffffff",
+                fontWeight: 600,
+                fontSize: "0.95rem",
+                border: "1px solid rgba(255, 255, 255, 0.25)",
+                textDecoration: "none",
+                display: "inline-flex",
+                alignItems: "center",
+                gap: 8,
+                transition: "all 0.15s"
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.background = "rgba(255, 255, 255, 0.2)";
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.background = "rgba(255, 255, 255, 0.12)";
+              }}
+            >
+              <span>Jelajahi Katalog Pelatihan</span>
+              <ArrowRight size={16} />
+            </a>
+          </div>
+
+          {/* Trust Badges / Social Proof Strip */}
+          <div
+            style={{
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              flexWrap: "wrap",
+              gap: 12,
+              marginBottom: 36
+            }}
+          >
+            <div
+              style={{
+                display: "inline-flex",
+                alignItems: "center",
+                gap: 6,
+                padding: "5px 14px",
+                borderRadius: 20,
+                background: "rgba(15, 23, 42, 0.6)",
+                border: "1px solid rgba(255, 255, 255, 0.14)",
+                color: "#e2e8f0",
+                fontSize: "0.8rem",
+                fontWeight: 500
+              }}
+            >
+              <CheckCircle size={14} color="#10b981" />
+              <span>Materi Praktikal Siap Kerja</span>
+            </div>
+            <div
+              style={{
+                display: "inline-flex",
+                alignItems: "center",
+                gap: 6,
+                padding: "5px 14px",
+                borderRadius: 20,
+                background: "rgba(15, 23, 42, 0.6)",
+                border: "1px solid rgba(255, 255, 255, 0.14)",
+                color: "#e2e8f0",
+                fontSize: "0.8rem",
+                fontWeight: 500
+              }}
+            >
+              <Award size={14} color="#f59e0b" />
+              <span>E-Sertifikat Resmi Ber-QR Code</span>
+            </div>
+            <div
+              style={{
+                display: "inline-flex",
+                alignItems: "center",
+                gap: 6,
+                padding: "5px 14px",
+                borderRadius: 20,
+                background: "rgba(15, 23, 42, 0.6)",
+                border: "1px solid rgba(255, 255, 255, 0.14)",
+                color: "#e2e8f0",
+                fontSize: "0.8rem",
+                fontWeight: 500
+              }}
+            >
+              <Users size={14} color="#38bdf8" />
+              <span>Untuk Umum &amp; Karyawan Perusahaan</span>
+            </div>
+          </div>
 
           {/* Quick Selection Hero Badges */}
           <div
@@ -610,8 +755,8 @@ export default function LandingPage({ initialCourses, initialCategories, initial
               display: "grid",
               gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))",
               gap: 16,
-              maxWidth: 900,
-              margin: "0 auto 40px auto"
+              maxWidth: 920,
+              margin: "0 auto 36px auto"
             }}
           >
             <div
@@ -623,22 +768,32 @@ export default function LandingPage({ initialCourses, initialCategories, initial
               style={{
                 padding: "16px 20px",
                 borderRadius: 14,
-                background: "var(--bg-card)",
+                background: "rgba(15, 23, 42, 0.72)",
+                backdropFilter: "blur(12px)",
                 border: "1px solid rgba(16, 185, 129, 0.4)",
                 cursor: "pointer",
                 textAlign: "left",
                 display: "flex",
                 alignItems: "center",
                 gap: 14,
+                boxShadow: "0 8px 24px rgba(0, 0, 0, 0.25)",
                 transition: "all 0.2s"
               }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.transform = "translateY(-3px)";
+                e.currentTarget.style.borderColor = "rgba(16, 185, 129, 0.8)";
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.transform = "translateY(0)";
+                e.currentTarget.style.borderColor = "rgba(16, 185, 129, 0.4)";
+              }}
             >
-              <div style={{ width: 44, height: 44, borderRadius: 12, background: "rgba(16, 185, 129, 0.15)", display: "flex", alignItems: "center", justifyContent: "center", color: "#10b981", flexShrink: 0 }}>
+              <div style={{ width: 44, height: 44, borderRadius: 12, background: "rgba(16, 185, 129, 0.2)", display: "flex", alignItems: "center", justifyContent: "center", color: "#34d399", flexShrink: 0 }}>
                 <Gift size={22} />
               </div>
               <div>
-                <div style={{ fontSize: "0.95rem", fontWeight: 700, color: "#10b981" }}>1. Self-Learning</div>
-                <div style={{ fontSize: "0.78rem", color: "var(--text-secondary)" }}>Akses On-Demand 24/7 (Gratis &amp; Berbayar)</div>
+                <div style={{ fontSize: "0.95rem", fontWeight: 700, color: "#34d399" }}>1. Self-Learning</div>
+                <div style={{ fontSize: "0.78rem", color: "#cbd5e1" }}>Akses On-Demand 24/7 (Gratis &amp; Berbayar)</div>
               </div>
             </div>
 
@@ -651,22 +806,32 @@ export default function LandingPage({ initialCourses, initialCategories, initial
               style={{
                 padding: "16px 20px",
                 borderRadius: 14,
-                background: "var(--bg-card)",
-                border: "1px solid rgba(59, 130, 246, 0.4)",
+                background: "rgba(15, 23, 42, 0.72)",
+                backdropFilter: "blur(12px)",
+                border: "1px solid rgba(59, 130, 246, 0.45)",
                 cursor: "pointer",
                 textAlign: "left",
                 display: "flex",
                 alignItems: "center",
                 gap: 14,
+                boxShadow: "0 8px 24px rgba(0, 0, 0, 0.25)",
                 transition: "all 0.2s"
               }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.transform = "translateY(-3px)";
+                e.currentTarget.style.borderColor = "rgba(59, 130, 246, 0.8)";
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.transform = "translateY(0)";
+                e.currentTarget.style.borderColor = "rgba(59, 130, 246, 0.45)";
+              }}
             >
-              <div style={{ width: 44, height: 44, borderRadius: 12, background: "rgba(59, 130, 246, 0.15)", display: "flex", alignItems: "center", justifyContent: "center", color: "#3b82f6", flexShrink: 0 }}>
+              <div style={{ width: 44, height: 44, borderRadius: 12, background: "rgba(59, 130, 246, 0.2)", display: "flex", alignItems: "center", justifyContent: "center", color: "#60a5fa", flexShrink: 0 }}>
                 <Tv size={22} />
               </div>
               <div>
-                <div style={{ fontSize: "0.95rem", fontWeight: 700, color: "#3b82f6" }}>2. Online Class</div>
-                <div style={{ fontSize: "0.78rem", color: "var(--text-secondary)" }}>Live Webinar Zoom • Q&A Interaktif</div>
+                <div style={{ fontSize: "0.95rem", fontWeight: 700, color: "#60a5fa" }}>2. Online Class</div>
+                <div style={{ fontSize: "0.78rem", color: "#cbd5e1" }}>Live Webinar Zoom • Q&amp;A Interaktif</div>
               </div>
             </div>
 
@@ -679,22 +844,32 @@ export default function LandingPage({ initialCourses, initialCategories, initial
               style={{
                 padding: "16px 20px",
                 borderRadius: 14,
-                background: "var(--bg-card)",
-                border: "1px solid rgba(168, 85, 247, 0.4)",
+                background: "rgba(15, 23, 42, 0.72)",
+                backdropFilter: "blur(12px)",
+                border: "1px solid rgba(168, 85, 247, 0.45)",
                 cursor: "pointer",
                 textAlign: "left",
                 display: "flex",
                 alignItems: "center",
                 gap: 14,
+                boxShadow: "0 8px 24px rgba(0, 0, 0, 0.25)",
                 transition: "all 0.2s"
               }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.transform = "translateY(-3px)";
+                e.currentTarget.style.borderColor = "rgba(168, 85, 247, 0.8)";
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.transform = "translateY(0)";
+                e.currentTarget.style.borderColor = "rgba(168, 85, 247, 0.45)";
+              }}
             >
-              <div style={{ width: 44, height: 44, borderRadius: 12, background: "rgba(168, 85, 247, 0.15)", display: "flex", alignItems: "center", justifyContent: "center", color: "#a855f7", flexShrink: 0 }}>
+              <div style={{ width: 44, height: 44, borderRadius: 12, background: "rgba(168, 85, 247, 0.2)", display: "flex", alignItems: "center", justifyContent: "center", color: "#c084fc", flexShrink: 0 }}>
                 <MapPin size={22} />
               </div>
               <div>
-                <div style={{ fontSize: "0.95rem", fontWeight: 700, color: "#a855f7" }}>3. Offline Workshop</div>
-                <div style={{ fontSize: "0.78rem", color: "var(--text-secondary)" }}>Tatap Muka Interaktif • Request via Contact Us</div>
+                <div style={{ fontSize: "0.95rem", fontWeight: 700, color: "#c084fc" }}>3. Offline Workshop</div>
+                <div style={{ fontSize: "0.78rem", color: "#cbd5e1" }}>Tatap Muka Interaktif • In-House Training</div>
               </div>
             </div>
           </div>
@@ -706,14 +881,15 @@ export default function LandingPage({ initialCourses, initialCategories, initial
               margin: "0 auto 36px auto",
               display: "flex",
               alignItems: "center",
-              background: "var(--bg-card)",
-              border: "1px solid var(--border-glow)",
+              background: "rgba(15, 23, 42, 0.8)",
+              backdropFilter: "blur(16px)",
+              border: "1px solid rgba(255, 255, 255, 0.22)",
               borderRadius: 14,
               padding: "6px 8px 6px 18px",
-              boxShadow: "var(--shadow-lg)"
+              boxShadow: "0 10px 30px rgba(0, 0, 0, 0.4)"
             }}
           >
-            <Search size={20} color="var(--text-muted)" style={{ flexShrink: 0, marginRight: 10 }} />
+            <Search size={20} color="#94a3b8" style={{ flexShrink: 0, marginRight: 10 }} />
             <input
               type="text"
               placeholder="Cari kursus gratis, webinar online, workshop tatap muka, topik PBJ..."
@@ -724,7 +900,7 @@ export default function LandingPage({ initialCourses, initialCategories, initial
                 border: "none",
                 background: "transparent",
                 outline: "none",
-                color: "var(--text-primary)",
+                color: "#ffffff",
                 fontSize: "0.95rem"
               }}
             />
@@ -733,7 +909,7 @@ export default function LandingPage({ initialCourses, initialCategories, initial
               style={{
                 padding: "10px 20px",
                 borderRadius: 10,
-                background: "var(--primary-gradient)",
+                background: "linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%)",
                 color: "#fff",
                 fontWeight: 600,
                 fontSize: "0.9rem",
