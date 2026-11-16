@@ -549,61 +549,20 @@ export default function LandingPage({ initialCourses, initialCategories, initial
         }}
       >
         <div style={{ maxWidth: 1140, margin: "0 auto", textAlign: "center" }}>
-          {/* Featured Hero Banner Card with Bright Background & Right-Aligned Content */}
-          <div
-            style={{
-              position: "relative",
-              overflow: "hidden",
-              borderRadius: 24,
-              border: "1px solid var(--border-color)",
-              boxShadow: "0 20px 45px -15px rgba(0, 0, 0, 0.25)",
-              minHeight: 360,
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "flex-end",
-              padding: "44px 44px",
-              marginBottom: 40,
-              boxSizing: "border-box"
-            }}
-          >
-            {/* Background Image of Woman (Bright & Flipped to Left) */}
-            <div
-              style={{
-                position: "absolute",
-                top: 0,
-                left: 0,
-                right: 0,
-                bottom: 0,
-                backgroundImage: "url('https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=1600&auto=format&fit=crop&q=85')",
-                backgroundSize: "cover",
-                backgroundPosition: "72% 18%",
-                transform: "scaleX(-1)",
-                zIndex: 1
-              }}
-            />
+          {/* Featured Hero Banner Card with Woman on Left & Text on Right */}
+          <div className="hero-banner-split">
+            {/* Left Column: Woman in high resolution without overlay obstruction */}
+            <div className="hero-banner-split-img">
+              <img
+                src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=1600&auto=format&fit=crop&q=90"
+                alt="Peserta Belajar Online"
+                loading="eager"
+              />
+              <div className="hero-banner-split-overlay" />
+            </div>
 
-            {/* Bright Gradient Overlay ensuring right-side text clarity */}
-            <div
-              style={{
-                position: "absolute",
-                top: 0,
-                left: 0,
-                right: 0,
-                bottom: 0,
-                background: "linear-gradient(90deg, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 0.2) 28%, rgba(255, 255, 255, 0.92) 54%, #ffffff 100%)",
-                zIndex: 2
-              }}
-            />
-
-            {/* Right-aligned text content */}
-            <div
-              style={{
-                position: "relative",
-                zIndex: 3,
-                maxWidth: 580,
-                textAlign: "left"
-              }}
-            >
+            {/* Right Column: Text content auto-adapts to both Light & Dark Theme */}
+            <div className="hero-banner-split-content">
               {/* Top Tag Badge */}
               <div
                 style={{
@@ -612,15 +571,16 @@ export default function LandingPage({ initialCourses, initialCategories, initial
                   gap: 8,
                   padding: "6px 16px",
                   borderRadius: 30,
-                  background: "rgba(37, 99, 235, 0.1)",
-                  border: "1px solid rgba(37, 99, 235, 0.25)",
-                  color: "#1d4ed8",
+                  background: "var(--accent-badge-bg)",
+                  border: "1px solid var(--accent-badge-border)",
+                  color: "var(--text-accent)",
                   fontSize: "0.82rem",
                   fontWeight: 700,
-                  marginBottom: 16
+                  marginBottom: 16,
+                  width: "fit-content"
                 }}
               >
-                <Sparkles size={15} color="#2563eb" />
+                <Sparkles size={15} />
                 <span>Pilihan Lengkap: Self-Learning • Online Live • Offline Workshop</span>
               </div>
 
@@ -631,14 +591,16 @@ export default function LandingPage({ initialCourses, initialCategories, initial
                   lineHeight: 1.22,
                   fontWeight: 800,
                   marginBottom: 16,
-                  color: "#0f172a",
+                  color: "var(--text-primary)",
                   letterSpacing: "-0.02em"
                 }}
               >
                 Tingkatkan Keahlian dengan{" "}
                 <span
                   style={{
-                    background: "linear-gradient(135deg, #1d4ed8 0%, #0284c7 100%)",
+                    background: theme === "light"
+                      ? "linear-gradient(135deg, #1d4ed8 0%, #0284c7 100%)"
+                      : "linear-gradient(135deg, #60a5fa 0%, #38bdf8 50%, #93c5fd 100%)",
                     WebkitBackgroundClip: "text",
                     WebkitTextFillColor: "transparent",
                     display: "inline-block"
@@ -653,7 +615,7 @@ export default function LandingPage({ initialCourses, initialCategories, initial
                 style={{
                   fontSize: "clamp(0.92rem, 1.6vw, 1.02rem)",
                   lineHeight: 1.6,
-                  color: "#334155",
+                  color: "var(--text-secondary)",
                   margin: 0
                 }}
               >
