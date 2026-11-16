@@ -290,23 +290,24 @@
 
 /* ===================================================
    Hero Banner Split Card (Woman Left, Text Right)
-   Auto-adapts to Light & Dark Theme
+   Auto-adapts to Light & Dark Theme - Proportional & Compact
    =================================================== */
 .hero-banner-split {
   display: flex;
   align-items: stretch;
-  border-radius: 24px;
+  border-radius: 20px;
   overflow: hidden;
   background: var(--bg-card);
   border: 1px solid var(--border-color);
-  box-shadow: var(--shadow-xl);
-  min-height: 380px;
-  margin-bottom: 40px;
+  box-shadow: var(--shadow-lg);
+  min-height: 250px;
+  max-width: 1040px;
+  margin: 0 auto 32px auto;
   text-align: left;
 }
 
 .hero-banner-split-img {
-  flex: 0 0 42%;
+  flex: 0 0 33%;
   position: relative;
   overflow: hidden;
   background: var(--bg-tertiary);
@@ -325,14 +326,14 @@
   top: 0;
   right: 0;
   bottom: 0;
-  width: 60px;
+  width: 50px;
   background: linear-gradient(to right, transparent, var(--bg-card));
   pointer-events: none;
 }
 
 .hero-banner-split-content {
   flex: 1;
-  padding: 44px 44px;
+  padding: 24px 32px;
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -346,7 +347,7 @@
   }
   .hero-banner-split-img {
     flex: none;
-    height: 280px;
+    height: 220px;
     width: 100%;
   }
   .hero-banner-split-overlay {
@@ -355,11 +356,11 @@
     right: 0;
     bottom: 0;
     width: 100%;
-    height: 60px;
+    height: 50px;
     background: linear-gradient(to bottom, transparent, var(--bg-card));
   }
   .hero-banner-split-content {
-    padding: 28px 24px;
+    padding: 20px 20px;
   }
 }
 

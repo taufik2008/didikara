@@ -568,31 +568,31 @@ export default function LandingPage({ initialCourses, initialCategories, initial
                 style={{
                   display: "inline-flex",
                   alignItems: "center",
-                  gap: 8,
-                  padding: "6px 16px",
+                  gap: 6,
+                  padding: "4px 12px",
                   borderRadius: 30,
                   background: "var(--accent-badge-bg)",
                   border: "1px solid var(--accent-badge-border)",
                   color: "var(--text-accent)",
-                  fontSize: "0.82rem",
+                  fontSize: "0.78rem",
                   fontWeight: 700,
-                  marginBottom: 16,
+                  marginBottom: 10,
                   width: "fit-content"
                 }}
               >
-                <Sparkles size={15} />
+                <Sparkles size={14} />
                 <span>Pilihan Lengkap: Self-Learning • Online Live • Offline Workshop</span>
               </div>
 
               {/* Main Title */}
               <h1
                 style={{
-                  fontSize: "clamp(1.65rem, 3.2vw, 2.3rem)",
-                  lineHeight: 1.22,
+                  fontSize: "clamp(1.35rem, 2.3vw, 1.75rem)",
+                  lineHeight: 1.24,
                   fontWeight: 800,
-                  marginBottom: 16,
+                  marginBottom: 10,
                   color: "var(--text-primary)",
-                  letterSpacing: "-0.02em"
+                  letterSpacing: "-0.015em"
                 }}
               >
                 Tingkatkan Keahlian dengan{" "}
@@ -613,8 +613,8 @@ export default function LandingPage({ initialCourses, initialCategories, initial
               {/* Subtitle */}
               <p
                 style={{
-                  fontSize: "clamp(0.92rem, 1.6vw, 1.02rem)",
-                  lineHeight: 1.6,
+                  fontSize: "clamp(0.85rem, 1.4vw, 0.92rem)",
+                  lineHeight: 1.5,
                   color: "var(--text-secondary)",
                   margin: 0
                 }}
@@ -773,7 +773,7 @@ export default function LandingPage({ initialCourses, initialCategories, initial
       {/* ── 3 LEARNING DELIVERY MODELS & PROCESS EXPLANATION (#model-belajar) ── */}
       <section id="model-belajar" style={{ padding: "80px 24px", maxWidth: 1240, margin: "0 auto" }}>
         <div style={{ textAlign: "center", marginBottom: 50 }}>
-          <div style={{ fontSize: "0.8rem", fontWeight: 700, color: "var(--primary)", textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: 6 }}>
+          <div style={{ fontSize: "0.82rem", fontWeight: 700, color: "var(--text-accent)", textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: 6 }}>
             Struktur &amp; Proses Pembelajaran
           </div>
           <h2 style={{ fontSize: "2.2rem", fontWeight: 800, marginBottom: 12 }}>3 Model Pembelajaran di DIDIKARA</h2>
@@ -1033,7 +1033,7 @@ export default function LandingPage({ initialCourses, initialCategories, initial
           {/* Section Header */}
           <div style={{ display: "flex", flexWrap: "wrap", alignItems: "flex-end", justifyContent: "space-between", gap: 20, marginBottom: 28 }}>
             <div>
-              <div style={{ fontSize: "0.8rem", fontWeight: 700, color: "var(--primary)", textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: 6 }}>
+              <div style={{ fontSize: "0.82rem", fontWeight: 700, color: "var(--text-accent)", textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: 6 }}>
                 Katalog Materi & Pilihan Format
               </div>
               <h2 style={{ fontSize: "2rem", fontWeight: 800 }}>Daftar Pelatihan Berdasarkan Model Belajar</h2>
@@ -1570,7 +1570,7 @@ export default function LandingPage({ initialCourses, initialCategories, initial
       >
         <div style={{ maxWidth: 1240, margin: "0 auto" }}>
           <div style={{ textAlign: "center", marginBottom: 50 }}>
-            <div style={{ fontSize: "0.8rem", fontWeight: 700, color: "var(--primary)", textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: 6 }}>
+            <div style={{ fontSize: "0.82rem", fontWeight: 700, color: "var(--text-accent)", textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: 6 }}>
               Keunggulan Ekosistem DIDIKARA
             </div>
             <h2 style={{ fontSize: "2.1rem", fontWeight: 800 }}>Mengapa Belajar di Platform DIDIKARA?</h2>
@@ -1655,7 +1655,7 @@ export default function LandingPage({ initialCourses, initialCategories, initial
           }}
         >
         <div style={{ textAlign: "center", marginBottom: 48 }}>
-          <div style={{ fontSize: "0.8rem", fontWeight: 700, color: "var(--primary)", textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: 6 }}>
+          <div style={{ fontSize: "0.82rem", fontWeight: 700, color: "var(--text-accent)", textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: 6 }}>
             Dewan Pengajar &amp; Praktisi
           </div>
           <h2 style={{ fontSize: "2.1rem", fontWeight: 800 }}>Instruktur &amp; Asesor Ahli DIDIKARA</h2>
@@ -1905,7 +1905,7 @@ export default function LandingPage({ initialCourses, initialCategories, initial
       {/* ── FAQ SECTION (#faq) ── */}
       <section id="faq" style={{ padding: "80px 24px", maxWidth: 860, margin: "0 auto" }}>
         <div style={{ textAlign: "center", marginBottom: 44 }}>
-          <div style={{ fontSize: "0.8rem", fontWeight: 700, color: "var(--primary)", textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: 6 }}>
+          <div style={{ fontSize: "0.82rem", fontWeight: 700, color: "var(--text-accent)", textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: 6 }}>
             Bantuan & FAQ
           </div>
           <h2 style={{ fontSize: "2rem", fontWeight: 800 }}>Pertanyaan Mengenai Model Pembelajaran</h2>
