@@ -543,69 +543,124 @@ export default function LandingPage({ initialCourses, initialCategories, initial
         style={{
           position: "relative",
           overflow: "hidden",
-          padding: "64px 24px 76px 24px",
+          padding: "54px 24px 72px 24px",
           borderBottom: "1px solid var(--border-color)",
-          backgroundImage: `linear-gradient(rgba(15, 23, 42, 0.75), rgba(15, 23, 42, 0.75)), url('https://images.unsplash.com/photo-1573497019940-1c28c88b4f3e?w=1920&auto=format&fit=crop&q=85')`,
-          backgroundSize: "cover",
-          backgroundPosition: "center 25%",
-          backgroundRepeat: "no-repeat"
+          background: "radial-gradient(ellipse at 50% -20%, rgba(37, 99, 235, 0.22), transparent 70%)"
         }}
       >
         <div style={{ maxWidth: 1140, margin: "0 auto", textAlign: "center" }}>
-          {/* Top Tag Badge */}
+          {/* Featured Hero Banner Card with Bright Background & Right-Aligned Content */}
           <div
             style={{
-              display: "inline-flex",
+              position: "relative",
+              overflow: "hidden",
+              borderRadius: 24,
+              border: "1px solid var(--border-color)",
+              boxShadow: "0 20px 45px -15px rgba(0, 0, 0, 0.25)",
+              minHeight: 360,
+              display: "flex",
               alignItems: "center",
-              gap: 8,
-              padding: "6px 16px",
-              borderRadius: 30,
-              background: "var(--accent-badge-bg)",
-              border: "1px solid var(--accent-badge-border)",
-              color: "var(--text-accent)",
-              fontSize: "0.85rem",
-              fontWeight: 600,
-              marginBottom: 22
+              justifyContent: "flex-end",
+              padding: "44px 44px",
+              marginBottom: 40,
+              boxSizing: "border-box"
             }}
           >
-            <Sparkles size={16} />
-            <span>Pilihan Lengkap: Self-Learning Mandiri • Online Live • Offline Workshop</span>
-          </div>
-
-          {/* Main Title */}
-          <h1
-            style={{
-              fontSize: "clamp(1.75rem, 3.8vw, 2.5rem)",
-              lineHeight: 1.16,
-              fontWeight: 800,
-              marginBottom: 20,
-              color: "#ffffff"
-            }}
-          >
-            Tingkatkan Keahlian dengan{" "}
-            <span
+            {/* Background Image of Woman (Bright & Flipped to Left) */}
+            <div
               style={{
-                background: "var(--primary-gradient)",
-                WebkitBackgroundClip: "text",
-                WebkitTextFillColor: "transparent"
+                position: "absolute",
+                top: 0,
+                left: 0,
+                right: 0,
+                bottom: 0,
+                backgroundImage: "url('https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=1600&auto=format&fit=crop&q=85')",
+                backgroundSize: "cover",
+                backgroundPosition: "72% 18%",
+                transform: "scaleX(-1)",
+                zIndex: 1
+              }}
+            />
+
+            {/* Bright Gradient Overlay ensuring right-side text clarity */}
+            <div
+              style={{
+                position: "absolute",
+                top: 0,
+                left: 0,
+                right: 0,
+                bottom: 0,
+                background: "linear-gradient(90deg, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 0.2) 28%, rgba(255, 255, 255, 0.92) 54%, #ffffff 100%)",
+                zIndex: 2
+              }}
+            />
+
+            {/* Right-aligned text content */}
+            <div
+              style={{
+                position: "relative",
+                zIndex: 3,
+                maxWidth: 580,
+                textAlign: "left"
               }}
             >
-              Metode Belajar Fleksibel
-            </span>
-          </h1>
+              {/* Top Tag Badge */}
+              <div
+                style={{
+                  display: "inline-flex",
+                  alignItems: "center",
+                  gap: 8,
+                  padding: "6px 16px",
+                  borderRadius: 30,
+                  background: "rgba(37, 99, 235, 0.1)",
+                  border: "1px solid rgba(37, 99, 235, 0.25)",
+                  color: "#1d4ed8",
+                  fontSize: "0.82rem",
+                  fontWeight: 700,
+                  marginBottom: 16
+                }}
+              >
+                <Sparkles size={15} color="#2563eb" />
+                <span>Pilihan Lengkap: Self-Learning • Online Live • Offline Workshop</span>
+              </div>
 
-          {/* Subtitle */}
-          <p
-            style={{
-              fontSize: "clamp(1rem, 2vw, 1.15rem)",
-              lineHeight: 1.6,
-              color: "#e2e8f0",
-              maxWidth: 820,
-              margin: "0 auto 36px auto"
-            }}
-          >
-            Sesuaikan metode belajar Anda: mulai dari <strong>Self-Learning On-Demand (Belajar Mandiri)</strong>, <strong>Kelas Online Live Webinar Interaktif</strong>, hingga <strong>Workshop Tatap Muka (Offline)</strong>.
-          </p>
+              {/* Main Title */}
+              <h1
+                style={{
+                  fontSize: "clamp(1.65rem, 3.2vw, 2.3rem)",
+                  lineHeight: 1.22,
+                  fontWeight: 800,
+                  marginBottom: 16,
+                  color: "#0f172a",
+                  letterSpacing: "-0.02em"
+                }}
+              >
+                Tingkatkan Keahlian dengan{" "}
+                <span
+                  style={{
+                    background: "linear-gradient(135deg, #1d4ed8 0%, #0284c7 100%)",
+                    WebkitBackgroundClip: "text",
+                    WebkitTextFillColor: "transparent",
+                    display: "inline-block"
+                  }}
+                >
+                  Metode Belajar Fleksibel
+                </span>
+              </h1>
+
+              {/* Subtitle */}
+              <p
+                style={{
+                  fontSize: "clamp(0.92rem, 1.6vw, 1.02rem)",
+                  lineHeight: 1.6,
+                  color: "#334155",
+                  margin: 0
+                }}
+              >
+                Sesuaikan metode belajar Anda: mulai dari <strong>Self-Learning On-Demand (Belajar Mandiri)</strong>, <strong>Kelas Online Live Webinar Interaktif</strong>, hingga <strong>Workshop Tatap Muka (Offline)</strong>.
+              </p>
+            </div>
+          </div>
 
           {/* Quick Selection Hero Badges */}
           <div
