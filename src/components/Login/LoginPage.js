@@ -653,11 +653,10 @@ export default function LoginPage() {
                 </div>
                 <div style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
                   {[
-                    { label: "🎓 Peserta", email: "peserta@ailms.id" },
+                    { label: "🎓 Peserta (Umum)", email: "peserta@ailms.id" },
+                    { label: "💼 HR Korporat", email: "hr@company.com" },
                     { label: "👨‍🏫 Instruktur", email: "budi.santoso@didikara.id" },
                     { label: "🛡️ Admin", email: "admin@digidaya.tech" },
-                    { label: "🏢 HR Korporat", email: "hr@company.com" },
-                    { label: "🏛️ Biro SDM ASN", email: "gov@kemenkeu.go.id" },
                   ].map(item => (
                     <button
                       key={item.email}
