@@ -289,13 +289,123 @@
 }
 
 /* ===================================================
-   Hero Banner Split Card (Woman Left, Text Right)
-   Auto-adapts to Light & Dark Theme - Proportional & Compact
+   Udemy-Style Hero Billboard Banner
+   Wide Photography Background with Floating Content Box
+   Auto-adapts to Light & Dark Theme - Proportional & Modern
    =================================================== */
+.udemy-billboard {
+  position: relative;
+  max-width: 1080px;
+  margin: 0 auto 36px auto;
+  min-height: 350px;
+  border-radius: 18px;
+  overflow: hidden;
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  box-shadow: var(--shadow-lg);
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  text-align: left;
+}
+
+.udemy-billboard-bg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: left 25%;
+  display: block;
+}
+
+.udemy-billboard-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0) 0%,
+    rgba(255, 255, 255, 0.15) 35%,
+    rgba(255, 255, 255, 0.72) 62%,
+    rgba(255, 255, 255, 0.96) 85%,
+    #ffffff 100%
+  );
+  pointer-events: none;
+}
+
+[data-theme="dark"] .udemy-billboard-overlay {
+  background: linear-gradient(
+    90deg,
+    rgba(16, 24, 43, 0.05) 0%,
+    rgba(16, 24, 43, 0.3) 35%,
+    rgba(16, 24, 43, 0.82) 62%,
+    rgba(16, 24, 43, 0.96) 85%,
+    #10182b 100%
+  );
+}
+
+.udemy-billboard-card {
+  position: relative;
+  z-index: 2;
+  width: 460px;
+  max-width: 90%;
+  margin-right: 44px;
+  padding: 24px 28px;
+  border-radius: 14px;
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.12), 0 1px 3px rgba(0, 0, 0, 0.06);
+  backdrop-filter: blur(8px);
+}
+
+[data-theme="light"] .udemy-billboard-card {
+  background: #ffffff;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08), 0 8px 24px rgba(0, 0, 0, 0.12);
+}
+
+[data-theme="dark"] .udemy-billboard-card {
+  background: rgba(24, 37, 72, 0.95);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+}
+
+@media (max-width: 860px) {
+  .udemy-billboard {
+    min-height: auto;
+    flex-direction: column;
+    justify-content: flex-start;
+  }
+  .udemy-billboard-bg {
+    position: relative;
+    height: 220px;
+    width: 100%;
+    object-position: center 25%;
+  }
+  .udemy-billboard-overlay {
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 220px;
+    background: linear-gradient(to bottom, transparent 60%, var(--bg-card) 100%);
+  }
+  .udemy-billboard-card {
+    position: relative;
+    width: 100%;
+    max-width: 100%;
+    margin-right: 0;
+    border-radius: 0;
+    border: none;
+    box-shadow: none;
+    padding: 20px 20px 24px 20px;
+  }
+}
+
+/* Fallback / legacy support */
 .hero-banner-split {
   display: flex;
   align-items: stretch;
-  border-radius: 20px;
+  border-radius: 18px;
   overflow: hidden;
   background: var(--bg-card);
   border: 1px solid var(--border-color);

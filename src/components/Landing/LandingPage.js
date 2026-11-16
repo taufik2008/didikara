@@ -549,20 +549,20 @@ export default function LandingPage({ initialCourses, initialCategories, initial
         }}
       >
         <div style={{ maxWidth: 1140, margin: "0 auto", textAlign: "center" }}>
-          {/* Featured Hero Banner Card with Woman on Left & Text on Right */}
-          <div className="hero-banner-split">
-            {/* Left Column: Woman in high resolution without overlay obstruction */}
-            <div className="hero-banner-split-img">
-              <img
-                src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=1600&auto=format&fit=crop&q=90"
-                alt="Peserta Belajar Online"
-                loading="eager"
-              />
-              <div className="hero-banner-split-overlay" />
-            </div>
+          {/* Udemy-Style Hero Billboard Banner */}
+          <div className="udemy-billboard">
+            {/* Background Photography: High-resolution woman learning happily with laptop on the left */}
+            <img
+              src="https://images.unsplash.com/photo-1588196749597-9ff075ee6b5b?w=1920&auto=format&fit=crop&q=90"
+              alt="Peserta Belajar Online"
+              className="udemy-billboard-bg"
+              loading="eager"
+            />
+            {/* Subtle Gradient Blend Overlay */}
+            <div className="udemy-billboard-overlay" />
 
-            {/* Right Column: Text content auto-adapts to both Light & Dark Theme */}
-            <div className="hero-banner-split-content">
+            {/* Floating Billboard Content Box (Udemy Style) */}
+            <div className="udemy-billboard-card">
               {/* Top Tag Badge */}
               <div
                 style={{
@@ -587,7 +587,7 @@ export default function LandingPage({ initialCourses, initialCategories, initial
               {/* Main Title */}
               <h1
                 style={{
-                  fontSize: "clamp(1.35rem, 2.3vw, 1.75rem)",
+                  fontSize: "clamp(1.3rem, 2.2vw, 1.65rem)",
                   lineHeight: 1.24,
                   fontWeight: 800,
                   marginBottom: 10,
@@ -613,7 +613,7 @@ export default function LandingPage({ initialCourses, initialCategories, initial
               {/* Subtitle */}
               <p
                 style={{
-                  fontSize: "clamp(0.85rem, 1.4vw, 0.92rem)",
+                  fontSize: "clamp(0.84rem, 1.3vw, 0.9rem)",
                   lineHeight: 1.5,
                   color: "var(--text-secondary)",
                   margin: 0
