@@ -29,6 +29,7 @@
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",
+    "docx": "^9.15.4",
     "eslint": "^9",
     "eslint-config-next": "16.2.7",
     "puppeteer-core": "^25.17.0",
