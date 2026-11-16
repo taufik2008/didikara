@@ -576,7 +576,7 @@ export default function LandingPage({ initialCourses, initialCategories, initial
               color: "var(--text-primary)"
             }}
           >
-            Pelatihan Kompetensi Terpadu dengan{" "}
+            Tingkatkan Keahlian dengan{" "}
             <span
               style={{
                 background: "var(--primary-gradient)",
@@ -584,7 +584,7 @@ export default function LandingPage({ initialCourses, initialCategories, initial
                 WebkitTextFillColor: "transparent"
               }}
             >
-              3 Pilihan Model Pembelajaran
+              Metode Belajar Fleksibel
             </span>
           </h1>
 
