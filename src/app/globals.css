@@ -307,7 +307,7 @@
   box-shadow: var(--shadow-lg);
   display: flex;
   align-items: center;
-  justify-content: flex-end;
+  justify-content: flex-start;
   text-align: left;
 }
 
@@ -317,7 +317,7 @@
   width: 100%;
   height: 100%;
   object-fit: cover;
-  object-position: left 20%;
+  object-position: right 25%;
   transform: none;
   filter: none;
   display: block;
@@ -328,11 +328,12 @@
   inset: 0;
   background: linear-gradient(
     90deg,
-    transparent 0%,
-    transparent 40%,
-    rgba(255, 255, 255, 0.3) 58%,
-    rgba(255, 255, 255, 0.88) 75%,
-    #ffffff 100%
+    #ffffff 0%,
+    rgba(255, 255, 255, 0.96) 28%,
+    rgba(255, 255, 255, 0.6) 48%,
+    rgba(255, 255, 255, 0.05) 62%,
+    transparent 75%,
+    transparent 100%
   );
   pointer-events: none;
 }
@@ -340,11 +341,12 @@
 [data-theme="dark"] .udemy-billboard-overlay {
   background: linear-gradient(
     90deg,
-    transparent 0%,
-    transparent 40%,
-    rgba(16, 24, 43, 0.3) 58%,
-    rgba(16, 24, 43, 0.88) 75%,
-    #10182b 100%
+    #10182b 0%,
+    rgba(16, 24, 43, 0.96) 28%,
+    rgba(16, 24, 43, 0.65) 48%,
+    rgba(16, 24, 43, 0.05) 62%,
+    transparent 75%,
+    transparent 100%
   );
 }
 
@@ -353,8 +355,8 @@
   z-index: 2;
   width: 460px;
   max-width: 90%;
-  margin-right: 48px;
-  margin-left: 0;
+  margin-left: 48px;
+  margin-right: 0;
   padding: 26px 30px;
   border-radius: 14px;
   background: var(--bg-card);
