@@ -295,9 +295,10 @@
    =================================================== */
 .udemy-billboard {
   position: relative;
-  max-width: 1080px;
+  width: 100%;
+  max-width: 1340px;
   margin: 0 auto 36px auto;
-  min-height: 350px;
+  min-height: 360px;
   border-radius: 18px;
   overflow: hidden;
   background: var(--bg-card);
@@ -315,7 +316,7 @@
   width: 100%;
   height: 100%;
   object-fit: cover;
-  object-position: left 25%;
+  object-position: left 20%;
   display: block;
 }
 
@@ -368,6 +369,41 @@
   background: rgba(24, 37, 72, 0.95);
   border: 1px solid rgba(255, 255, 255, 0.14);
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+}
+
+.udemy-billboard-title {
+  font-size: clamp(1.3rem, 2.2vw, 1.65rem);
+  line-height: 1.25;
+  font-weight: 800;
+  margin-bottom: 12px;
+  color: #0f172a;
+  letter-spacing: -0.015em;
+}
+
+[data-theme="dark"] .udemy-billboard-title {
+  color: #ffffff;
+}
+
+.udemy-billboard-highlight {
+  color: #1d4ed8;
+  font-weight: 800;
+  display: inline-block;
+}
+
+[data-theme="dark"] .udemy-billboard-highlight {
+  color: #38bdf8;
+  text-shadow: 0 0 16px rgba(56, 189, 248, 0.45);
+}
+
+.udemy-billboard-desc {
+  font-size: clamp(0.84rem, 1.3vw, 0.9rem);
+  line-height: 1.5;
+  color: var(--text-secondary);
+  margin: 0;
+}
+
+[data-theme="dark"] .udemy-billboard-desc {
+  color: #e2e8f0;
 }
 
 @media (max-width: 860px) {

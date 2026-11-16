@@ -548,13 +548,13 @@ export default function LandingPage({ initialCourses, initialCategories, initial
           background: "radial-gradient(ellipse at 50% -20%, rgba(37, 99, 235, 0.22), transparent 70%)"
         }}
       >
-        <div style={{ maxWidth: 1140, margin: "0 auto", textAlign: "center" }}>
-          {/* Udemy-Style Hero Billboard Banner */}
+        <div style={{ maxWidth: 1340, width: "100%", margin: "0 auto", textAlign: "center" }}>
+          {/* Udemy-Style Hero Billboard Banner (Full-Width to sides) */}
           <div className="udemy-billboard">
-            {/* Background Photography: High-resolution woman learning happily with laptop on the left */}
+            {/* Background Photography: High-resolution smiling woman attending online training with laptop */}
             <img
-              src="https://images.unsplash.com/photo-1588196749597-9ff075ee6b5b?w=1920&auto=format&fit=crop&q=90"
-              alt="Peserta Belajar Online"
+              src="https://images.unsplash.com/photo-1516534775068-ba3e7458af70?w=1920&auto=format&fit=crop&q=90"
+              alt="Peserta Mengikuti Online Training"
               className="udemy-billboard-bg"
               loading="eager"
             />
@@ -584,41 +584,16 @@ export default function LandingPage({ initialCourses, initialCategories, initial
                 <span>Pilihan Lengkap: Self-Learning • Online Live • Offline Workshop</span>
               </div>
 
-              {/* Main Title */}
-              <h1
-                style={{
-                  fontSize: "clamp(1.3rem, 2.2vw, 1.65rem)",
-                  lineHeight: 1.24,
-                  fontWeight: 800,
-                  marginBottom: 10,
-                  color: "var(--text-primary)",
-                  letterSpacing: "-0.015em"
-                }}
-              >
+              {/* Main Title - High contrast & crystal clear in both Light & Dark mode */}
+              <h1 className="udemy-billboard-title">
                 Tingkatkan Keahlian dengan{" "}
-                <span
-                  style={{
-                    background: theme === "light"
-                      ? "linear-gradient(135deg, #1d4ed8 0%, #0284c7 100%)"
-                      : "linear-gradient(135deg, #60a5fa 0%, #38bdf8 50%, #93c5fd 100%)",
-                    WebkitBackgroundClip: "text",
-                    WebkitTextFillColor: "transparent",
-                    display: "inline-block"
-                  }}
-                >
+                <span className="udemy-billboard-highlight">
                   Metode Belajar Fleksibel
                 </span>
               </h1>
 
               {/* Subtitle */}
-              <p
-                style={{
-                  fontSize: "clamp(0.84rem, 1.3vw, 0.9rem)",
-                  lineHeight: 1.5,
-                  color: "var(--text-secondary)",
-                  margin: 0
-                }}
-              >
+              <p className="udemy-billboard-desc">
                 Sesuaikan metode belajar Anda: mulai dari <strong>Self-Learning On-Demand (Belajar Mandiri)</strong>, <strong>Kelas Online Live Webinar Interaktif</strong>, hingga <strong>Workshop Tatap Muka (Offline)</strong>.
               </p>
             </div>
