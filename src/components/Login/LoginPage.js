@@ -29,7 +29,26 @@ export default function LoginPage() {
   const brandLogo = platformSettings?.platform_logo || "/logos/didikara-symbol-redblue-2.jpg";
   const brandTagline = platformSettings?.platform_tagline || "Platform Pelatihan & Sertifikasi Profesional";
 
-  const [authMode, setAuthMode] = useState("login"); // 'login' | 'register'
+  const [authMode, setAuthMode] = useState(() => {
+    if (typeof window !== "undefined") {
+      const params = new URLSearchParams(window.location.search);
+      const m = params.get("mode");
+      if (m === "register" || m === "signup") return "register";
+    }
+    return "login";
+  });
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const params = new URLSearchParams(window.location.search);
+      const m = params.get("mode");
+      if (m === "register" || m === "signup") {
+        setAuthMode("register");
+      } else if (m === "login") {
+        setAuthMode("login");
+      }
+    }
+  }, []);
   const [regFullname, setRegFullname] = useState("");
   const [regEmail, setRegEmail] = useState("");
   const [regPassword, setRegPassword] = useState("");

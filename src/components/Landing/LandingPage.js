@@ -496,13 +496,14 @@ export default function LandingPage({ initialCourses, initialCategories, initial
                 <ChevronRight size={16} />
               </button>
             ) : (
-              <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+              <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
                 <button
-                  onClick={() => router.push("/dashboard")}
+                  type="button"
+                  onClick={() => router.push("/dashboard?mode=login")}
                   style={{
-                    padding: "8px 16px",
+                    padding: "8px 18px",
                     borderRadius: 10,
-                    border: "1px solid rgba(255, 255, 255, 0.3)",
+                    border: "1px solid rgba(255, 255, 255, 0.35)",
                     background: "rgba(255, 255, 255, 0.1)",
                     color: "#ffffff",
                     fontWeight: 600,
@@ -511,12 +512,13 @@ export default function LandingPage({ initialCourses, initialCategories, initial
                     transition: "all 0.2s"
                   }}
                 >
-                  Masuk
+                  Login
                 </button>
                 <button
-                  onClick={() => router.push("/dashboard")}
+                  type="button"
+                  onClick={() => router.push("/dashboard?mode=register")}
                   style={{
-                    padding: "8px 18px",
+                    padding: "8px 20px",
                     borderRadius: 10,
                     background: "linear-gradient(135deg, #edb63f 0%, #d99b26 100%)",
                     color: "#0f172a",
@@ -524,10 +526,11 @@ export default function LandingPage({ initialCourses, initialCategories, initial
                     fontSize: "0.88rem",
                     border: "none",
                     cursor: "pointer",
-                    boxShadow: "0 4px 14px rgba(237, 182, 63, 0.35)"
+                    boxShadow: "0 4px 14px rgba(237, 182, 63, 0.35)",
+                    transition: "all 0.2s"
                   }}
                 >
-                  Mulai Belajar
+                  Sign Up
                 </button>
               </div>
             )}
