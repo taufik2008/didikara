@@ -14,6 +14,7 @@ export default function InstructorStudioPage() {
     handleOpenLmsManageModal,
     handleOpenCrudModal,
     handleDeleteCrud,
+    handleOpenClass,
     setActiveCourse,
     setActivePage,
   } = useApp();
@@ -113,8 +114,12 @@ export default function InstructorStudioPage() {
   }, [myCourses]);
 
   const handleOpenCourseInLms = (course) => {
-    setActiveCourse(course);
-    setActivePage("lms-page");
+    if (typeof handleOpenClass === "function") {
+      handleOpenClass(course.id);
+    } else {
+      setActiveCourse(course);
+      setActivePage("lms-page");
+    }
   };
 
   return (
