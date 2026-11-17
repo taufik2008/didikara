@@ -1,7 +1,42 @@
 "use client";
 import { useState, useEffect } from "react";
-import { Award, Gift, Zap, Copy, Check, Sparkles, Tag, ExternalLink } from "lucide-react";
+import { Award, Gift, Zap, Copy, Check, Sparkles, Tag, ExternalLink, RefreshCw, CheckCircle } from "lucide-react";
 import { useApp } from "@/context/AppContext";
+
+const DEFAULT_REWARDS = [
+  {
+    id: "voucher-25k",
+    title: "Voucher Diskon Pelatihan Rp 25.000",
+    cost: 200,
+    prefix: "XP25K",
+    discountAmount: 25000,
+    desc: "Potongan harga Rp 25.000 untuk kursus apa pun di Katalog Pelatihan.",
+  },
+  {
+    id: "voucher-50k",
+    title: "Voucher Diskon Pelatihan Rp 50.000",
+    cost: 400,
+    prefix: "XP50K",
+    discountAmount: 50000,
+    desc: "Potongan harga Rp 50.000 untuk kursus apa pun di Katalog Pelatihan.",
+  },
+  {
+    id: "voucher-100k",
+    title: "Voucher Spesial Pelatihan Rp 100.000",
+    cost: 750,
+    prefix: "XP100K",
+    discountAmount: 100000,
+    desc: "Potongan harga Rp 100.000 untuk paket kursus dan sertifikasi.",
+  },
+  {
+    id: "badge-gold",
+    title: "Lencana Kehormatan: Top Learner Gold",
+    cost: 300,
+    prefix: null,
+    badgeId: "top-scholar",
+    desc: "Lencana eksklusif yang terpampang di profil dan portofolio Anda.",
+  },
+];
 
 export default function WalletPage() {
   const { certificates, handleViewCert, currentUser, setActivePage } = useApp();
@@ -9,7 +44,7 @@ export default function WalletPage() {
 
   // Gamification & Rewards state
   const [userPoints, setUserPoints] = useState({ points: 0, total_points: 0, level: 1 });
-  const [redeemCatalog, setRedeemCatalog] = useState([]);
+  const [redeemCatalog, setRedeemCatalog] = useState(DEFAULT_REWARDS);
   const [redeemedVouchers, setRedeemedVouchers] = useState([]);
   const [redeemingId, setRedeemingId] = useState(null);
   const [redeemSuccessMsg, setRedeemSuccessMsg] = useState("");
@@ -44,7 +79,7 @@ export default function WalletPage() {
 
   const handleRedeemReward = async (reward) => {
     if (userPoints.points < reward.cost) {
-      alert(`Poin XP tidak cukup! Dibutuhkan ${reward.cost} XP.`);
+      alert(`Poin tidak cukup! Dibutuhkan ${reward.cost} Poin.`);
       return;
     }
 
@@ -91,7 +126,7 @@ export default function WalletPage() {
 
   const tabs = [
     { key: "certs",   label: "Sertifikat Kelulusan", icon: Award },
-    { key: "rewards", label: "Toko Hadiah XP",       icon: Gift  },
+    { key: "rewards", label: "Tukar Poin",           icon: Gift  },
   ];
 
   return (
@@ -99,7 +134,7 @@ export default function WalletPage() {
       <div style={{ marginBottom: 24 }}>
         <h2 style={{ fontSize: "1.8rem", marginBottom: 6 }}>Portofolio Saya</h2>
         <p style={{ color: "var(--text-secondary)", fontSize: "0.85rem" }}>
-          Koleksi sertifikat kelulusan resmi dan penukaran poin hadiah prestasi (XP) Anda.
+          Koleksi sertifikat kelulusan resmi dan penukaran poin reward hasil belajar Anda.
         </p>
       </div>
 
@@ -148,7 +183,7 @@ export default function WalletPage() {
         </div>
       )}
 
-      {/* ── Tab: Toko Hadiah XP ── */}
+      {/* ── Tab: Tukar Poin ── */}
       {tab === "rewards" && (
         <div>
           {/* Header Poin User */}
@@ -169,13 +204,13 @@ export default function WalletPage() {
               </div>
               <div>
                 <div style={{ fontSize: "0.75rem", color: "var(--text-accent)", fontWeight: 600, textTransform: "uppercase", letterSpacing: 0.5 }}>
-                  Saldo Hadiah Gamifikasi
+                  Saldo Poin Belajar
                 </div>
                 <div style={{ fontSize: "1.8rem", fontWeight: 800, color: "var(--text-primary)" }}>
-                  {(userPoints.points || 0).toLocaleString("id-ID")} <span style={{ fontSize: "1rem", color: "var(--text-accent)" }}>XP</span>
+                  {(userPoints.points || 0).toLocaleString("id-ID")} <span style={{ fontSize: "1rem", color: "var(--text-accent)" }}>Poin</span>
                 </div>
                 <div style={{ fontSize: "0.75rem", color: "var(--text-secondary)" }}>
-                  Level {userPoints.level || 1} Pembelajar &nbsp;•&nbsp; Total XP Terkumpul: {(userPoints.total_points || 0).toLocaleString("id-ID")} XP
+                  Level {userPoints.level || 1} Pembelajar &nbsp;•&nbsp; Total Terkumpul: {(userPoints.total_points || 0).toLocaleString("id-ID")} Poin
                 </div>
               </div>
             </div>
@@ -185,7 +220,7 @@ export default function WalletPage() {
               className="btn btn-secondary"
               onClick={loadGamificationData}
               style={{ width: "auto", padding: "6px 14px", fontSize: "0.78rem", display: "inline-flex", alignItems: "center", gap: 6 }}>
-              <RefreshCw size={13} /> Segarkan XP
+              <RefreshCw size={13} /> Segarkan Poin
             </button>
           </div>
 
@@ -199,12 +234,12 @@ export default function WalletPage() {
             </div>
           )}
 
-          {/* Grid Katalog Hadiah */}
+          {/* Grid Katalog Penukaran Poin */}
           <h3 style={{ fontSize: "1.1rem", marginBottom: 14, display: "flex", alignItems: "center", gap: 8 }}>
-            <Gift size={18} style={{ color: "var(--primary)" }} /> Katalog Penukaran Hadiah
+            <Gift size={18} style={{ color: "var(--primary)" }} /> Pilihan Penukaran Poin &amp; Voucher
           </h3>
           <p style={{ color: "var(--text-secondary)", fontSize: "0.82rem", marginBottom: 16 }}>
-            Tukarkan poin XP hasil belajar, kuis, dan kehadiran Anda dengan kupon diskon langsung atau lencana kehormatan.
+            Tukarkan poin hasil penyelesaian modul, kuis, dan kehadiran Anda dengan kupon diskon langsung atau lencana kehormatan.
           </p>
 
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))", gap: 16, marginBottom: 32 }}>
@@ -239,7 +274,7 @@ export default function WalletPage() {
                       <div>
                         <h4 style={{ margin: 0, fontSize: "0.92rem", color: "var(--text-primary)" }}>{item.title}</h4>
                         <span style={{ fontSize: "0.78rem", fontWeight: 700, color: canAfford ? "#f97316" : "var(--text-muted)" }}>
-                          {item.cost} XP
+                          {item.cost} Poin
                         </span>
                       </div>
                     </div>
@@ -259,7 +294,7 @@ export default function WalletPage() {
                       opacity: canAfford ? 1 : 0.5,
                       cursor: canAfford ? "pointer" : "not-allowed"
                     }}>
-                    {redeemingId === item.id ? "Memproses..." : canAfford ? `Tukar (${item.cost} XP)` : `XP Kurang (${item.cost - (userPoints.points || 0)} XP lagi)`}
+                    {redeemingId === item.id ? "Memproses..." : canAfford ? `Tukar (${item.cost} Poin)` : `Poin Kurang (${item.cost - (userPoints.points || 0)} Poin lagi)`}
                   </button>
                 </div>
               );
@@ -273,7 +308,7 @@ export default function WalletPage() {
             </h3>
             {redeemedVouchers.length === 0 ? (
               <p style={{ color: "var(--text-muted)", fontSize: "0.8rem", margin: 0 }}>
-                Belum ada kupon yang ditukarkan. Tukarkan XP di atas untuk mendapatkan kode voucher diskon.
+                Belum ada kupon yang ditukarkan. Tukarkan poin di atas untuk mendapatkan kode voucher diskon pelatihan.
               </p>
             ) : (
               <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(260px, 1fr))", gap: 12 }}>
