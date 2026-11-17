@@ -551,10 +551,10 @@ export default function LandingPage({ initialCourses, initialCategories, initial
         <div style={{ maxWidth: 1340, width: "100%", margin: "0 auto", textAlign: "center" }}>
           {/* Udemy-Style Hero Billboard Banner (Full-Width to sides) */}
           <div className="udemy-billboard">
-            {/* Background Photography: High-resolution attractive smiling woman attending online training with laptop */}
+            {/* Background Photography: High-resolution attractive woman and man (30-35 years old) learning with laptop */}
             <img
-              src="https://images.unsplash.com/photo-1590650153855-d9e808231d41?w=1920&auto=format&fit=crop&q=90"
-              alt="Peserta Mengikuti Online Training"
+              src="https://images.unsplash.com/photo-1573497491765-dccce02b29df?w=1920&auto=format&fit=crop&q=90"
+              alt="Profesional Mengikuti Pelatihan Online"
               className="udemy-billboard-bg"
               loading="eager"
             />
