@@ -1,15 +1,17 @@
 "use client";
 import { useState, useRef, useMemo, useEffect } from "react";
-import { Check, CheckSquare, Square, Upload, Image as ImageIcon, Link as LinkIcon, X, Award, UserCheck, Eye, EyeOff, BookOpen, GraduationCap } from "lucide-react";
+import { Check, CheckSquare, Square, Upload, Image as ImageIcon, Link as LinkIcon, X, Award, UserCheck, Eye, EyeOff, BookOpen, GraduationCap, Lock } from "lucide-react";
 import { useApp } from "@/context/AppContext";
 
 export default function CrudModal() {
   const {
     crudModalActive, crudType, crudAction, categories, levels, competencySkills = [], courseForm, userForm,
-    courses, users,
+    courses, users, currentUser,
     setCourseForm, setUserForm, setCrudModalActive,
     handleSaveCrud, handlePermissionToggle
   } = useApp();
+
+  const isInstructorUser = currentUser?.role === "instructor";
 
   const [imageUploadMode, setImageUploadMode] = useState("file"); // "file" | "url"
   const [isDragging, setIsDragging] = useState(false);
@@ -30,6 +32,20 @@ export default function CrudModal() {
         .catch(() => {});
     }
   }, [crudModalActive, crudType]);
+
+  // Kunci data pengajar otomatis ke profil user jika role instruktur
+  useEffect(() => {
+    if (crudModalActive && crudType === "course" && isInstructorUser && currentUser) {
+      setCourseForm(prev => ({
+        ...prev,
+        instructorName: currentUser.fullname || prev.instructorName,
+        instructorEmail: currentUser.email || prev.instructorEmail,
+        instructorTitle: currentUser.jobTitle || prev.instructorTitle || "Instruktur / Pengajar Ahli",
+        instructorOrg: currentUser.organization || prev.instructorOrg || "DIDIKARA Certified",
+        instructorAvatar: currentUser.avatar || prev.instructorAvatar || ""
+      }));
+    }
+  }, [crudModalActive, crudType, isInstructorUser, currentUser]);
 
   // Kumpulan seluruh data instruktur unik yang ada di sistem
   const availableInstructors = useMemo(() => {
@@ -570,34 +586,62 @@ export default function CrudModal() {
               {/* Step 2: Instruktur & Spesifikasi */}
               {courseStep === 2 && (
                 <div>
-                  <div className="form-group" style={{ marginBottom: 20 }}>
-                    <label style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 8 }}>
-                      <span style={{ fontSize: "0.9rem", fontWeight: 700 }}>Pilih Instruktur / Pengajar Terdaftar *</span>
-                      <span style={{ fontSize: "0.76rem", color: "var(--text-muted)" }}>
-                        {availableInstructors.length} Instruktur tersedia
+                  {isInstructorUser ? (
+                    <div className="form-group" style={{ marginBottom: 20 }}>
+                      <label style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 8 }}>
+                        <span style={{ fontSize: "0.9rem", fontWeight: 700 }}>Instruktur / Pengajar Pelatihan *</span>
+                        <span style={{ fontSize: "0.75rem", padding: "3px 10px", borderRadius: 8, background: "rgba(59, 130, 246, 0.15)", color: "#60a5fa", fontWeight: 700, border: "1px solid rgba(59, 130, 246, 0.3)" }}>
+                          🔒 Terkunci pada Akun Anda (Read-Only)
+                        </span>
+                      </label>
+                      <input
+                        type="text"
+                        value={`👨‍🏫 ${currentUser?.fullname} (${currentUser?.email || ""}) — ${currentUser?.jobTitle || "Instruktur / Pengajar Ahli"}`}
+                        readOnly
+                        disabled
+                        style={{
+                          width: "100%", height: 46, padding: "0 16px", borderRadius: 8,
+                          border: "1.5px solid rgba(59, 130, 246, 0.35)",
+                          background: "rgba(59, 130, 246, 0.05)",
+                          color: "var(--text-primary)",
+                          fontSize: "0.9rem", fontWeight: 600,
+                          cursor: "not-allowed"
+                        }}
+                      />
+                      <span style={{ fontSize: "0.74rem", color: "var(--text-muted)", marginTop: 6, display: "block" }}>
+                        💡 Pada role Instruktur, pengajar kursus otomatis terhubung dengan profil akun Anda dan tidak dapat memilih atau menambah instruktur lain.
                       </span>
-                    </label>
-                    <select
-                      value={selectedInstructorKey}
-                      onChange={handleInstructorSelect}
-                      required
-                      style={{
-                        width: "100%", height: 46, padding: "0 16px", borderRadius: 8,
-                        border: "1px solid var(--border-color)",
-                        background: "var(--bg-card)",
-                        color: "var(--text-primary)",
-                        fontSize: "0.9rem", fontWeight: 600
-                      }}
-                    >
-                      <option value="">-- Pilih dari Data Instruktur Terdaftar --</option>
-                      {availableInstructors.map((ins) => (
-                        <option key={ins.key} value={ins.key}>
-                          👨‍🏫 {ins.name} — {ins.title || ins.org || "Instruktur"} {ins.email ? `(${ins.email})` : ""}
-                        </option>
-                      ))}
-                      <option value="custom">➕ Input Instruktur Baru / Manual...</option>
-                    </select>
-                  </div>
+                    </div>
+                  ) : (
+                    <div className="form-group" style={{ marginBottom: 20 }}>
+                      <label style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 8 }}>
+                        <span style={{ fontSize: "0.9rem", fontWeight: 700 }}>Pilih Instruktur / Pengajar Terdaftar *</span>
+                        <span style={{ fontSize: "0.76rem", color: "var(--text-muted)" }}>
+                          {availableInstructors.length} Instruktur tersedia
+                        </span>
+                      </label>
+                      <select
+                        value={selectedInstructorKey}
+                        onChange={handleInstructorSelect}
+                        required
+                        style={{
+                          width: "100%", height: 46, padding: "0 16px", borderRadius: 8,
+                          border: "1px solid var(--border-color)",
+                          background: "var(--bg-card)",
+                          color: "var(--text-primary)",
+                          fontSize: "0.9rem", fontWeight: 600
+                        }}
+                      >
+                        <option value="">-- Pilih dari Data Instruktur Terdaftar --</option>
+                        {availableInstructors.map((ins) => (
+                          <option key={ins.key} value={ins.key}>
+                            👨‍🏫 {ins.name} — {ins.title || ins.org || "Instruktur"} {ins.email ? `(${ins.email})` : ""}
+                          </option>
+                        ))}
+                        <option value="custom">➕ Input Instruktur Baru / Manual...</option>
+                      </select>
+                    </div>
+                  )}
 
                   {/* Selected Instructor Preview Card */}
                   {courseForm.instructorName && (
@@ -634,7 +678,7 @@ export default function CrudModal() {
                         )}
                       </div>
                       <span style={{ fontSize: "0.75rem", padding: "4px 10px", borderRadius: 12, background: "rgba(16,185,129,0.15)", color: "#34d399", fontWeight: 700 }}>
-                        ✓ Pengajar Terpilih
+                        ✓ {isInstructorUser ? "Profil Terkunci" : "Pengajar Terpilih"}
                       </span>
                     </div>
                   )}
@@ -650,7 +694,13 @@ export default function CrudModal() {
                         onChange={(e) => setCourseForm({ ...courseForm, instructorName: e.target.value })}
                         placeholder="Pilih instruktur di atas atau ketik manual..."
                         required
-                        style={{ height: 44, padding: "0 16px", fontSize: "0.9rem", borderRadius: 8 }}
+                        readOnly={isInstructorUser}
+                        disabled={isInstructorUser}
+                        style={{
+                          height: 44, padding: "0 16px", fontSize: "0.9rem", borderRadius: 8,
+                          cursor: isInstructorUser ? "not-allowed" : "text",
+                          background: isInstructorUser ? "rgba(255,255,255,0.03)" : undefined
+                        }}
                       />
                     </div>
                     <div className="form-group" style={{ margin: 0 }}>
@@ -662,7 +712,13 @@ export default function CrudModal() {
                         value={courseForm.instructorTitle || ""}
                         onChange={(e) => setCourseForm({ ...courseForm, instructorTitle: e.target.value })}
                         placeholder="Contoh: Ahli Pengadaan Utama LKPP / Asesor BNSP"
-                        style={{ height: 44, padding: "0 16px", fontSize: "0.9rem", borderRadius: 8 }}
+                        readOnly={isInstructorUser}
+                        disabled={isInstructorUser}
+                        style={{
+                          height: 44, padding: "0 16px", fontSize: "0.9rem", borderRadius: 8,
+                          cursor: isInstructorUser ? "not-allowed" : "text",
+                          background: isInstructorUser ? "rgba(255,255,255,0.03)" : undefined
+                        }}
                       />
                     </div>
                   </div>
@@ -677,7 +733,13 @@ export default function CrudModal() {
                         value={courseForm.instructorAvatar || ""}
                         onChange={(e) => setCourseForm({ ...courseForm, instructorAvatar: e.target.value })}
                         placeholder="https://images.unsplash.com/... atau URL foto"
-                        style={{ height: 44, padding: "0 16px", fontSize: "0.9rem", borderRadius: 8 }}
+                        readOnly={isInstructorUser}
+                        disabled={isInstructorUser}
+                        style={{
+                          height: 44, padding: "0 16px", fontSize: "0.9rem", borderRadius: 8,
+                          cursor: isInstructorUser ? "not-allowed" : "text",
+                          background: isInstructorUser ? "rgba(255,255,255,0.03)" : undefined
+                        }}
                       />
                     </div>
                     <div className="form-group" style={{ margin: 0 }}>
@@ -689,34 +751,42 @@ export default function CrudModal() {
                         value={courseForm.instructorOrg || ""}
                         onChange={(e) => setCourseForm({ ...courseForm, instructorOrg: e.target.value })}
                         placeholder="Contoh: DIDIKARA Certified / LKPP RI"
-                        style={{ height: 44, padding: "0 16px", fontSize: "0.9rem", borderRadius: 8 }}
+                        readOnly={isInstructorUser}
+                        disabled={isInstructorUser}
+                        style={{
+                          height: 44, padding: "0 16px", fontSize: "0.9rem", borderRadius: 8,
+                          cursor: isInstructorUser ? "not-allowed" : "text",
+                          background: isInstructorUser ? "rgba(255,255,255,0.03)" : undefined
+                        }}
                       />
                     </div>
                   </div>
 
-                  {/* Foto Instruktur Presets */}
-                  <div style={{ marginBottom: 18 }}>
-                    <div style={{ display: "flex", flexWrap: "wrap", gap: 8, alignItems: "center" }}>
-                      <span style={{ fontSize: "0.78rem", color: "var(--text-muted)", fontWeight: 600 }}>Pilihan Foto Cepat:</span>
-                      {[
-                        { label: "Pria 1", url: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=120&auto=format&fit=crop&q=80" },
-                        { label: "Pria 2", url: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=120&auto=format&fit=crop&q=80" },
-                        { label: "Pria 3", url: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=120&auto=format&fit=crop&q=80" },
-                        { label: "Wanita 1", url: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=120&auto=format&fit=crop&q=80" },
-                        { label: "Wanita 2", url: "https://images.unsplash.com/photo-1580489944761-15a19d654956?w=120&auto=format&fit=crop&q=80" },
-                      ].map((preset) => (
-                        <button
-                          key={preset.label}
-                          type="button"
-                          className="btn btn-secondary"
-                          style={{ padding: "4px 10px", fontSize: "0.75rem", height: "auto", width: "auto", borderRadius: 6 }}
-                          onClick={() => setCourseForm({ ...courseForm, instructorAvatar: preset.url })}
-                        >
-                          {preset.label}
-                        </button>
-                      ))}
+                  {/* Foto Instruktur Presets (hanya tampil untuk admin) */}
+                  {!isInstructorUser && (
+                    <div style={{ marginBottom: 18 }}>
+                      <div style={{ display: "flex", flexWrap: "wrap", gap: 8, alignItems: "center" }}>
+                        <span style={{ fontSize: "0.78rem", color: "var(--text-muted)", fontWeight: 600 }}>Pilihan Foto Cepat:</span>
+                        {[
+                          { label: "Pria 1", url: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=120&auto=format&fit=crop&q=80" },
+                          { label: "Pria 2", url: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=120&auto=format&fit=crop&q=80" },
+                          { label: "Pria 3", url: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=120&auto=format&fit=crop&q=80" },
+                          { label: "Wanita 1", url: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=120&auto=format&fit=crop&q=80" },
+                          { label: "Wanita 2", url: "https://images.unsplash.com/photo-1580489944761-15a19d654956?w=120&auto=format&fit=crop&q=80" },
+                        ].map((preset) => (
+                          <button
+                            key={preset.label}
+                            type="button"
+                            className="btn btn-secondary"
+                            style={{ padding: "4px 10px", fontSize: "0.75rem", height: "auto", width: "auto", borderRadius: 6 }}
+                            onClick={() => setCourseForm({ ...courseForm, instructorAvatar: preset.url })}
+                          >
+                            {preset.label}
+                          </button>
+                        ))}
+                      </div>
                     </div>
-                  </div>
+                  )}
 
                   <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 18, marginBottom: 20 }}>
                     <div className="form-group" style={{ margin: 0 }}>
