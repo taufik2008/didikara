@@ -1,6 +1,6 @@
 "use client";
 import { useEffect, useRef, useMemo } from "react";
-import { Clock, BookOpen, Award, BarChart2, Search, Cpu, Compass, Play, PlayCircle, ArrowRight } from "lucide-react";
+import { Clock, BookOpen, Award, BarChart2, Search, Cpu, Compass, Play, PlayCircle, ArrowRight, GraduationCap } from "lucide-react";
 import Chart from "chart.js/auto";
 import { useApp } from "@/context/AppContext";
 
@@ -146,11 +146,21 @@ export default function DashboardPage() {
               </button>
             )}
           </div>
-          <p style={{ color: "var(--text-secondary)", fontSize: "0.9rem" }}>Siap meningkatkan kompetensi nasional Anda hari ini? Mari jelajahi program baru.</p>
+          <p style={{ color: "var(--text-secondary)", fontSize: "0.9rem" }}>
+            {currentUser?.role === "instructor"
+              ? "Kelola materi silabus, upload modul video/presentasi, dan pantau tugas peserta kelas Anda."
+              : "Siap meningkatkan kompetensi nasional Anda hari ini? Mari jelajahi program baru."}
+          </p>
         </div>
-        <button className="btn btn-primary" onClick={() => setActivePage("marketplace-page")} style={{ width: "auto", background: "#edb63f", color: "#0f172a", border: "none", fontWeight: 700 }}>
-          <span>Jelajahi Pelatihan</span><Search size={16} />
-        </button>
+        {currentUser?.role === "instructor" ? (
+          <button className="btn btn-primary" onClick={() => setActivePage("instructor-page")} style={{ width: "auto", background: "#edb63f", color: "#0f172a", border: "none", fontWeight: 700 }}>
+            <span>Studio Mengajar</span><GraduationCap size={16} />
+          </button>
+        ) : (
+          <button className="btn btn-primary" onClick={() => setActivePage("marketplace-page")} style={{ width: "auto", background: "#edb63f", color: "#0f172a", border: "none", fontWeight: 700 }}>
+            <span>Jelajahi Pelatihan</span><Search size={16} />
+          </button>
+        )}
       </div>
 
       {/* 🚀 Hero Card: Lanjutkan Belajar (Resume Learning) */}

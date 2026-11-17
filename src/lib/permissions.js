@@ -19,6 +19,7 @@ export const PAGE_PERMISSION = {
   "dashboard-page":   PERMISSIONS.VIEW_DASHBOARD,
   "marketplace-page": null,
   "lms-page":         PERMISSIONS.ACCESS_LMS,
+  "instructor-page":  PERMISSIONS.ACCESS_LMS,
   "wallet-page":        null,
   "transactions-page":  null,
   "ai-planner-page":  PERMISSIONS.ACCESS_AI_PORTAL,

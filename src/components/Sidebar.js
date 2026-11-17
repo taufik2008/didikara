@@ -1,5 +1,5 @@
 "use client";
-import { Cpu, LayoutDashboard, BookOpen, PlayCircle, Award, Receipt, Compass, Settings, LogOut, ChevronLeft, ChevronRight } from "lucide-react";
+import { Cpu, LayoutDashboard, BookOpen, PlayCircle, Award, Receipt, Compass, Settings, LogOut, ChevronLeft, ChevronRight, GraduationCap } from "lucide-react";
 import { useApp } from "@/context/AppContext";
 import { canAccessPage } from "@/lib/permissions";
 
@@ -11,7 +11,13 @@ export default function Sidebar() {
     : "DIDIKARA";
   const brandLogo = platformSettings?.platform_logo || "/logos/didikara-symbol-redblue-2.jpg";
 
-  const menuItems = [
+  const isInstructorRole = currentUser?.role === "instructor";
+
+  const menuItems = (isInstructorRole ? [
+    { page: "dashboard-page",   icon: LayoutDashboard, label: "Dashboard Instruktur" },
+    { page: "instructor-page",  icon: GraduationCap,   label: "Kelas Mengajar" },
+    { page: "ai-planner-page",  icon: Compass,         label: "AI Portal Perencanaan" },
+  ] : [
     { page: "dashboard-page",    icon: LayoutDashboard, label: "Dashboard" },
     { page: "marketplace-page",  icon: BookOpen,        label: "Katalog Pelatihan" },
     { page: "lms-page",          icon: PlayCircle,      label: "Kelas Aktif" },
@@ -19,7 +25,7 @@ export default function Sidebar() {
     { page: "transactions-page", icon: Receipt,         label: "Riwayat Transaksi" },
     { page: "ai-planner-page",   icon: Compass,         label: "AI Portal Perencanaan" },
     { page: "admin-page",        icon: Settings,        label: "Modul Admin" },
-  ].filter(item => canAccessPage(currentUser, item.page));
+  ]).filter(item => canAccessPage(currentUser, item.page));
 
   return (
     <aside className={`sidebar glass-panel ${sidebarCollapsed ? "collapsed" : ""}`}>

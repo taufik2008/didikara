@@ -1,6 +1,7 @@
 import { initDatabase, query } from "@/lib/db";
 import { sendWelcomeEmail } from "@/lib/email";
 import { authenticateRequest, hashPassword } from "@/lib/auth";
+import { canManageCourse } from "@/lib/courseAccess";
 import { NextResponse } from "next/server";
 
 /**
@@ -161,12 +162,43 @@ export async function POST(request) {
     const auth      = await authenticateRequest(request);
     const userRole  = auth?.role;
     const userEmail = auth?.email || "system";
-    if (userRole !== "admin") {
-      return NextResponse.json({ success: false, error: "Forbidden: Admin only" }, { status: 403 });
+
+    if (!auth || !auth.email) {
+      return NextResponse.json({ success: false, error: "Unauthorized" }, { status: 401 });
     }
 
     const body = await request.json();
     const { type, action, data } = body;
+
+    // Admin memiliki hak penuh untuk seluruh tipe entitas.
+    // Instruktur diizinkan mengedit/menyimpan kursus miliknya (type === "course" && action === "save").
+    const isAdmin = userRole === "admin" || userRole === "superadmin";
+    const isInstructorCourseSave = (userRole === "instructor" || userRole === "corporate" || userRole === "government")
+      && type === "course"
+      && action === "save";
+
+    if (!isAdmin && !isInstructorCourseSave) {
+      return NextResponse.json({ success: false, error: "Forbidden: Akses tidak diizinkan" }, { status: 403 });
+    }
+
+    if (isInstructorCourseSave && !isAdmin && data?.id) {
+      // Verifikasi apakah kursus ini milik instruktur atau kursus baru
+      const { rows: courseRows } = await query("SELECT instructor FROM courses WHERE id = $1", [data.id]);
+      if (courseRows.length > 0) {
+        let isOwner = false;
+        try {
+          const inst = typeof courseRows[0].instructor === "string" ? JSON.parse(courseRows[0].instructor) : courseRows[0].instructor;
+          if (inst?.email === auth.email || (inst?.name && inst.name.toLowerCase() === (auth.fullname || "").toLowerCase())) {
+            isOwner = true;
+          }
+        } catch {}
+
+        const canManage = isOwner || (await canManageCourse(auth, data.id));
+        if (!canManage) {
+          return NextResponse.json({ success: false, error: "Forbidden: Anda bukan pengajar kursus ini" }, { status: 403 });
+        }
+      }
+    }
 
     if (type === "user") {
       if (action === "save") {
@@ -285,6 +317,15 @@ export async function POST(request) {
           examSettingsJson, prerequisiteCourseId || null,
           resolvedLearningType, resolvedTypeLabel, venue || '', schedule || '', quota || '', featuresJson
         ]);
+
+        if (userRole === "instructor" && auth?.email) {
+          await query(
+            `INSERT INTO course_instructors (course_id, user_email, assigned_by)
+             VALUES ($1, $2, $2)
+             ON CONFLICT (course_id, user_email) DO NOTHING`,
+            [id, auth.email]
+          ).catch(() => {});
+        }
       } else if (action === "delete") {
         // Idem: sertifikat dan riwayat ujian menunjuk course_id ini.
         await query("UPDATE courses SET deleted_at = NOW() WHERE id = $1", [data.id]);

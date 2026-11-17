@@ -165,11 +165,11 @@ export function AdminProvider({ children }) {
           schedule: "",
           quota: "",
           features: [],
-          instructorName: "",
-          instructorTitle: "",
-          instructorEmail: "",
-          instructorAvatar: "",
-          instructorOrg: "",
+          instructorName: currentUser?.role === "instructor" ? (currentUser.fullname || "") : "",
+          instructorTitle: currentUser?.role === "instructor" ? (currentUser.jobTitle || "Instruktur") : "",
+          instructorEmail: currentUser?.role === "instructor" ? (currentUser.email || "") : "",
+          instructorAvatar: currentUser?.role === "instructor" ? (currentUser.avatar || "IN") : "",
+          instructorOrg: currentUser?.role === "instructor" ? (currentUser.organization || "") : "",
           desc: ""
         });
       }
@@ -339,7 +339,7 @@ export function AdminProvider({ children }) {
     });
   }, []);
 
-  const handleOpenLmsManageModal = useCallback((course) => {
+  const handleOpenLmsManageModal = useCallback((course, tab = "materials") => {
     const courseCopy = JSON.parse(JSON.stringify(course));
     if (!courseCopy.modules) courseCopy.modules = [];
     if (!courseCopy.quiz) courseCopy.quiz = [];
@@ -350,7 +350,7 @@ export function AdminProvider({ children }) {
         : []
     }));
     setSelectedLmsCourse(courseCopy);
-    setLmsManageTab("materials");
+    setLmsManageTab(tab || "materials");
     setNewLessonInput({});
     setLmsManageModalActive(true);
   }, []);

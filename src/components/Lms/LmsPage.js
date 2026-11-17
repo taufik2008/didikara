@@ -1,6 +1,6 @@
 "use client";
 import { useEffect, useRef, useState, useCallback, useMemo } from "react";
-import { PlayCircle, Play, Pause, CheckCircle, UploadCloud, MapPin, LogOut, Film, MonitorPlay, Lock, Clock, History, X, Megaphone, Send, Trash2, MessageCircle, Video, Bot, Zap, Calendar, Star, ShoppingCart, ShoppingBag, Download, BookOpen, Bookmark, CalendarPlus, Award, ShieldAlert, AlertTriangle, ArrowLeft, ArrowRight, FileText, Mic, MicOff, Volume2, Smile } from "lucide-react";
+import { PlayCircle, Play, Pause, CheckCircle, UploadCloud, MapPin, LogOut, Film, MonitorPlay, Lock, Clock, History, X, Megaphone, Send, Trash2, MessageCircle, Video, Bot, Zap, Calendar, Star, ShoppingCart, ShoppingBag, Download, BookOpen, Bookmark, CalendarPlus, Award, ShieldAlert, AlertTriangle, ArrowLeft, ArrowRight, FileText, Mic, MicOff, Volume2, Smile, Edit3 } from "lucide-react";
 import { useApp } from "@/context/AppContext";
 import VideoPlayerV2 from "./VideoPlayerV2";
 import EmptyState from "@/components/Common/EmptyState";
@@ -80,6 +80,7 @@ function ExamTimerBanner({ examTimeRemaining, examTimerActive }) {
 function CurriculumNav({
   activeCourse, courses, enrolledCourses, activeLessonIndex, completedLessons,
   dbLessonProgress, lockedModules, handleSelectLesson, handleOpenClass,
+  isInstructor, handleOpenLmsManageModal,
 }) {
   const modules = activeCourse?.modules || [];
   const completedSet = new Set(completedLessons[activeCourse.id] || []);
@@ -91,6 +92,32 @@ function CurriculumNav({
 
   return (
     <aside className="lms-sidebar">
+      {isInstructor && (
+        <div style={{ marginBottom: 14 }}>
+          <button
+            type="button"
+            className="btn btn-primary"
+            onClick={() => handleOpenLmsManageModal?.(activeCourse, "materials")}
+            style={{
+              width: "100%",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              gap: 8,
+              padding: "9px 12px",
+              fontSize: "0.82rem",
+              fontWeight: 700,
+              borderRadius: 8,
+              background: "linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%)",
+              boxShadow: "0 2px 8px rgba(37, 99, 235, 0.3)",
+            }}
+          >
+            <Edit3 size={15} />
+            <span>Kelola Materi &amp; Silabus</span>
+          </button>
+        </div>
+      )}
+
       {kelasSaya.length > 1 && (
         <div className="form-group" style={{ marginBottom: 16 }}>
           <label htmlFor="pilih-kelas">Kelas Saya</label>
@@ -228,6 +255,7 @@ export default function LmsPage() {
     handleSelectLesson, handleAssignmentUpload, handleAttendance, muatKehadiran, handleForumSubmit,
     handleStartExam, handleQuizSubmit, handleLoadExamHistory, handleSaveLessonProgress,
     handleOpenClass, courses, currentUser, isSubscribed, showSubscriptionModal, setShowSubscriptionModal,
+    handleOpenLmsManageModal,
   } = useApp();
 
   const videoTimerRef = useRef(null);
@@ -598,8 +626,16 @@ Didikara - Platform Pelatihan & Sertifikasi Profesional
     return () => { batal = true; };
   }, [perluCekPengajar, activeCourse, currentUser]);
 
+  const isInstructorDirect = Boolean(
+    currentUser && (
+      currentUser.role === "admin" ||
+      (activeCourse?.instructor?.email && currentUser.email && activeCourse.instructor.email.toLowerCase() === currentUser.email.toLowerCase()) ||
+      (activeCourse?.instructor?.name && currentUser.fullname && activeCourse.instructor.name.toLowerCase() === currentUser.fullname.toLowerCase())
+    )
+  );
+
   const isInstructor =
-    currentUser?.role === "admin" || (perluCekPengajar && ditugaskanSebagaiPengajar);
+    isInstructorDirect || (perluCekPengajar && ditugaskanSebagaiPengajar);
 
   const loadAnnouncements = useCallback(async () => {
     if (!activeCourse) return;
@@ -1031,9 +1067,9 @@ Didikara - Platform Pelatihan & Sertifikasi Profesional
     );
   }
 
-  // 2. Jika kursus Online / Offline: diarahkan melalui Contact Us
+  // 2. Jika kursus Online / Offline: diarahkan melalui Contact Us (kecuali jika pengajar/admin)
   const learningTypeLms = activeCourse?.learningType || activeCourse?.learning_type;
-  if (learningTypeLms === "online" || learningTypeLms === "offline") {
+  if ((learningTypeLms === "online" || learningTypeLms === "offline") && !isAdminUser && !isInstructor) {
     return (
       <main className="page-view active">
         <div style={{
@@ -1083,7 +1119,7 @@ Didikara - Platform Pelatihan & Sertifikasi Profesional
 
   // 3. Jika kursus Video Berbayar (price > 0): setelah register member, peserta baru bisa daftar
   if (activeCourse && activeCourse.price > 0) {
-    const isEnrolledInPaid = (enrolledCourses || []).includes(activeCourse.id) || isAdminUser;
+    const isEnrolledInPaid = (enrolledCourses || []).includes(activeCourse.id) || isAdminUser || isInstructor;
     if (!isEnrolledInPaid) {
       return (
         <main className="page-view active">
@@ -1314,6 +1350,56 @@ Didikara - Platform Pelatihan & Sertifikasi Profesional
 
           {/* ── Tab: Ringkasan ──────────────────────────────────────────── */}
           <div className={`lms-tab-content ${activeLmsTab === "tab-overview" ? "active" : ""}`}>
+            {isInstructor && (
+              <div style={{
+                background: "linear-gradient(135deg, rgba(37, 99, 235, 0.16) 0%, rgba(30, 64, 175, 0.1) 100%)",
+                border: "1px solid rgba(59, 130, 246, 0.35)",
+                borderRadius: 12,
+                padding: "16px 20px",
+                marginBottom: 20,
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "space-between",
+                flexWrap: "wrap",
+                gap: 12
+              }}>
+                <div>
+                  <div style={{ fontWeight: 700, fontSize: "0.95rem", color: "#60a5fa", display: "flex", alignItems: "center", gap: 6 }}>
+                    <span>👨‍🏫 Panel Kelola Materi (Instruktur)</span>
+                  </div>
+                  <p style={{ margin: "4px 0 0", fontSize: "0.82rem", color: "var(--text-secondary)", maxWidth: 520, lineHeight: 1.5 }}>
+                    Anda adalah pengajar resmi kursus ini. Masukkan materi baru, atur video interaktif, perbarui bank soal ujian, atau pantau siswa.
+                  </p>
+                </div>
+                <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+                  <button
+                    type="button"
+                    className="btn btn-primary"
+                    onClick={() => handleOpenLmsManageModal?.(activeCourse, "materials")}
+                    style={{ width: "auto", padding: "8px 16px", fontSize: "0.82rem", fontWeight: 700 }}
+                  >
+                    <Edit3 size={14} style={{ marginRight: 6 }} /> Kelola Silabus &amp; Materi
+                  </button>
+                  <button
+                    type="button"
+                    className="btn btn-secondary"
+                    onClick={() => handleOpenLmsManageModal?.(activeCourse, "bank")}
+                    style={{ width: "auto", padding: "8px 14px", fontSize: "0.82rem" }}
+                  >
+                    <FileText size={14} style={{ marginRight: 6 }} /> Bank Soal Ujian
+                  </button>
+                  <button
+                    type="button"
+                    className="btn btn-secondary"
+                    onClick={() => handleOpenLmsManageModal?.(activeCourse, "students")}
+                    style={{ width: "auto", padding: "8px 14px", fontSize: "0.82rem" }}
+                  >
+                    <Users size={14} style={{ marginRight: 6 }} /> Peserta &amp; Nilai
+                  </button>
+                </div>
+              </div>
+            )}
+
             <h3 style={{ marginBottom: 8 }}>{activeCourse.title}</h3>
             <p style={{ color: "var(--text-secondary)", fontSize: "0.9rem", lineHeight: 1.6 }}>{activeCourse.desc}</p>
 
@@ -2733,6 +2819,8 @@ Didikara - Platform Pelatihan & Sertifikasi Profesional
             lockedModules={lockedModules}
             handleSelectLesson={handleSelectLesson}
             handleOpenClass={handleOpenClass}
+            isInstructor={isInstructor}
+            handleOpenLmsManageModal={handleOpenLmsManageModal}
           />
         )}
       </div>
