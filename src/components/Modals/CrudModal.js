@@ -1,14 +1,14 @@
 "use client";
 import { useState, useRef, useMemo, useEffect } from "react";
-import { Check, CheckSquare, Square, Upload, Image as ImageIcon, Link as LinkIcon, X, Award, UserCheck, Eye, EyeOff, BookOpen, GraduationCap, Lock } from "lucide-react";
+import { Check, CheckSquare, Square, Upload, Image as ImageIcon, Link as LinkIcon, X, Award, UserCheck, Eye, EyeOff, BookOpen, GraduationCap, Lock, Trash2 } from "lucide-react";
 import { useApp } from "@/context/AppContext";
 
 export default function CrudModal() {
   const {
     crudModalActive, crudType, crudAction, categories, levels, competencySkills = [], courseForm, userForm,
-    courses, users, currentUser,
+    courses, users, currentUser, editingId,
     setCourseForm, setUserForm, setCrudModalActive,
-    handleSaveCrud, handlePermissionToggle
+    handleSaveCrud, handleDeleteCrud, handlePermissionToggle
   } = useApp();
 
   const isInstructorUser = currentUser?.role === "instructor";
@@ -1097,6 +1097,34 @@ export default function CrudModal() {
 
 
           <div style={{ display: "flex", gap: 14, marginTop: 28, paddingTop: 20, borderTop: "1px solid var(--border-color)", justifyContent: "flex-end", alignItems: "center" }}>
+            {crudType === "course" && crudAction === "edit" && (
+              <button
+                type="button"
+                className="btn btn-secondary"
+                style={{
+                  marginRight: "auto",
+                  width: "auto",
+                  padding: "11px 20px",
+                  fontSize: "0.88rem",
+                  fontWeight: 600,
+                  borderRadius: 10,
+                  color: "#ef4444",
+                  borderColor: "rgba(239, 68, 68, 0.35)",
+                  background: "rgba(239, 68, 68, 0.06)",
+                  display: "inline-flex",
+                  alignItems: "center",
+                  gap: 8,
+                }}
+                onClick={() => {
+                  const targetId = editingId || courseForm.id;
+                  handleDeleteCrud("course", targetId, courseForm.title);
+                  setCrudModalActive(false);
+                }}
+              >
+                <Trash2 size={16} />
+                <span>Hapus Kursus Ini</span>
+              </button>
+            )}
             <button
               type="button"
               className="btn btn-secondary"

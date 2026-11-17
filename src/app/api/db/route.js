@@ -171,11 +171,11 @@ export async function POST(request) {
     const { type, action, data } = body;
 
     // Admin memiliki hak penuh untuk seluruh tipe entitas.
-    // Instruktur diizinkan mengedit/menyimpan kursus miliknya (type === "course" && action === "save").
+    // Instruktur diizinkan mengedit/menyimpan atau menghapus kursus miliknya (type === "course" && (action === "save" || action === "delete")).
     const isAdmin = userRole === "admin" || userRole === "superadmin";
     const isInstructorCourseSave = (userRole === "instructor" || userRole === "corporate" || userRole === "government")
       && type === "course"
-      && action === "save";
+      && (action === "save" || action === "delete");
 
     if (!isAdmin && !isInstructorCourseSave) {
       return NextResponse.json({ success: false, error: "Forbidden: Akses tidak diizinkan" }, { status: 403 });

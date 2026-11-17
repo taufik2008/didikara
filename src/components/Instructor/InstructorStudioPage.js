@@ -3,7 +3,7 @@ import { useState, useEffect, useMemo } from "react";
 import {
   GraduationCap, PlusCircle, BookOpen, FileText, Users,
   Settings, Search, PlayCircle, Edit3, Clock, Sparkles,
-  Layers, Award, CheckCircle2, AlertCircle, Eye
+  Layers, Award, CheckCircle2, AlertCircle, Eye, Trash2
 } from "lucide-react";
 import { useApp } from "@/context/AppContext";
 
@@ -13,6 +13,7 @@ export default function InstructorStudioPage() {
     currentUser,
     handleOpenLmsManageModal,
     handleOpenCrudModal,
+    handleDeleteCrud,
     setActiveCourse,
     setActivePage,
   } = useApp();
@@ -729,7 +730,7 @@ export default function InstructorStudioPage() {
                       </button>
                     </div>
 
-                    <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 6, marginTop: 2 }}>
+                    <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr auto", gap: 6, marginTop: 2 }}>
                       <button
                         type="button"
                         className="btn btn-secondary"
@@ -748,7 +749,7 @@ export default function InstructorStudioPage() {
                         title="Buka tampilan kelas sebagai simulasi peserta"
                       >
                         <Eye size={14} />
-                        <span>Tinjau Kelas</span>
+                        <span>Tinjau</span>
                       </button>
 
                       <button
@@ -767,7 +768,29 @@ export default function InstructorStudioPage() {
                         title="Ubah judul, kategori, harga, jadwal, dan pengajar"
                       >
                         <Settings size={14} />
-                        <span>Edit Detail</span>
+                        <span>Edit</span>
+                      </button>
+
+                      <button
+                        type="button"
+                        className="btn btn-secondary"
+                        onClick={() => handleDeleteCrud("course", c.id, c.title)}
+                        style={{
+                          padding: "7px 10px",
+                          fontSize: "0.76rem",
+                          borderRadius: 6,
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "center",
+                          gap: 4,
+                          borderColor: "rgba(239, 68, 68, 0.3)",
+                          color: "#ef4444",
+                          background: "rgba(239, 68, 68, 0.05)",
+                        }}
+                        title="Hapus kursus ini"
+                      >
+                        <Trash2 size={14} />
+                        <span>Hapus</span>
                       </button>
                     </div>
                   </div>

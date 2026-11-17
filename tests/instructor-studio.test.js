@@ -30,6 +30,7 @@ test("Instructor Studio components and routes exist", () => {
   const componentContent = fs.readFileSync(componentPath, "utf8");
   assert.ok(componentContent.includes("handleOpenLmsManageModal"), "Studio must wire handleOpenLmsManageModal");
   assert.ok(componentContent.includes("handleOpenCrudModal"), "Studio must wire handleOpenCrudModal");
+  assert.ok(componentContent.includes("handleDeleteCrud"), "Studio must wire handleDeleteCrud");
   assert.ok(componentContent.includes("Manajemen Kursus"), "Studio must display Manajemen Kursus heading");
 });
 
@@ -42,11 +43,12 @@ test("Sidebar differentiates menus for instructor role", () => {
   assert.ok(sidebarContent.includes("instructor-page"), "Sidebar must navigate to instructor-page");
 });
 
-test("Backend API db route allows instructor course saves", () => {
+test("Backend API db route allows instructor course saves and deletes", () => {
   const dbRoutePath = path.resolve("./src/app/api/db/route.js");
   const dbContent = fs.readFileSync(dbRoutePath, "utf8");
 
   assert.ok(dbContent.includes("isInstructorCourseSave"), "DB route must define isInstructorCourseSave");
+  assert.ok(dbContent.includes('action === "delete"'), "DB route must allow delete action for instructors");
   assert.ok(dbContent.includes("canManageCourse"), "DB route must verify instructor ownership via canManageCourse");
   assert.ok(dbContent.includes("course_instructors"), "DB route must auto-assign instructor in course_instructors");
 });

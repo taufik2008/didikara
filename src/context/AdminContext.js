@@ -320,8 +320,13 @@ export function AdminProvider({ children }) {
     setCrudModalActive(false);
   }, [crudType, courseForm, crudAction, editingId, courses, userForm, users, currentUser, setCurrentUser, setCourses, syncWithDb]);
 
-  const handleDeleteCrud = useCallback((type, id) => {
-    if (!confirm("Apakah Anda yakin ingin menghapus data master ini?")) return;
+  const handleDeleteCrud = useCallback((type, id, customName) => {
+    const promptText = type === "course"
+      ? `Apakah Anda yakin ingin menghapus kursus "${customName || id}"? Kursus ini akan dihapus dari daftar aktif Anda dan katalog.`
+      : type === "user"
+      ? `Apakah Anda yakin ingin menghapus pengguna "${customName || id}"?`
+      : "Apakah Anda yakin ingin menghapus data master ini?";
+    if (!confirm(promptText)) return;
     if (type === "course") {
       setCourses(prev => prev.filter(c => c.id !== id));
       syncWithDb("course", "delete", { id });
