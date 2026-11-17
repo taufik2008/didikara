@@ -15,7 +15,7 @@ export default function Sidebar() {
 
   const menuItems = (isInstructorRole ? [
     { page: "dashboard-page",   icon: LayoutDashboard, label: "Dashboard Instruktur" },
-    { page: "instructor-page",  icon: GraduationCap,   label: "Kelas Mengajar" },
+    { page: "instructor-page",  icon: BookOpen,        label: "Manajemen Kursus" },
     { page: "ai-planner-page",  icon: Compass,         label: "AI Portal Perencanaan" },
   ] : [
     { page: "dashboard-page",    icon: LayoutDashboard, label: "Dashboard" },

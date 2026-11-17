@@ -153,7 +153,7 @@ export default function InstructorStudioPage() {
               <GraduationCap size={22} />
             </div>
             <h2 style={{ margin: 0, fontSize: "1.45rem", fontWeight: 800, color: "#ffffff" }}>
-              Kelas Mengajar
+              Manajemen Kursus
             </h2>
             <span
               style={{
@@ -408,7 +408,7 @@ export default function InstructorStudioPage() {
           <h3 style={{ margin: "0 0 8px", fontSize: "1.2rem", fontWeight: 700 }}>
             {searchTerm || selectedCategory !== "all"
               ? "Tidak Ada Kelas yang Sesuai Filter"
-              : "Belum Ada Kelas Mengajar"}
+              : "Belum Ada Program Kursus"}
           </h3>
           <p
             style={{

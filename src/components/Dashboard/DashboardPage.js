@@ -154,7 +154,7 @@ export default function DashboardPage() {
         </div>
         {currentUser?.role === "instructor" ? (
           <button className="btn btn-primary" onClick={() => setActivePage("instructor-page")} style={{ width: "auto", background: "#edb63f", color: "#0f172a", border: "none", fontWeight: 700 }}>
-            <span>Studio Mengajar</span><GraduationCap size={16} />
+            <span>Manajemen Kursus</span><GraduationCap size={16} />
           </button>
         ) : (
           <button className="btn btn-primary" onClick={() => setActivePage("marketplace-page")} style={{ width: "auto", background: "#edb63f", color: "#0f172a", border: "none", fontWeight: 700 }}>

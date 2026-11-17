@@ -30,7 +30,7 @@ test("Instructor Studio components and routes exist", () => {
   const componentContent = fs.readFileSync(componentPath, "utf8");
   assert.ok(componentContent.includes("handleOpenLmsManageModal"), "Studio must wire handleOpenLmsManageModal");
   assert.ok(componentContent.includes("handleOpenCrudModal"), "Studio must wire handleOpenCrudModal");
-  assert.ok(componentContent.includes("Kelas Mengajar"), "Studio must display Kelas Mengajar heading");
+  assert.ok(componentContent.includes("Manajemen Kursus"), "Studio must display Manajemen Kursus heading");
 });
 
 test("Sidebar differentiates menus for instructor role", () => {
@@ -38,7 +38,7 @@ test("Sidebar differentiates menus for instructor role", () => {
   const sidebarContent = fs.readFileSync(sidebarPath, "utf8");
 
   assert.ok(sidebarContent.includes("isInstructorRole"), "Sidebar must detect instructor role");
-  assert.ok(sidebarContent.includes("Kelas Mengajar"), "Sidebar must include Kelas Mengajar menu");
+  assert.ok(sidebarContent.includes("Manajemen Kursus"), "Sidebar must include Manajemen Kursus menu");
   assert.ok(sidebarContent.includes("instructor-page"), "Sidebar must navigate to instructor-page");
 });
 
