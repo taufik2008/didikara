@@ -53,6 +53,16 @@ test("Backend API db route allows instructor course saves and deletes", () => {
   assert.ok(dbContent.includes("course_instructors"), "DB route must auto-assign instructor in course_instructors");
 });
 
+test("LmsPage imports Users icon and provides instructor toolbar", () => {
+  const lmsPagePath = path.resolve("./src/components/Lms/LmsPage.js");
+  const lmsPageContent = fs.readFileSync(lmsPagePath, "utf8");
+
+  // Check Users icon is imported from lucide-react
+  assert.ok(lmsPageContent.includes("Users"), "LmsPage must import Users icon");
+  assert.match(lmsPageContent, /import\s*\{[^}]*\bUsers\b[^}]*\}\s*from\s*["']lucide-react["']/, "LmsPage must import Users from lucide-react");
+  assert.ok(lmsPageContent.includes("Peserta &amp; Nilai"), "LmsPage must contain Peserta & Nilai button");
+});
+
 test("Sidebar and AuthContext handle image URL avatar and safe logout", () => {
   const sidebarPath = path.resolve("./src/components/Sidebar.js");
   const sidebarContent = fs.readFileSync(sidebarPath, "utf8");

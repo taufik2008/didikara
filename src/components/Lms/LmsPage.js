@@ -1,6 +1,6 @@
 "use client";
 import { useEffect, useRef, useState, useCallback, useMemo } from "react";
-import { PlayCircle, Play, Pause, CheckCircle, UploadCloud, MapPin, LogOut, Film, MonitorPlay, Lock, Clock, History, X, Megaphone, Send, Trash2, MessageCircle, Video, Bot, Zap, Calendar, Star, ShoppingCart, ShoppingBag, Download, BookOpen, Bookmark, CalendarPlus, Award, ShieldAlert, AlertTriangle, ArrowLeft, ArrowRight, FileText, Mic, MicOff, Volume2, Smile, Edit3 } from "lucide-react";
+import { PlayCircle, Play, Pause, CheckCircle, UploadCloud, MapPin, LogOut, Film, MonitorPlay, Lock, Clock, History, X, Megaphone, Send, Trash2, MessageCircle, Video, Bot, Zap, Calendar, Star, ShoppingCart, ShoppingBag, Download, BookOpen, Bookmark, CalendarPlus, Award, ShieldAlert, AlertTriangle, ArrowLeft, ArrowRight, FileText, Mic, MicOff, Volume2, Smile, Edit3, Users } from "lucide-react";
 import { useApp } from "@/context/AppContext";
 import VideoPlayerV2 from "./VideoPlayerV2";
 import EmptyState from "@/components/Common/EmptyState";
