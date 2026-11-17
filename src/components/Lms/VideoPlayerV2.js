@@ -14,7 +14,8 @@ import {
   ExternalLink,
   AlertTriangle,
   RefreshCw,
-  Video as VideoIcon
+  Video as VideoIcon,
+  BookOpen
 } from "lucide-react";
 import { useApp } from "@/context/AppContext";
 import { createScorm12Adapter } from "@/lib/scormRuntime";
@@ -120,11 +121,12 @@ export default function VideoPlayerV2({
   const videoRef = useRef(null);
 
   const rawUrl = (typeof activeLesson === "object" && activeLesson?.url) ? activeLesson.url : "";
+  const isTextType = lessonType === "text";
   const isDocType = lessonType === "pptx" || lessonType === "pdf" || Boolean(rawUrl?.toLowerCase()?.includes(".pdf")) || Boolean(rawUrl?.toLowerCase()?.includes(".pptx")) || Boolean(rawUrl?.toLowerCase()?.includes(".ppt"));
   const defaultCategoryVideo = DEFAULT_TRAINING_VIDEOS[activeCourse?.category] || "https://www.youtube.com/watch?v=kYJv_t7H6_I";
-  const defaultUrl = isDocType ? "" : defaultCategoryVideo;
+  const defaultUrl = (isDocType || isTextType) ? "" : defaultCategoryVideo;
   
-  const effectiveRawUrl = customBackupUrl || rawUrl || (isDocType ? "" : defaultUrl);
+  const effectiveRawUrl = customBackupUrl || rawUrl || ((isDocType || isTextType) ? "" : defaultUrl);
   const lessonUrl = normalizeVideoUrl(effectiveRawUrl);
 
   // Sync state on lesson change
@@ -320,6 +322,99 @@ export default function VideoPlayerV2({
   const iframeStyle = isFullscreen
     ? { width: "100%", flex: 1, border: "none", display: "block" }
     : { width: "100%", height: "100%", minHeight: "520px", border: "none", borderRadius: 14, background: "#000", display: "block" };
+
+  // ── 1.8. Render Teks / Bacaan Mode (Interactive Article Canvas) ──
+  if (isTextType) {
+    const textContent = (typeof activeLesson === "object" && (activeLesson?.content || activeLesson?.text || activeLesson?.desc || activeLesson?.description)) || "";
+    const words = textContent ? textContent.trim().split(/\s+/).length : 0;
+    const estMinutes = Math.max(1, Math.round(words / 150));
+
+    return (
+      <div style={{ ...fsWrapper, background: "linear-gradient(135deg, #090d16 0%, #0f172a 100%)", color: "#fff", display: "flex", flexDirection: "column" }}>
+        {/* Header Toolbar */}
+        <div style={{
+          padding: "12px 20px", background: "rgba(15, 23, 42, 0.95)", borderBottom: "1px solid rgba(255,255,255,0.1)",
+          display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: 10, zIndex: 20,
+        }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+            <span style={{
+              background: "linear-gradient(135deg, #10b981 0%, #059669 100%)", color: "#fff",
+              padding: "4px 10px", borderRadius: 6, fontSize: "0.72rem", fontWeight: 700,
+              display: "flex", alignItems: "center", gap: 6, boxShadow: "0 2px 8px rgba(16,185,129,0.3)",
+            }}>
+              <BookOpen size={13} /> MATERI TEKS &amp; BACAAN
+            </span>
+            <span style={{ fontSize: "0.85rem", fontWeight: 600, color: "#f8fafc" }}>
+              {lessonTitle}
+            </span>
+          </div>
+
+          <div style={{ display: "flex", alignItems: "center", gap: 8, fontSize: "0.75rem", color: "var(--text-muted)" }}>
+            <span style={{ display: "flex", alignItems: "center", gap: 4 }}>
+              <Clock size={13} /> Estimasi: ±{estMinutes} menit baca
+            </span>
+          </div>
+        </div>
+
+        {/* Article Reading Body */}
+        <div style={{
+          flex: 1, overflowY: "auto", padding: "36px 32px",
+          background: "radial-gradient(ellipse at top, rgba(30, 41, 59, 0.5) 0%, rgba(15, 23, 42, 0.95) 100%)",
+          display: "flex", justifyContent: "center",
+        }}>
+          <div style={{
+            width: "100%", maxWidth: 820,
+            background: "rgba(15, 23, 42, 0.65)",
+            border: "1px solid rgba(255, 255, 255, 0.08)",
+            borderRadius: 16, padding: "36px 40px",
+            boxShadow: "0 8px 32px rgba(0, 0, 0, 0.35)",
+            lineHeight: 1.8, fontSize: "1rem", color: "#e2e8f0"
+          }}>
+            <h1 style={{ fontSize: "1.6rem", fontWeight: 800, color: "#ffffff", marginBottom: 16, lineHeight: 1.35 }}>
+              {lessonTitle}
+            </h1>
+            <div style={{
+              display: "flex", gap: 12, alignItems: "center", marginBottom: 28, paddingBottom: 16,
+              borderBottom: "1px solid rgba(255, 255, 255, 0.08)", fontSize: "0.8rem", color: "var(--text-muted)"
+            }}>
+              <span>📚 Modul Belajar</span>
+              <span>•</span>
+              <span>{activeCourse?.title || "Pelatihan DIDIKARA"}</span>
+            </div>
+
+            {textContent ? (
+              <div style={{ whiteSpace: "pre-line", wordBreak: "break-word" }}>
+                {textContent}
+              </div>
+            ) : (
+              <div style={{
+                padding: "36px 24px", textAlign: "center",
+                background: "rgba(255, 255, 255, 0.02)",
+                border: "1.5px dashed rgba(255, 255, 255, 0.15)",
+                borderRadius: 12,
+              }}>
+                <div style={{
+                  width: 52, height: 52, borderRadius: "50%",
+                  background: "rgba(16, 185, 129, 0.12)", color: "#34d399",
+                  display: "flex", alignItems: "center", justifyContent: "center",
+                  margin: "0 auto 14px",
+                }}>
+                  <BookOpen size={24} />
+                </div>
+                <h3 style={{ fontSize: "1.05rem", fontWeight: 700, margin: "0 0 8px", color: "#f8fafc" }}>
+                  Belum Ada Isi Teks / Bacaan
+                </h3>
+                <p style={{ fontSize: "0.85rem", color: "#94a3b8", margin: "0 auto 16px", maxWidth: 480, lineHeight: 1.6 }}>
+                  Materi ini telah dikonfigurasi sebagai <strong>Teks/Bacaan</strong>, namun naskah materi belum dituliskan.
+                  Silakan buka menu <strong>Kelola Materi &amp; Silabus</strong> untuk menulis isi materi atau panduan belajar.
+                </p>
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   // ── 2. Render PowerPoint / PDF Document Mode ─────────────────────
   const isPdf = Boolean(lessonUrl && (lessonUrl.toLowerCase().includes(".pdf") || lessonType === "pdf"));

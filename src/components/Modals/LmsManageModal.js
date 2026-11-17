@@ -921,7 +921,7 @@ export default function LmsManageModal() {
                                 <option value="video">🎬 Video (YouTube/MP4)</option>
                                 <option value="pptx">📄 Presentasi / PDF Dokumen</option>
                               </select>
-                              {lessonObj.type !== "text" && (
+                              {lessonObj.type !== "text" ? (
                                 <>
                                   <input
                                     type="text"
@@ -970,6 +970,55 @@ export default function LmsManageModal() {
                                     </button>
                                   )}
                                 </>
+                              ) : (
+                                <div style={{ width: "100%", display: "flex", flexDirection: "column", gap: 6, marginTop: 4 }}>
+                                  <textarea
+                                    value={lessonObj.content || lessonObj.text || ""}
+                                    onChange={(e) => {
+                                      handleLmsLessonChange(modIdx, lessonIdx, "content", e.target.value);
+                                      handleLmsLessonChange(modIdx, lessonIdx, "text", e.target.value);
+                                    }}
+                                    placeholder="Tuliskan isi materi, artikel bacaan, rangkuman teori, atau panduan belajar untuk siswa di sini..."
+                                    rows={4}
+                                    style={{
+                                      width: "100%",
+                                      padding: "10px 14px",
+                                      fontSize: "0.85rem",
+                                      borderRadius: 8,
+                                      border: "1.5px solid var(--border-color)",
+                                      background: "var(--bg-secondary)",
+                                      color: "var(--text-primary)",
+                                      resize: "vertical",
+                                      lineHeight: 1.6,
+                                    }}
+                                  />
+                                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                                    <span style={{ fontSize: "0.72rem", color: "var(--text-muted)" }}>
+                                      💡 Materi teks bacaan disajikan sebagai artikel interaktif di ruang belajar siswa (LMS).
+                                    </span>
+                                    <button
+                                      type="button"
+                                      onClick={() => setPreviewLesson(lessonObj)}
+                                      style={{
+                                        padding: "4px 12px",
+                                        borderRadius: 6,
+                                        border: "1px solid rgba(16, 185, 129, 0.4)",
+                                        background: "rgba(16, 185, 129, 0.12)",
+                                        color: "#34d399",
+                                        fontSize: "0.76rem",
+                                        fontWeight: 700,
+                                        cursor: "pointer",
+                                        display: "flex",
+                                        alignItems: "center",
+                                        gap: 5,
+                                      }}
+                                      title="Pratinjau tampilan artikel bacaan ini"
+                                    >
+                                      <Eye size={13} />
+                                      <span>Uji Preview Teks</span>
+                                    </button>
+                                  </div>
+                                </div>
                               )}
                             </div>
 
@@ -1403,7 +1452,31 @@ export default function LmsManageModal() {
             </div>
 
             <div style={{ width: "100%", height: 440, background: "#050811", borderRadius: 12, overflow: "hidden", display: "flex", alignItems: "center", justifyContent: "center", border: "1px solid var(--border-color)" }}>
-              {(() => {
+              {previewLesson.type === "text" ? (
+                <div style={{
+                  width: "100%", height: "100%", overflowY: "auto", padding: "28px 32px",
+                  background: "#090d16", color: "#e2e8f0", lineHeight: 1.8, fontSize: "0.95rem"
+                }}>
+                  <h3 style={{ fontSize: "1.35rem", fontWeight: 800, color: "#fff", marginBottom: 12 }}>
+                    {previewLesson.title || "Materi Teks / Bacaan"}
+                  </h3>
+                  <div style={{ display: "flex", gap: 10, fontSize: "0.75rem", color: "var(--text-muted)", marginBottom: 20, paddingBottom: 12, borderBottom: "1px solid rgba(255,255,255,0.08)" }}>
+                    <span>📖 Artikel Bacaan Peserta</span>
+                    <span>•</span>
+                    <span>DIDIKARA LMS</span>
+                  </div>
+                  {previewLesson.content || previewLesson.text ? (
+                    <div style={{ whiteSpace: "pre-line", wordBreak: "break-word" }}>
+                      {previewLesson.content || previewLesson.text}
+                    </div>
+                  ) : (
+                    <div style={{ textAlign: "center", padding: "40px 20px", color: "var(--text-muted)" }}>
+                      <p style={{ margin: "0 0 6px", fontWeight: 600 }}>Belum ada naskah teks/bacaan yang dituliskan.</p>
+                      <span style={{ fontSize: "0.8rem" }}>Ketikkan materi Anda pada kotak teks di form silabus, lalu klik &quot;Uji Preview Teks&quot;.</span>
+                    </div>
+                  )}
+                </div>
+              ) : (() => {
                 const embed = getEmbedPreview(previewLesson.url, previewLesson.type);
                 if (!embed) {
                   return (
