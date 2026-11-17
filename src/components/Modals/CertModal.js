@@ -43,7 +43,7 @@ export default function CertModal() {
       {activeCert && (
         <div className="modal-content glass-panel" style={{ width: 860, maxWidth: "95%" }}>
           <h3 style={{ marginBottom: 16, display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-            <span>Digital Wallet - Sertifikat Kompetensi</span>
+            <span>Portofolio Saya - Sertifikat Kompetensi</span>
             <X size={20} style={{ cursor: "pointer" }} onClick={() => setCertModalActive(false)} />
           </h3>
 

@@ -8,7 +8,8 @@ const PATH_BY_PAGE = {
   "dashboard-page":   "/dashboard",
   "marketplace-page": "/marketplace",
   "lms-page":         "/kelas",
-  "wallet-page":      "/wallet",
+  "wallet-page":        "/wallet",
+  "transactions-page":  "/transaksi",
   "ai-planner-page":  "/ai-planner",
   "admin-page":       "/admin",
 };

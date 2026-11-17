@@ -1,5 +1,5 @@
 "use client";
-import { Cpu, LayoutDashboard, BookOpen, PlayCircle, Wallet, Compass, Settings, LogOut, ChevronLeft, ChevronRight } from "lucide-react";
+import { Cpu, LayoutDashboard, BookOpen, PlayCircle, Award, Receipt, Compass, Settings, LogOut, ChevronLeft, ChevronRight } from "lucide-react";
 import { useApp } from "@/context/AppContext";
 import { canAccessPage } from "@/lib/permissions";
 
@@ -12,12 +12,13 @@ export default function Sidebar() {
   const brandLogo = platformSettings?.platform_logo || "/logos/didikara-symbol-redblue-2.jpg";
 
   const menuItems = [
-    { page: "dashboard-page",   icon: LayoutDashboard, label: "Dashboard" },
-    { page: "marketplace-page", icon: BookOpen,        label: "Katalog Pelatihan" },
-    { page: "lms-page",         icon: PlayCircle,      label: "Kelas Aktif" },
-    { page: "wallet-page",      icon: Wallet,          label: "Digital Wallet" },
-    { page: "ai-planner-page",  icon: Compass,         label: "AI Portal Perencanaan" },
-    { page: "admin-page",       icon: Settings,        label: "Modul Admin" },
+    { page: "dashboard-page",    icon: LayoutDashboard, label: "Dashboard" },
+    { page: "marketplace-page",  icon: BookOpen,        label: "Katalog Pelatihan" },
+    { page: "lms-page",          icon: PlayCircle,      label: "Kelas Aktif" },
+    { page: "wallet-page",       icon: Award,           label: "Portofolio Saya" },
+    { page: "transactions-page", icon: Receipt,         label: "Riwayat Transaksi" },
+    { page: "ai-planner-page",   icon: Compass,         label: "AI Portal Perencanaan" },
+    { page: "admin-page",        icon: Settings,        label: "Modul Admin" },
   ].filter(item => canAccessPage(currentUser, item.page));
 
   return (

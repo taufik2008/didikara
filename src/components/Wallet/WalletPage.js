@@ -1,22 +1,11 @@
 "use client";
 import { useState, useEffect } from "react";
-import { CreditCard, Award, ExternalLink, RefreshCw, CheckCircle, Clock, XCircle, AlertCircle, Gift, Zap, Copy, Check, Sparkles, Tag } from "lucide-react";
+import { Award, Gift, Zap, Copy, Check, Sparkles, Tag, ExternalLink } from "lucide-react";
 import { useApp } from "@/context/AppContext";
 
-const STATUS_CONFIG = {
-  paid:    { icon: CheckCircle, color: "#34d399", label: "Berhasil" },
-  Berhasil:{ icon: CheckCircle, color: "#34d399", label: "Berhasil" },
-  pending: { icon: Clock,       color: "#fbbf24", label: "Pending"  },
-  failed:  { icon: XCircle,     color: "#f87171", label: "Gagal"    },
-  Gagal:   { icon: XCircle,     color: "#f87171", label: "Gagal"    },
-};
-
 export default function WalletPage() {
-  const { certificates, transactions, handleViewCert, currentUser, refreshEnrollments, setActivePage } = useApp();
+  const { certificates, handleViewCert, currentUser, setActivePage } = useApp();
   const [tab, setTab]         = useState("certs");
-  const [orders, setOrders]   = useState([]);
-  const [loading, setLoading] = useState(false);
-  const [mockMode, setMockMode] = useState(true);
 
   // Gamification & Rewards state
   const [userPoints, setUserPoints] = useState({ points: 0, total_points: 0, level: 1 });
@@ -42,7 +31,6 @@ export default function WalletPage() {
   };
 
   useEffect(() => {
-    if (tab === "payments") loadOrders();
     if (tab === "rewards") loadGamificationData();
   }, [tab]);
 
@@ -101,49 +89,17 @@ export default function WalletPage() {
     setTimeout(() => setCopiedCode(""), 3000);
   };
 
-  const loadOrders = async () => {
-    setLoading(true);
-    try {
-      const res  = await fetch("/api/payment");
-      const data = await res.json();
-      if (data.success) {
-        const daftar = data.orders || [];
-        setOrders(daftar);
-        setMockMode(!data.clientKey || data.clientKey.includes("xxxx"));
-
-        // Admin mengonfirmasi transfer di sisinya; peserta baru tahu saat
-        // membuka riwayat ini. Bila ada order yang sudah lunas, segarkan daftar
-        // kelas agar akses langsung muncul tanpa perlu memuat ulang halaman.
-        if (daftar.some(o => o.status === "paid")) refreshEnrollments();
-      }
-    } catch { /* fallback ke context transactions */ }
-    finally { setLoading(false); }
-  };
-
-  // Gabung: DB orders + context transactions (in-memory)
-  const contextTx = (transactions || []).map(tx => ({
-    invoice_number: tx.invoice,
-    course_title:   tx.program,
-    amount:         tx.amount,
-    payment_method: tx.type,
-    status:         tx.status,
-    created_at:     null,
-    source:         "memory",
-  }));
-  const allOrders = orders.length > 0 ? orders : contextTx;
-
   const tabs = [
-    { key: "certs",    label: "Sertifikat",        icon: Award       },
-    { key: "rewards",  label: "Toko Hadiah XP",    icon: Gift        },
-    { key: "payments", label: "Riwayat Pembayaran", icon: CreditCard  },
+    { key: "certs",   label: "Sertifikat Kelulusan", icon: Award },
+    { key: "rewards", label: "Toko Hadiah XP",       icon: Gift  },
   ];
 
   return (
     <main className="page-view active">
       <div style={{ marginBottom: 24 }}>
-        <h2 style={{ fontSize: "1.8rem", marginBottom: 6 }}>Dompet Digital</h2>
+        <h2 style={{ fontSize: "1.8rem", marginBottom: 6 }}>Portofolio Saya</h2>
         <p style={{ color: "var(--text-secondary)", fontSize: "0.85rem" }}>
-          Sertifikat kelulusan, penukaran poin hadiah XP, dan riwayat transaksi pembayaran Anda.
+          Koleksi sertifikat kelulusan resmi dan penukaran poin hadiah prestasi (XP) Anda.
         </p>
       </div>
 
@@ -353,80 +309,6 @@ export default function WalletPage() {
               </div>
             )}
           </div>
-        </div>
-      )}
-
-      {/* ── Tab: Riwayat Pembayaran ── */}
-      {tab === "payments" && (
-        <div>
-          {/* Mode indicator */}
-          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 16 }}>
-            <div style={{
-              display: "inline-flex", alignItems: "center", gap: 6,
-              padding: "5px 12px", borderRadius: 20, fontSize: "0.75rem", fontWeight: 600,
-              background: mockMode ? "rgba(251,191,36,0.15)" : "rgba(52,211,153,0.15)",
-              color: mockMode ? "#fbbf24" : "#34d399",
-              border: `1px solid ${mockMode ? "rgba(251,191,36,0.3)" : "rgba(52,211,153,0.3)"}`,
-            }}>
-              {mockMode
-                ? <><AlertCircle size={13} /> Mode Simulasi (Mock)</>
-                : <><CheckCircle size={13} /> Mode Real — Midtrans Aktif</>}
-            </div>
-            <button onClick={loadOrders} style={{ background: "none", border: "none", cursor: "pointer", color: "var(--text-secondary)", display: "flex", alignItems: "center", gap: 6, fontSize: "0.8rem" }}>
-              <RefreshCw size={14} /> Refresh
-            </button>
-          </div>
-
-          {loading && <div style={{ color: "var(--text-muted)", fontSize: "0.85rem" }}>Memuat...</div>}
-
-          {!loading && allOrders.length === 0 && (
-            <div className="glass-card" style={{ padding: 32, textAlign: "center" }}>
-              <CreditCard size={40} style={{ color: "var(--text-muted)", marginBottom: 12 }} />
-              <p style={{ color: "var(--text-muted)", fontSize: "0.85rem" }}>Belum ada transaksi.</p>
-              <p style={{ color: "var(--text-muted)", fontSize: "0.75rem", marginTop: 4 }}>Daftar pelatihan di menu Katalog Pelatihan untuk memulai.</p>
-            </div>
-          )}
-
-          {!loading && allOrders.length > 0 && (
-            <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
-              {allOrders.map((order, i) => {
-                const cfg = STATUS_CONFIG[order.status] || STATUS_CONFIG.pending;
-                const Icon = cfg.icon;
-                return (
-                  <div key={order.id || i} className="glass-card" style={{ padding: 16, display: "flex", alignItems: "center", gap: 16 }}>
-                    <div style={{
-                      width: 40, height: 40, borderRadius: 10,
-                      background: `${cfg.color}22`,
-                      display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0,
-                    }}>
-                      <Icon size={20} style={{ color: cfg.color }} />
-                    </div>
-                    <div style={{ flex: 1 }}>
-                      <div style={{ fontWeight: 600, fontSize: "0.9rem" }}>{order.course_title || order.program || "—"}</div>
-                      <div style={{ fontSize: "0.75rem", color: "var(--text-secondary)", marginTop: 2 }}>
-                        {order.invoice_number} &nbsp;·&nbsp; {order.payment_method || "—"}
-                        {order.created_at && <> &nbsp;·&nbsp; {new Date(order.created_at).toLocaleDateString("id-ID")}</>}
-                      </div>
-                    </div>
-                    <div style={{ textAlign: "right" }}>
-                      <div style={{ fontWeight: 700, fontSize: "0.95rem" }}>
-                        {order.amount ? `Rp ${Number(order.amount).toLocaleString("id-ID")}` : "Gratis"}
-                      </div>
-                      <div style={{ fontSize: "0.72rem", fontWeight: 600, color: cfg.color, marginTop: 4 }}>
-                        {cfg.label}
-                      </div>
-                    </div>
-                    {order.snap_redirect_url && order.status === "pending" && (
-                      <a href={order.snap_redirect_url} target="_blank" rel="noreferrer"
-                        style={{ color: "var(--primary)", flexShrink: 0 }}>
-                        <ExternalLink size={16} />
-                      </a>
-                    )}
-                  </div>
-                );
-              })}
-            </div>
-          )}
         </div>
       )}
     </main>

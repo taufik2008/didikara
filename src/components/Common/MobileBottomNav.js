@@ -46,8 +46,8 @@ export default function MobileBottomNav() {
     },
     {
       id: "wallet",
-      label: "Dompet",
-      icon: Wallet,
+      label: "Portofolio",
+      icon: Award,
       path: "/wallet",
       isActive: pathname === "/wallet",
     },

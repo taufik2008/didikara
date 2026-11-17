@@ -23,9 +23,9 @@ const TOUR_STEPS = [
   },
   {
     icon: Award,
-    title: "4. Digital Wallet & Klaim Sertifikat Resmi",
+    title: "4. Portofolio Saya & Klaim Sertifikat Resmi",
     desc: "Setelah seluruh modul selesai dan lulus passing score, klaim sertifikat digital Anda dengan QR-Code verifikasi resmi yang dapat langsung diunduh dalam format PDF.",
-    tip: "Sertifikat tersimpan aman di menu 'Digital Wallet' dan dapat dicetak kapan saja."
+    tip: "Sertifikat tersimpan aman di menu 'Portofolio Saya' dan dapat dicetak kapan saja."
   }
 ];
 

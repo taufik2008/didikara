@@ -411,7 +411,7 @@ export default function LandingPage({ initialCourses, initialCategories, initial
               style={{ color: "inherit", textDecoration: "none", transition: "color 0.2s" }}
               className="nav-link"
             >
-              Keunggulan AI
+              Mengapa Pilih Kami
             </a>
             <a
               href="#instruktur"
