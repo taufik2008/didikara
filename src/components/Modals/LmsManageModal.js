@@ -1,7 +1,85 @@
 "use client";
 import { useState, useEffect, useCallback } from "react";
-import { X, Book, FileText, Settings, PlusCircle, Trash, Check, UploadCloud, Loader, Database, Users, Star } from "lucide-react";
+import { X, Book, FileText, Settings, PlusCircle, Trash, Check, UploadCloud, Loader, Database, Users, Star, Eye } from "lucide-react";
 import { useApp } from "@/context/AppContext";
+
+function getEmbedPreview(url, type) {
+  if (!url || typeof url !== "string") return null;
+  const trimmed = url.trim();
+
+  // YouTube
+  const ytMatch = trimmed.match(/(?:https?:\/\/)?(?:www\.)?(?:m\.)?(?:youtube(?:-nocookie)?\.com\/(?:watch\?(?:.*&)?v=|embed\/|v\/|shorts\/|live\/)|youtu\.be\/)([a-zA-Z0-9_-]{11})/i);
+  if (ytMatch) {
+    return {
+      type: "iframe",
+      src: `https://www.youtube.com/embed/${ytMatch[1]}?rel=0&autoplay=1`,
+      title: "YouTube Video"
+    };
+  }
+
+  // Google Drive (Video / Slides / Docs)
+  const gdriveMatch = trimmed.match(/(?:drive|docs)\.google\.com\/(?:file\/d\/|open\?.*id=|uc\?.*id=|document\/d\/|presentation\/d\/)?([a-zA-Z0-9_-]{15,})/i);
+  if (gdriveMatch) {
+    return {
+      type: "iframe",
+      src: `https://drive.google.com/file/d/${gdriveMatch[1]}/preview`,
+      title: "Google Drive File"
+    };
+  }
+
+  // Vimeo
+  const vimeoMatch = trimmed.match(/vimeo\.com\/(?:channels\/(?:\w+\/)?|groups\/([^\/]*)\/videos\/|album\/(\d+)\/video\/|video\/|)(\d+)/);
+  if (vimeoMatch) {
+    return {
+      type: "iframe",
+      src: `https://player.vimeo.com/video/${vimeoMatch[3]}?autoplay=1`,
+      title: "Vimeo Video"
+    };
+  }
+
+  // Loom
+  const loomMatch = trimmed.match(/loom\.com\/(?:share|embed)\/([a-zA-Z0-9]+)/i);
+  if (loomMatch) {
+    return {
+      type: "iframe",
+      src: `https://www.loom.com/embed/${loomMatch[1]}`,
+      title: "Loom Video"
+    };
+  }
+
+  // Direct Video MP4 / WEBM
+  if (trimmed.match(/\.(mp4|webm|mov|mkv)($|\?)/i) || type === "video") {
+    return {
+      type: "video",
+      src: trimmed,
+      title: "Direct Video Player"
+    };
+  }
+
+  // Direct PDF
+  if (trimmed.match(/\.pdf($|\?)/i)) {
+    return {
+      type: "iframe",
+      src: trimmed,
+      title: "Dokumen PDF"
+    };
+  }
+
+  // PPTX / Office Document
+  if (trimmed.match(/\.(pptx|ppt|docx|doc|xlsx|xls)($|\?)/i)) {
+    return {
+      type: "iframe",
+      src: `https://view.officeapps.live.com/op/embed.aspx?src=${encodeURIComponent(trimmed)}`,
+      title: "Office Document Viewer"
+    };
+  }
+
+  return {
+    type: "iframe",
+    src: trimmed,
+    title: "Media Preview"
+  };
+}
 
 // ── Helper untuk membaca response JSON dengan aman tanpa crash JSON.parse HTML ──
 async function parseResponseJson(res) {
@@ -643,10 +721,14 @@ export default function LmsManageModal() {
     handleLmsAddLesson,   handleLmsDeleteLesson,
     handleLmsLessonChange,
     courses,
+    handleOpenClass,
+    setActiveCourse,
+    setActivePage,
   } = useApp();
 
-  const [uploadMsg, setUploadMsg]           = useState("");
+  const [uploadMsg, setUploadMsg]             = useState("");
   const [uploadingLesson, setUploadingLesson] = useState(null);
+  const [previewLesson, setPreviewLesson]     = useState(null); // { title, type, url } | null
 
   // Tutup dengan Esc. Sebelumnya satu-satunya cara menutup lewat latar adalah
   // klik tetikus. Hook harus berada sebelum early-return di bawah.
@@ -861,6 +943,32 @@ export default function LmsManageModal() {
                                     {isUploading ? "Uploading..." : "Upload File"}
                                     <input type="file" accept={lessonObj.type === "video" ? "video/*" : ".pptx,.pdf"} style={{ display: "none" }} onChange={(e) => { if (e.target.files[0]) handleFileUpload(modIdx, lessonIdx, e.target.files[0]); }} />
                                   </label>
+
+                                  {Boolean(lessonObj.url) && (
+                                    <button
+                                      type="button"
+                                      onClick={() => setPreviewLesson(lessonObj)}
+                                      style={{
+                                        height: 34,
+                                        padding: "0 12px",
+                                        borderRadius: 6,
+                                        border: "1px solid rgba(59, 130, 246, 0.4)",
+                                        background: "rgba(59, 130, 246, 0.12)",
+                                        color: "#60a5fa",
+                                        fontSize: "0.76rem",
+                                        fontWeight: 700,
+                                        cursor: "pointer",
+                                        display: "flex",
+                                        alignItems: "center",
+                                        gap: 5,
+                                        flexShrink: 0
+                                      }}
+                                      title="Uji coba putar video atau buka slide PPT/PDF ini sekarang"
+                                    >
+                                      <Eye size={13} />
+                                      <span>Uji Preview</span>
+                                    </button>
+                                  )}
                                 </>
                               )}
                             </div>
@@ -1207,6 +1315,39 @@ export default function LmsManageModal() {
         )}
 
         <div style={{ display: "flex", gap: 14, marginTop: 32, paddingTop: 18, borderTop: "1px solid var(--border-color)", justifyContent: "flex-end", alignItems: "center" }}>
+          <button
+            type="button"
+            className="btn btn-secondary"
+            style={{
+              marginRight: "auto",
+              width: "auto",
+              padding: "11px 18px",
+              fontSize: "0.86rem",
+              fontWeight: 700,
+              borderRadius: 10,
+              color: "#60a5fa",
+              borderColor: "rgba(59, 130, 246, 0.35)",
+              background: "rgba(59, 130, 246, 0.08)",
+              display: "inline-flex",
+              alignItems: "center",
+              gap: 8,
+            }}
+            onClick={() => {
+              handleLmsSaveAll();
+              setLmsManageModalActive(false);
+              if (typeof handleOpenClass === "function") {
+                handleOpenClass(selectedLmsCourse.id);
+              } else {
+                setActiveCourse(selectedLmsCourse);
+                setActivePage("lms-page");
+              }
+            }}
+            title="Simpan perubahan silabus dan buka ruang belajar LMS untuk simulasi peserta"
+          >
+            <Eye size={16} />
+            <span>Tinjau di Ruang Belajar (LMS) ↗</span>
+          </button>
+
           <button type="button" className="btn btn-secondary" style={{ width: "auto", padding: "12px 24px", fontSize: "0.9rem", fontWeight: 600 }} onClick={() => setLmsManageModalActive(false)}>
             Batal
           </button>
@@ -1216,6 +1357,100 @@ export default function LmsManageModal() {
           </button>
         </div>
       </div>
+
+      {/* ── Modal Pratinjau Materi (Quick Media Preview) ───────────────── */}
+      {previewLesson && (
+        <div
+          className="modal-overlay active"
+          style={{ zIndex: 11000, background: "rgba(0, 0, 0, 0.85)", backdropFilter: "blur(6px)" }}
+          onClick={() => setPreviewLesson(null)}
+        >
+          <div
+            className="modal-content glass-panel"
+            style={{
+              maxWidth: 860,
+              width: "92vw",
+              maxHeight: "90vh",
+              padding: "24px 28px",
+              borderRadius: 16,
+              display: "flex",
+              flexDirection: "column",
+              gap: 16,
+              border: "1px solid rgba(255, 255, 255, 0.15)",
+              boxShadow: "0 20px 50px rgba(0, 0, 0, 0.5)",
+            }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+              <div>
+                <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 4 }}>
+                  <span style={{ fontSize: "0.75rem", padding: "2px 8px", borderRadius: 6, background: "rgba(59, 130, 246, 0.2)", color: "#60a5fa", fontWeight: 700 }}>
+                    {previewLesson.type === "video" ? "🎬 Preview Video" : previewLesson.type === "pptx" ? "📄 Preview Presentasi / PDF" : "📖 Preview Teks"}
+                  </span>
+                  <span style={{ fontSize: "0.75rem", color: "var(--text-muted)" }}>Simulasi Tampilan Peserta</span>
+                </div>
+                <h4 style={{ margin: 0, fontSize: "1.15rem", fontWeight: 700, color: "var(--text-primary)" }}>
+                  {previewLesson.title || "Pratinjau Materi"}
+                </h4>
+              </div>
+              <button
+                type="button"
+                onClick={() => setPreviewLesson(null)}
+                style={{ background: "none", border: "none", cursor: "pointer", color: "var(--text-muted)", padding: 6 }}
+              >
+                <X size={20} />
+              </button>
+            </div>
+
+            <div style={{ width: "100%", height: 440, background: "#050811", borderRadius: 12, overflow: "hidden", display: "flex", alignItems: "center", justifyContent: "center", border: "1px solid var(--border-color)" }}>
+              {(() => {
+                const embed = getEmbedPreview(previewLesson.url, previewLesson.type);
+                if (!embed) {
+                  return (
+                    <div style={{ textAlign: "center", padding: 20, color: "var(--text-muted)" }}>
+                      <p>Belum ada URL materi yang dimasukkan untuk pelajaran ini.</p>
+                    </div>
+                  );
+                }
+                if (embed.type === "video") {
+                  return (
+                    <video
+                      src={embed.src}
+                      controls
+                      autoPlay
+                      style={{ width: "100%", height: "100%", objectFit: "contain" }}
+                    />
+                  );
+                }
+                return (
+                  <iframe
+                    src={embed.src}
+                    title={embed.title}
+                    style={{ width: "100%", height: "100%", border: "none" }}
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                    allowFullScreen
+                  />
+                );
+              })()}
+            </div>
+
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", fontSize: "0.78rem", color: "var(--text-muted)", flexWrap: "wrap", gap: 10 }}>
+              <span style={{ display: "flex", alignItems: "center", gap: 6 }}>
+                <span style={{ width: 8, height: 8, borderRadius: "50%", background: "#10b981", display: "inline-block" }}></span>
+                Media siap disajikan kepada peserta dalam kelas.
+              </span>
+              <button
+                type="button"
+                className="btn btn-secondary"
+                onClick={() => setPreviewLesson(null)}
+                style={{ width: "auto", padding: "6px 16px", fontSize: "0.82rem" }}
+              >
+                Tutup Preview
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
