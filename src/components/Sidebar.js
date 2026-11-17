@@ -94,7 +94,8 @@ export default function Sidebar() {
       <div>
         <div className="user-profile-badge" style={{
           marginBottom: 12, backgroundColor: "transparent", border: "none", padding: 0,
-          justifyContent: sidebarCollapsed ? "center" : "flex-start"
+          justifyContent: sidebarCollapsed ? "center" : "flex-start",
+          display: "flex", alignItems: "center", gap: 10
         }}>
           <div
             className="avatar"
@@ -103,11 +104,30 @@ export default function Sidebar() {
               fontWeight: 700,
               background: "linear-gradient(135deg, #2b5c8d 0%, #4f80b5 100%)",
               border: "1.5px solid rgba(255, 255, 255, 0.25)",
-              boxShadow: "0 2px 6px rgba(0, 0, 0, 0.25)"
+              boxShadow: "0 2px 6px rgba(0, 0, 0, 0.25)",
+              overflow: "hidden",
+              width: 36,
+              height: 36,
+              borderRadius: "50%",
+              flexShrink: 0,
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              fontSize: "0.85rem"
             }}
             title={currentUser?.fullname}
           >
-            {currentUser?.avatar || "SA"}
+            {currentUser?.avatar && (currentUser.avatar.startsWith("http") || currentUser.avatar.startsWith("/")) ? (
+              <img
+                src={currentUser.avatar}
+                alt={currentUser?.fullname || "Avatar"}
+                style={{ width: "100%", height: "100%", objectFit: "cover" }}
+              />
+            ) : (
+              currentUser?.avatar && currentUser.avatar.length <= 4
+                ? currentUser.avatar
+                : (currentUser?.fullname ? currentUser.fullname.split(" ").filter(Boolean).map(w => w[0]).join("").slice(0, 2).toUpperCase() : "SA")
+            )}
           </div>
           {!sidebarCollapsed && (
             <div style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
@@ -121,7 +141,7 @@ export default function Sidebar() {
           className={`menu-item ${sidebarCollapsed ? 'item-collapsed' : ''}`}
           style={{ color: "var(--danger)", justifyContent: sidebarCollapsed ? "center" : "flex-start" }}
           title={sidebarCollapsed ? "Keluar" : undefined}
-          onClick={handleLogout}
+          onClick={() => handleLogout()}
         >
           <LogOut size={18} style={{ flexShrink: 0 }} />
           {!sidebarCollapsed && <span>Keluar</span>}

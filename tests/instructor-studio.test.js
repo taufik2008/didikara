@@ -50,3 +50,18 @@ test("Backend API db route allows instructor course saves", () => {
   assert.ok(dbContent.includes("canManageCourse"), "DB route must verify instructor ownership via canManageCourse");
   assert.ok(dbContent.includes("course_instructors"), "DB route must auto-assign instructor in course_instructors");
 });
+
+test("Sidebar and AuthContext handle image URL avatar and safe logout", () => {
+  const sidebarPath = path.resolve("./src/components/Sidebar.js");
+  const sidebarContent = fs.readFileSync(sidebarPath, "utf8");
+
+  // Avatar safely handles URLs with <img>
+  assert.ok(sidebarContent.includes("currentUser.avatar.startsWith"), "Sidebar must detect image URL avatars");
+  assert.ok(sidebarContent.includes("<img"), "Sidebar must render img tag for URL avatars");
+  assert.ok(sidebarContent.includes("handleLogout()"), "Sidebar must call handleLogout without passing event");
+
+  // AuthContext safe function check
+  const authContextPath = path.resolve("./src/context/AuthContext.js");
+  const authContent = fs.readFileSync(authContextPath, "utf8");
+  assert.ok(authContent.includes('typeof onLogout === "function"'), "AuthContext must verify onLogout is function");
+});

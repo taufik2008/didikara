@@ -76,13 +76,26 @@ export function AuthProvider({ children }) {
   }, [loginEmail, loginPassword]);
 
   const handleLogout = useCallback(async (onLogout) => {
-    setCurrentUser(null);
     try {
       await logoutApi();
     } catch {
       // Best-effort
     }
-    if (onLogout) await onLogout();
+    setCurrentUser(null);
+    if (typeof onLogout === "function") {
+      try {
+        await onLogout();
+      } catch {
+        // Best-effort
+      }
+    }
+    if (typeof window !== "undefined") {
+      try {
+        localStorage.removeItem("auth_token");
+        sessionStorage.removeItem("auth_token");
+      } catch {}
+      window.location.href = "/";
+    }
   }, []);
 
   const refreshUser = useCallback(async () => {
