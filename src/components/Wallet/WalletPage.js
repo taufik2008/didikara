@@ -174,9 +174,27 @@ export default function WalletPage() {
                 <h4 style={{ marginTop: 4 }}>{cert.title}</h4>
                 <p style={{ fontSize: "0.75rem", color: "var(--text-secondary)" }}>Diberikan pada {cert.date}</p>
               </div>
-              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", borderTop: "1px solid var(--border-color)", paddingTop: 12 }}>
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", borderTop: "1px solid var(--border-color)", paddingTop: 12, flexWrap: "wrap", gap: 6 }}>
                 <span style={{ fontSize: "0.7rem", fontFamily: "monospace", color: "var(--text-muted)" }}>{cert.idCode}</span>
-                <button className="btn btn-primary" style={{ width: "auto", padding: "6px 12px", fontSize: "0.75rem" }} onClick={() => handleViewCert(cert)}>Lihat</button>
+                <div style={{ display: "flex", gap: 6, alignItems: "center" }}>
+                  <a
+                    href={(() => {
+                      const d = cert.date ? new Date(cert.date) : new Date();
+                      const y = !isNaN(d.getFullYear()) ? d.getFullYear() : new Date().getFullYear();
+                      const m = !isNaN(d.getMonth()) ? d.getMonth() + 1 : new Date().getMonth() + 1;
+                      const verifyUrl = typeof window !== "undefined" ? `${window.location.origin}/verify/${cert.idCode}` : `/verify/${cert.idCode}`;
+                      return `https://www.linkedin.com/profile/add?startTask=CERTIFICATION_NAME&name=${encodeURIComponent(cert.title)}&organizationName=DIDIKARA&issueYear=${y}&issueMonth=${m}&certUrl=${encodeURIComponent(verifyUrl)}&certId=${encodeURIComponent(cert.idCode)}`;
+                    })()}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="btn btn-secondary"
+                    style={{ width: "auto", padding: "5px 10px", fontSize: "0.72rem", borderColor: "#0a66c2", color: "#60a5fa", display: "inline-flex", alignItems: "center", gap: 4, textDecoration: "none" }}
+                    title="Tambahkan ke Profil LinkedIn (Lisensi & Sertifikasi)"
+                  >
+                    💼 + LinkedIn
+                  </a>
+                  <button className="btn btn-primary" style={{ width: "auto", padding: "6px 12px", fontSize: "0.75rem" }} onClick={() => handleViewCert(cert)}>Lihat</button>
+                </div>
               </div>
             </div>
           ))}

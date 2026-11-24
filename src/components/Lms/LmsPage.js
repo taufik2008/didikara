@@ -80,13 +80,14 @@ function ExamTimerBanner({ examTimeRemaining, examTimerActive }) {
 function CurriculumNav({
   activeCourse, courses, enrolledCourses, activeLessonIndex, completedLessons,
   dbLessonProgress, lockedModules, handleSelectLesson, handleOpenClass,
-  isInstructor, handleOpenLmsManageModal,
+  isInstructor, handleOpenLmsManageModal, isAdminUser, handleEnrollCourse,
 }) {
   const modules = activeCourse?.modules || [];
   const completedSet = new Set(completedLessons[activeCourse.id] || []);
   const kelasSaya = enrolledCourses
     .map(id => courses.find(c => c.id === id))
     .filter(Boolean);
+  const isEnrolledInPaid = (enrolledCourses || []).includes(activeCourse?.id) || isAdminUser || isInstructor || (activeCourse?.price === 0);
 
   let flatIndex = -1; // dinaikkan sebelum dipakai agar mulai dari 0
 
@@ -153,25 +154,60 @@ function CurriculumNav({
                   const selesai = completedSet.has(idx);
                   const pct     = dbLessonProgress[idx]?.pct ?? 0;
                   const aktif   = idx === activeLessonIndex;
+                  const isFreePreview = idx === 0 || Boolean(typeof lesson === "object" && lesson?.isFreePreview);
+                  const isLockedByEnrollment = !isEnrolledInPaid && !isFreePreview;
+
                   return (
                     <button type="button" key={li}
                       className={`lesson-item ${aktif ? "active" : ""}`}
                       disabled={terkunci}
                       aria-current={aktif ? "true" : undefined}
-                      title={terkunci ? "Selesaikan modul sebelumnya terlebih dahulu" : judul}
-                      onClick={() => handleSelectLesson(idx)}
-                      style={{ opacity: terkunci ? 0.45 : 1, cursor: terkunci ? "not-allowed" : "pointer" }}>
-                      <span style={{ display: "flex", alignItems: "center", gap: 8, textAlign: "left" }}>
+                      title={terkunci ? "Selesaikan modul sebelumnya terlebih dahulu" : isLockedByEnrollment ? "Terkunci: Beli kursus untuk membuka materi ini" : judul}
+                      onClick={() => {
+                        if (isLockedByEnrollment) {
+                          if (handleEnrollCourse) handleEnrollCourse(activeCourse);
+                        } else {
+                          handleSelectLesson(idx);
+                        }
+                      }}
+                      style={{
+                        opacity: terkunci ? 0.45 : isLockedByEnrollment ? 0.6 : 1,
+                        cursor: terkunci ? "not-allowed" : "pointer"
+                      }}>
+                      <span style={{ display: "flex", alignItems: "center", gap: 8, textAlign: "left", flex: 1, overflow: "hidden" }}>
                         {selesai ? (
                           <CheckCircle size={14} style={{ color: "var(--success)", flexShrink: 0 }} />
+                        ) : isLockedByEnrollment ? (
+                          <Lock size={14} style={{ color: "#f87171", flexShrink: 0 }} />
                         ) : (typeof lesson === "object" && (lesson?.type === "pptx" || lesson?.type === "pdf")) ? (
                           <FileText size={14} style={{ color: "var(--primary)", flexShrink: 0 }} />
                         ) : (
-                          <PlayCircle size={14} style={{ color: "var(--text-muted)", flexShrink: 0 }} />
+                          <PlayCircle size={14} style={{ color: isFreePreview && !isEnrolledInPaid ? "#34d399" : "var(--text-muted)", flexShrink: 0 }} />
                         )}
-                        <span>{judul}</span>
+                        <span style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{judul}</span>
                       </span>
-                      {!selesai && pct > 0 && (
+
+                      {!isEnrolledInPaid && isFreePreview && (
+                        <span style={{
+                          fontSize: "0.62rem", padding: "1px 6px", borderRadius: 4,
+                          background: "rgba(16, 185, 129, 0.15)", color: "#34d399",
+                          border: "1px solid rgba(16, 185, 129, 0.3)", fontWeight: 700, flexShrink: 0
+                        }}>
+                          Gratis
+                        </span>
+                      )}
+
+                      {isLockedByEnrollment && (
+                        <span style={{
+                          fontSize: "0.62rem", padding: "1px 6px", borderRadius: 4,
+                          background: "rgba(239, 68, 68, 0.15)", color: "#f87171",
+                          border: "1px solid rgba(239, 68, 68, 0.3)", fontWeight: 700, flexShrink: 0
+                        }}>
+                          Kunci
+                        </span>
+                      )}
+
+                      {!selesai && pct > 0 && isEnrolledInPaid && (
                         <span style={{ fontSize: "0.65rem", color: "var(--text-muted)", flexShrink: 0 }}>{pct}%</span>
                       )}
                     </button>
@@ -255,7 +291,7 @@ export default function LmsPage() {
     handleSelectLesson, handleAssignmentUpload, handleAttendance, muatKehadiran, handleForumSubmit,
     handleStartExam, handleQuizSubmit, handleLoadExamHistory, handleSaveLessonProgress,
     handleOpenClass, courses, currentUser, isSubscribed, showSubscriptionModal, setShowSubscriptionModal,
-    handleOpenLmsManageModal,
+    handleOpenLmsManageModal, handleEnrollCourse,
   } = useApp();
 
   const videoTimerRef = useRef(null);
@@ -1117,53 +1153,6 @@ Didikara - Platform Pelatihan & Sertifikasi Profesional
     );
   }
 
-  // 3. Jika kursus Video Berbayar (price > 0): setelah register member, peserta baru bisa daftar
-  if (activeCourse && activeCourse.price > 0) {
-    const isEnrolledInPaid = (enrolledCourses || []).includes(activeCourse.id) || isAdminUser || isInstructor;
-    if (!isEnrolledInPaid) {
-      return (
-        <main className="page-view active">
-          <div style={{
-            display: "flex", flexDirection: "column", alignItems: "center",
-            justifyContent: "center", minHeight: "70vh", padding: 40, textAlign: "center"
-          }}>
-            <div style={{
-              width: 72, height: 72, borderRadius: "50%", background: "rgba(59, 130, 246, 0.12)",
-              border: "1.5px solid rgba(59, 130, 246, 0.3)", display: "flex", alignItems: "center",
-              justifyContent: "center", marginBottom: 20, color: "#3b82f6"
-            }}>
-              <Lock size={36} />
-            </div>
-            <h2 style={{ fontSize: "1.5rem", fontWeight: 800, marginBottom: 10, color: "var(--text-primary)" }}>
-              Pendaftaran Kelas Video Berbayar
-            </h2>
-            <p style={{ color: "var(--text-secondary)", maxWidth: 500, lineHeight: 1.6, marginBottom: 20, fontSize: "0.9rem" }}>
-              Sebagai member terdaftar, Anda dapat mendaftar kursus khusus <strong>"{activeCourse.title}"</strong> ({activeCourse.priceLabel}). Silakan selesaikan pendaftaran untuk membuka seluruh video materi dan modul sertifikasi.
-            </p>
-            <div style={{ display: "flex", gap: 12, flexWrap: "wrap", justifyContent: "center" }}>
-              <button
-                type="button"
-                className="btn btn-primary"
-                onClick={() => handleEnrollCourse(activeCourse)}
-                style={{ width: "auto", padding: "12px 24px", fontWeight: 700 }}
-              >
-                Beli Kelas Sekarang ({activeCourse.priceLabel})
-              </button>
-              <button
-                type="button"
-                className="btn btn-secondary"
-                onClick={() => setActivePage("marketplace-page")}
-                style={{ width: "auto", padding: "12px 24px" }}
-              >
-                Kembali ke Katalog Pelatihan
-              </button>
-            </div>
-          </div>
-        </main>
-      );
-    }
-  }
-
   if (!activeCourse) {
     return (
       <main className="page-view active">
@@ -1176,6 +1165,11 @@ Didikara - Platform Pelatihan & Sertifikasi Profesional
       </main>
     );
   }
+
+  // Cek hak akses kursus berbayar & pratinjau materi gratis (Free Preview)
+  const isEnrolledInPaid = (enrolledCourses || []).includes(activeCourse.id) || isAdminUser || isInstructor || (activeCourse.price === 0);
+  const isCurrentLessonFree = activeLessonIndex === 0 || Boolean(activeLesson?.isFreePreview);
+  const isCurrentLessonLocked = !isEnrolledInPaid && !isCurrentLessonFree;
 
   const sudahSelesai  = (completedLessons[activeCourse.id] || []).includes(activeLessonIndex);
   const examSettings  = activeCourse.examSettings || {};
@@ -1226,18 +1220,108 @@ Didikara - Platform Pelatihan & Sertifikasi Profesional
 
       <div className={`lms-container ${cinemaMode ? "cinema-mode" : "with-sidebar"}`}>
         <div className="lms-player-side">
+          {/* Banner Pratinjau Gratis (Free Preview) */}
+          {!isEnrolledInPaid && isCurrentLessonFree && (
+            <div style={{
+              background: "linear-gradient(135deg, rgba(16, 185, 129, 0.16) 0%, rgba(59, 130, 246, 0.16) 100%)",
+              border: "1px solid rgba(16, 185, 129, 0.35)",
+              borderRadius: 12,
+              padding: "12px 18px",
+              marginBottom: 16,
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "space-between",
+              flexWrap: "wrap",
+              gap: 12
+            }}>
+              <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+                <div style={{
+                  width: 36, height: 36, borderRadius: "50%",
+                  background: "rgba(16, 185, 129, 0.2)", color: "#34d399",
+                  display: "flex", alignItems: "center", justifyContent: "center", fontSize: "1.1rem"
+                }}>
+                  🎁
+                </div>
+                <div>
+                  <div style={{ fontWeight: 700, fontSize: "0.88rem", color: "var(--text-primary)" }}>
+                    Mode Pratinjau Gratis (Free Preview)
+                  </div>
+                  <div style={{ fontSize: "0.78rem", color: "var(--text-secondary)" }}>
+                    Anda sedang mengakses sampel gratis kursus <strong>{activeCourse.title}</strong>. Beli kursus lengkap ({activeCourse.priceLabel}) untuk membuka seluruh {flatLessons.length} materi, kuis ujian, dan sertifikat resmi.
+                  </div>
+                </div>
+              </div>
+              <button
+                type="button"
+                className="btn btn-primary"
+                onClick={() => handleEnrollCourse(activeCourse)}
+                style={{ width: "auto", padding: "8px 18px", fontSize: "0.82rem", fontWeight: 700, whiteSpace: "nowrap" }}
+              >
+                Beli Kursus Sekarang ({activeCourse.priceLabel})
+              </button>
+            </div>
+          )}
+
           <div className={`video-container ${isFullscreen ? "is-fullscreen" : ""}`} ref={playerRef}>
-            <VideoPlayerV2
-              activeLesson={activeLesson}
-              activeCourse={activeCourse}
-              activeLessonIndex={activeLessonIndex}
-              videoPlaying={videoPlaying}
-              videoProgress={videoProgress}
-              videoTime={videoTime}
-              setVideoPlaying={setVideoPlaying}
-              setVideoProgress={setVideoProgress}
-              isFullscreen={isFullscreen}
-            />
+            {isCurrentLessonLocked ? (
+              <div style={{
+                minHeight: 420,
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "center",
+                justifyContent: "center",
+                padding: 36,
+                textAlign: "center",
+                background: "var(--bg-card)",
+                borderRadius: 12,
+                border: "1px solid var(--border-color)"
+              }}>
+                <div style={{
+                  width: 64, height: 64, borderRadius: "50%",
+                  background: "rgba(239, 68, 68, 0.12)", border: "1.5px solid rgba(239, 68, 68, 0.3)",
+                  display: "flex", alignItems: "center", justifyContent: "center",
+                  marginBottom: 16, color: "#f87171"
+                }}>
+                  <Lock size={32} />
+                </div>
+                <h3 style={{ fontSize: "1.3rem", fontWeight: 700, marginBottom: 8, color: "var(--text-primary)" }}>
+                  Materi Terkunci
+                </h3>
+                <p style={{ color: "var(--text-secondary)", maxWidth: 460, lineHeight: 1.6, marginBottom: 20, fontSize: "0.85rem" }}>
+                  Materi <strong>&quot;{activeLesson?.title || 'ini'}&quot;</strong> hanya dapat diakses oleh peserta terdaftar. Silakan selesaikan pendaftaran untuk membuka seluruh video materi, forum kelas, dan ujian sertifikasi.
+                </p>
+                <div style={{ display: "flex", gap: 12, flexWrap: "wrap", justifyContent: "center" }}>
+                  <button
+                    type="button"
+                    className="btn btn-primary"
+                    onClick={() => handleEnrollCourse(activeCourse)}
+                    style={{ width: "auto", padding: "10px 22px", fontWeight: 700, fontSize: "0.85rem" }}
+                  >
+                    Beli Kelas Sekarang ({activeCourse.priceLabel})
+                  </button>
+                  <button
+                    type="button"
+                    className="btn btn-secondary"
+                    onClick={() => handleSelectLesson(0)}
+                    style={{ width: "auto", padding: "10px 18px", fontSize: "0.85rem" }}
+                  >
+                    Tonton Pratinjau Gratis (Materi 1)
+                  </button>
+                </div>
+              </div>
+            ) : (
+              <VideoPlayerV2
+                activeLesson={activeLesson}
+                activeCourse={activeCourse}
+                activeLessonIndex={activeLessonIndex}
+                videoPlaying={videoPlaying}
+                videoProgress={videoProgress}
+                videoTime={videoTime}
+                setVideoPlaying={setVideoPlaying}
+                setVideoProgress={setVideoProgress}
+                isFullscreen={isFullscreen}
+              />
+            )}
           </div>
           {/* Player Mode Toolbar: Cinema Mode & Fullscreen */}
           {activeLesson && (
@@ -2821,6 +2905,8 @@ Didikara - Platform Pelatihan & Sertifikasi Profesional
             handleOpenClass={handleOpenClass}
             isInstructor={isInstructor}
             handleOpenLmsManageModal={handleOpenLmsManageModal}
+            isAdminUser={isAdminUser}
+            handleEnrollCourse={handleEnrollCourse}
           />
         )}
       </div>

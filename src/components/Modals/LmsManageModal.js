@@ -1,6 +1,6 @@
 "use client";
 import { useState, useEffect, useCallback } from "react";
-import { X, Book, FileText, Settings, PlusCircle, Trash, Check, UploadCloud, Loader, Database, Users, Star, Eye } from "lucide-react";
+import { X, Book, FileText, Settings, PlusCircle, Trash, Check, UploadCloud, Loader, Database, Users, Star, Eye, Maximize2, Minimize2, Bell, AlertTriangle } from "lucide-react";
 import { useApp } from "@/context/AppContext";
 
 function getEmbedPreview(url, type) {
@@ -474,9 +474,10 @@ function QuestionBankTab({ courseId }) {
 function InstructorDashboard({ courseId }) {
   const [students, setStudents]   = useState([]);
   const [loading, setLoading]     = useState(true);
-  const [grading, setGrading]     = useState(null); // { email, grade, feedback }
+  const [grading, setGrading]     = useState(null); // { email, fullname, grade, feedback, status, rubric: { concept, analysis, format } }
   const [saveMsg, setSaveMsg]     = useState("");
   const [search, setSearch]       = useState("");
+  const [nudgingEmail, setNudgingEmail] = useState(null);
 
   const load = useCallback(async () => {
     if (!courseId) return;
@@ -498,12 +499,76 @@ function InstructorDashboard({ courseId }) {
       const res  = await fetch("/api/instructor", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ courseId, userEmail: grading.email, grade: grading.grade, feedback: grading.feedback }),
+        body: JSON.stringify({
+          courseId,
+          userEmail: grading.email,
+          grade: grading.grade,
+          feedback: grading.feedback,
+          status: grading.status || (grading.grade >= 70 ? "graded" : "revision_needed"),
+          rubric: grading.rubric,
+        }),
       });
       const data = await res.json();
-      if (data.success) { setSaveMsg("✓ Nilai tersimpan & notifikasi terkirim ke peserta"); setGrading(null); load(); }
-      else setSaveMsg(`✕ ${data.error}`);
-    } catch { setSaveMsg("✕ Gagal menyimpan"); }
+      if (data.success) {
+        setSaveMsg(`✓ Penilaian & rubrik untuk ${grading.fullname || grading.email} tersimpan. Peserta telah ternotifikasi.`);
+        setGrading(null);
+        load();
+      } else {
+        setSaveMsg(`✕ ${data.error || "Gagal menyimpan nilai"}`);
+      }
+    } catch {
+      setSaveMsg("✕ Gagal menyimpan ke server");
+    }
+  };
+
+  const handleNudge = async (student) => {
+    setNudgingEmail(student.email);
+    setSaveMsg("");
+    try {
+      const res = await fetch("/api/instructor", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          action: "nudge",
+          courseId,
+          userEmail: student.email,
+        }),
+      });
+      const data = await res.json();
+      if (data.success) {
+        setSaveMsg(`✓ Notifikasi pengingat belajar berhasil dikirim ke ${student.fullname || student.email}.`);
+      } else {
+        setSaveMsg(`✕ ${data.error || "Gagal mengirim pengingat"}`);
+      }
+    } catch {
+      setSaveMsg("✕ Gagal mengirim notifikasi pengingat");
+    } finally {
+      setNudgingEmail(null);
+    }
+  };
+
+  const handleBatchNudge = async () => {
+    const inactiveList = students.filter(s => (s.avg_progress || 0) < 50 || s.assignment_grade == null);
+    if (inactiveList.length === 0) {
+      alert("Seluruh peserta memiliki kemajuan belajar di atas 50%!");
+      return;
+    }
+    if (!confirm(`Kirim notifikasi pengingat belajar serentak kepada ${inactiveList.length} peserta yang progressnya tertunda?`)) return;
+
+    setLoading(true);
+    let successCount = 0;
+    for (const st of inactiveList) {
+      try {
+        await fetch("/api/instructor", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ action: "nudge", courseId, userEmail: st.email }),
+        });
+        successCount++;
+      } catch {}
+    }
+    setSaveMsg(`✓ Berhasil mengirimkan pengingat belajar ke ${successCount} peserta.`);
+    setLoading(false);
   };
 
   const filtered = students.filter(s =>
@@ -519,22 +584,50 @@ function InstructorDashboard({ courseId }) {
     return `${d} hari lalu`;
   };
 
+  const updateRubric = (key, val) => {
+    const num = Math.max(0, Math.min(key === "analysis" ? 40 : 30, Number(val) || 0));
+    setGrading(prev => {
+      const nextRubric = { ...(prev.rubric || { concept: 25, analysis: 35, format: 25 }), [key]: num };
+      const total = (nextRubric.concept || 0) + (nextRubric.analysis || 0) + (nextRubric.format || 0);
+      return {
+        ...prev,
+        rubric: nextRubric,
+        grade: total,
+        status: total >= 70 ? "graded" : "revision_needed"
+      };
+    });
+  };
+
   return (
     <div>
-      <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:16 }}>
-        <p style={{ color:"var(--text-secondary)", fontSize:"0.8rem", margin:0 }}>
-          {students.length} peserta terdaftar di kursus ini.
-        </p>
-        <div style={{ display:"flex", gap:8 }}>
+      <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:16, flexWrap: "wrap", gap: 10 }}>
+        <div>
+          <p style={{ color:"var(--text-secondary)", fontSize:"0.82rem", margin:0 }}>
+            {students.length} peserta terdaftar di kursus ini.
+          </p>
+          <span style={{ fontSize: "0.72rem", color: "var(--text-muted)" }}>
+            Kelola penilaian tugas, umpan balik rubrik kriteria, dan pantau status kelulusan.
+          </span>
+        </div>
+        <div style={{ display:"flex", gap:8, alignItems: "center", flexWrap: "wrap" }}>
+          <button
+            type="button"
+            className="btn btn-secondary"
+            onClick={handleBatchNudge}
+            style={{ width: "auto", padding: "6px 12px", fontSize: "0.75rem", borderColor: "rgba(245,158,11,0.4)", color: "#fbbf24", display: "inline-flex", alignItems: "center", gap: 5 }}
+            title="Kirim notifikasi pengingat bagi peserta dengan progress < 50%"
+          >
+            <Bell size={13} /> Nudge Peserta Tertunda
+          </button>
           <input type="text" placeholder="Cari nama / email..." value={search}
             onChange={e => setSearch(e.target.value)}
-            style={{ paddingLeft:10, height:32, fontSize:"0.78rem", width:180 }} />
-          <button onClick={load} className="btn btn-secondary" style={{ width:"auto", padding:"0 10px", height:32, fontSize:"0.72rem" }}>↻</button>
+            style={{ paddingLeft:10, height:34, fontSize:"0.78rem", width:180 }} />
+          <button onClick={load} className="btn btn-secondary" style={{ width:"auto", padding:"0 10px", height:34, fontSize:"0.72rem" }} title="Segarkan data">↻</button>
         </div>
       </div>
 
       {saveMsg && (
-        <div style={{ fontSize:"0.78rem", padding:"8px 14px", borderRadius:8, marginBottom:12,
+        <div style={{ fontSize:"0.78rem", padding:"10px 14px", borderRadius:8, marginBottom:16,
           background: saveMsg.startsWith("✓") ? "rgba(16,185,129,0.12)" : "rgba(239,68,68,0.12)",
           color: saveMsg.startsWith("✓") ? "var(--success)" : "var(--danger)",
           border: `1px solid ${saveMsg.startsWith("✓") ? "var(--success)" : "var(--danger)"}`, fontWeight: 600 }}>
@@ -542,32 +635,115 @@ function InstructorDashboard({ courseId }) {
         </div>
       )}
 
-      {/* Form penilaian */}
+      {/* Form penilaian berbasis Rubrik Terstruktur */}
       {grading && (
-        <div className="glass-card" style={{ padding:18, marginBottom:16, border:"1.5px solid var(--primary)" }}>
-          <p style={{ fontSize:"0.85rem", fontWeight:700, color:"var(--primary)", marginBottom:10 }}>
-            Nilai Tugas — {grading.email}
-          </p>
-          <div style={{ display:"flex", gap:12, flexWrap:"wrap" }}>
-            <div className="form-group" style={{ margin:0, width:110 }}>
-              <label style={{ fontSize:"0.75rem", color:"var(--text-muted)", fontWeight: 600 }}>Nilai (0–100)</label>
-              <input type="number" min={0} max={100} value={grading.grade}
-                onChange={e => setGrading(p => ({...p, grade: Number(e.target.value)}))}
-                style={{ paddingLeft:10, height:38, fontSize:"0.9rem", fontWeight:700 }} />
+        <div className="glass-card" style={{ padding: 20, marginBottom: 20, border: "1.5px solid var(--primary)", borderRadius: 12 }}>
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 14 }}>
+            <div>
+              <span style={{ fontSize: "0.72rem", textTransform: "uppercase", color: "var(--primary)", fontWeight: 700, letterSpacing: 0.5 }}>
+                Rubrik Penilaian &amp; Koreksi Tugas
+              </span>
+              <h4 style={{ margin: "2px 0 0", fontSize: "1rem" }}>
+                {grading.fullname || grading.email}
+              </h4>
             </div>
-            <div className="form-group" style={{ margin:0, flex:1, minWidth: 200 }}>
-              <label style={{ fontSize:"0.75rem", color:"var(--text-muted)", fontWeight: 600 }}>Feedback (opsional)</label>
-              <input type="text" value={grading.feedback}
-                onChange={e => setGrading(p => ({...p, feedback: e.target.value}))}
-                placeholder="Catatan untuk peserta..."
-                style={{ paddingLeft:10, height:38, fontSize:"0.85rem" }} />
+            <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+              <div style={{ fontSize: "1.2rem", fontWeight: 800, color: grading.grade >= 70 ? "var(--success)" : "var(--danger)" }}>
+                Total: {grading.grade}/100
+              </div>
             </div>
-            <div style={{ display:"flex", gap:8, alignItems:"flex-end" }}>
-              <button onClick={handleGrade} className="btn btn-primary" style={{ width:"auto", height:38, padding:"0 18px", fontSize:"0.85rem", fontWeight: 700 }}>
-                <Star size={14} style={{ marginRight:4 }} />Simpan
-              </button>
-              <button onClick={() => setGrading(null)} className="btn btn-secondary" style={{ width:"auto", height:38, padding:"0 14px", fontSize:"0.85rem" }}>Batal</button>
+          </div>
+
+          {/* Kriteria Rubrik */}
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))", gap: 12, marginBottom: 14 }}>
+            <div style={{ background: "var(--bg-secondary)", padding: 12, borderRadius: 8, border: "1px solid var(--border-color)" }}>
+              <div style={{ display: "flex", justifyContent: "space-between", fontSize: "0.75rem", marginBottom: 6 }}>
+                <span style={{ fontWeight: 600, color: "var(--text-primary)" }}>1. Pemahaman Materi</span>
+                <span style={{ color: "var(--text-accent)", fontWeight: 700 }}>Max 30</span>
+              </div>
+              <input
+                type="number"
+                min={0}
+                max={30}
+                value={grading.rubric?.concept ?? 25}
+                onChange={e => updateRubric("concept", e.target.value)}
+                style={{ width: "100%", height: 36, paddingLeft: 10, fontSize: "0.85rem", fontWeight: 700 }}
+              />
+              <span style={{ fontSize: "0.68rem", color: "var(--text-muted)", display: "block", marginTop: 4 }}>
+                Ketepatan konsep &amp; teori dasar
+              </span>
             </div>
+
+            <div style={{ background: "var(--bg-secondary)", padding: 12, borderRadius: 8, border: "1px solid var(--border-color)" }}>
+              <div style={{ display: "flex", justifyContent: "space-between", fontSize: "0.75rem", marginBottom: 6 }}>
+                <span style={{ fontWeight: 600, color: "var(--text-primary)" }}>2. Analisis &amp; Solusi</span>
+                <span style={{ color: "var(--text-accent)", fontWeight: 700 }}>Max 40</span>
+              </div>
+              <input
+                type="number"
+                min={0}
+                max={40}
+                value={grading.rubric?.analysis ?? 35}
+                onChange={e => updateRubric("analysis", e.target.value)}
+                style={{ width: "100%", height: 36, paddingLeft: 10, fontSize: "0.85rem", fontWeight: 700 }}
+              />
+              <span style={{ fontSize: "0.68rem", color: "var(--text-muted)", display: "block", marginTop: 4 }}>
+                Kualitas telaah kasus &amp; pemecahan masalah
+              </span>
+            </div>
+
+            <div style={{ background: "var(--bg-secondary)", padding: 12, borderRadius: 8, border: "1px solid var(--border-color)" }}>
+              <div style={{ display: "flex", justifyContent: "space-between", fontSize: "0.75rem", marginBottom: 6 }}>
+                <span style={{ fontWeight: 600, color: "var(--text-primary)" }}>3. Sistematika &amp; Format</span>
+                <span style={{ color: "var(--text-accent)", fontWeight: 700 }}>Max 30</span>
+              </div>
+              <input
+                type="number"
+                min={0}
+                max={30}
+                value={grading.rubric?.format ?? 25}
+                onChange={e => updateRubric("format", e.target.value)}
+                style={{ width: "100%", height: 36, paddingLeft: 10, fontSize: "0.85rem", fontWeight: 700 }}
+              />
+              <span style={{ fontSize: "0.68rem", color: "var(--text-muted)", display: "block", marginTop: 4 }}>
+                Kerapian laporan &amp; kaidah penulisan
+              </span>
+            </div>
+          </div>
+
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 220px", gap: 14, marginBottom: 14 }}>
+            <div className="form-group" style={{ margin: 0 }}>
+              <label style={{ fontSize: "0.75rem", color: "var(--text-muted)", fontWeight: 600 }}>Catatan Koreksi &amp; Umpan Balik (Feedback)</label>
+              <textarea
+                value={grading.feedback}
+                onChange={e => setGrading(p => ({ ...p, feedback: e.target.value }))}
+                placeholder="Tuliskan catatan perbaikan atau rekomendasi untuk peserta..."
+                style={{ width: "100%", minHeight: 68, padding: "8px 12px", fontSize: "0.82rem", borderRadius: 8, background: "var(--bg-secondary)", border: "1px solid var(--border-color)", color: "var(--text-primary)" }}
+              />
+            </div>
+            <div className="form-group" style={{ margin: 0 }}>
+              <label style={{ fontSize: "0.75rem", color: "var(--text-muted)", fontWeight: 600 }}>Status Penilaian</label>
+              <select
+                value={grading.status || (grading.grade >= 70 ? "graded" : "revision_needed")}
+                onChange={e => setGrading(p => ({ ...p, status: e.target.value }))}
+                style={{ height: 38, fontSize: "0.82rem", padding: "0 10px", width: "100%" }}
+              >
+                <option value="graded">✅ Lulus (Memenuhi Syarat)</option>
+                <option value="revision_needed">⚠️ Perlu Revisi (Resubmit)</option>
+              </select>
+              <span style={{ fontSize: "0.68rem", color: "var(--text-muted)", display: "block", marginTop: 6 }}>
+                {grading.grade >= 70 ? "Skor melampaui standar kelulusan (>=70)." : "Skor di bawah 70, disarankan revisi."}
+              </span>
+            </div>
+          </div>
+
+          <div style={{ display: "flex", gap: 10, justifyContent: "flex-end", alignItems: "center" }}>
+            <button onClick={() => setGrading(null)} type="button" className="btn btn-secondary" style={{ width: "auto", padding: "8px 16px", fontSize: "0.82rem" }}>
+              Batal
+            </button>
+            <button onClick={handleGrade} type="button" className="btn btn-primary" style={{ width: "auto", padding: "8px 22px", fontSize: "0.82rem", fontWeight: 700 }}>
+              <Star size={14} style={{ marginRight: 6 }} /> Simpan Nilai &amp; Kirim Notifikasi
+            </button>
           </div>
         </div>
       )}
@@ -583,7 +759,7 @@ function InstructorDashboard({ courseId }) {
           <table style={{ width:"100%", fontSize:"0.78rem", borderCollapse:"collapse" }}>
             <thead>
               <tr style={{ borderBottom:"2px solid var(--border-color)", color:"var(--text-secondary)", textAlign:"left" }}>
-                {["Peserta","Organisasi","Progress","Lessons","Skor Terbaik","Attempt","Aktif Terakhir","Nilai Tugas","Aksi"].map(h => (
+                {["Peserta","Organisasi","Progress","Lessons","Skor Ujian","Attempt","Aktif Terakhir","Nilai Tugas","Aksi"].map(h => (
                   <th key={h} style={{ padding:"8px 10px", whiteSpace:"nowrap" }}>{h}</th>
                 ))}
               </tr>
@@ -621,16 +797,42 @@ function InstructorDashboard({ courseId }) {
                   <td style={{ padding:"8px 10px", fontSize:"0.72rem", color:"var(--text-muted)" }}>{timeAgo(s.last_active)}</td>
                   <td style={{ padding:"8px 10px", textAlign:"center" }}>
                     {s.assignment_grade != null ? (
-                      <span style={{ color: s.assignment_grade >= 70 ? "var(--success)" : "var(--danger)", fontWeight:700 }}>
+                      <span style={{
+                        padding: "2px 8px", borderRadius: 6,
+                        background: s.assignment_grade >= 70 ? "rgba(16,185,129,0.12)" : "rgba(239,68,68,0.12)",
+                        color: s.assignment_grade >= 70 ? "var(--success)" : "var(--danger)", fontWeight: 700
+                      }}>
                         {s.assignment_grade}
                       </span>
                     ) : <span style={{ color:"var(--text-muted)" }}>—</span>}
                   </td>
                   <td style={{ padding:"8px 10px" }}>
-                    <button onClick={() => setGrading({ email: s.email, grade: s.assignment_grade || 0, feedback: s.assignment_feedback || "" })}
-                      className="btn btn-secondary" style={{ width:"auto", padding:"4px 12px", fontSize:"0.72rem" }}>
-                      <Star size={11} style={{ marginRight:3 }} />Nilai
-                    </button>
+                    <div style={{ display: "flex", gap: 6, alignItems: "center" }}>
+                      <button
+                        onClick={() => setGrading({
+                          email: s.email,
+                          fullname: s.fullname,
+                          grade: s.assignment_grade ?? 85,
+                          feedback: s.assignment_feedback || "",
+                          status: s.assignment_grade != null && s.assignment_grade < 70 ? "revision_needed" : "graded",
+                          rubric: { concept: 25, analysis: 35, format: 25 }
+                        })}
+                        className="btn btn-secondary"
+                        style={{ width:"auto", padding:"4px 10px", fontSize:"0.72rem", display: "inline-flex", alignItems: "center", gap: 3 }}
+                        title="Nilai Tugas dengan Rubrik"
+                      >
+                        <Star size={11} /> Nilai
+                      </button>
+                      <button
+                        onClick={() => handleNudge(s)}
+                        disabled={nudgingEmail === s.email}
+                        className="btn btn-secondary"
+                        style={{ width: "auto", padding: "4px 8px", fontSize: "0.72rem", borderColor: "rgba(245,158,11,0.3)", color: "#fbbf24" }}
+                        title="Kirim pengingat belajar (Nudge)"
+                      >
+                        <Bell size={11} />
+                      </button>
+                    </div>
                   </td>
                 </tr>
               ))}
@@ -729,6 +931,7 @@ export default function LmsManageModal() {
   const [uploadMsg, setUploadMsg]             = useState("");
   const [uploadingLesson, setUploadingLesson] = useState(null);
   const [previewLesson, setPreviewLesson]     = useState(null); // { title, type, url } | null
+  const [isMaximized, setIsMaximized]         = useState(false);
 
   // Tutup dengan Esc. Sebelumnya satu-satunya cara menutup lewat latar adalah
   // klik tetikus. Hook harus berada sebelum early-return di bawah.
@@ -845,12 +1048,45 @@ export default function LmsManageModal() {
     // agar modal tetap bisa ditutup tanpa tetikus.
     <div className="modal-overlay active" role="dialog" aria-modal="true"
       onClick={() => setLmsManageModalActive(false)}>
-      <div className="modal-content" style={{ maxWidth: 980, width: "95vw", maxHeight: "90vh", overflowY: "auto", padding: "28px" }} onClick={e => e.stopPropagation()}>
+      <div className="modal-content" style={isMaximized ? {
+        position: "fixed",
+        inset: 0,
+        width: "100vw",
+        height: "100vh",
+        maxWidth: "100vw",
+        maxHeight: "100vh",
+        borderRadius: 0,
+        overflowY: "auto",
+        padding: "24px 36px",
+        zIndex: 9999,
+        margin: 0,
+      } : {
+        maxWidth: 980,
+        width: "95vw",
+        maxHeight: "90vh",
+        overflowY: "auto",
+        padding: "28px"
+      }} onClick={e => e.stopPropagation()}>
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 20 }}>
           <h3 style={{ margin: 0 }}>Kelola Kursus: <span style={{ color: "var(--primary)" }}>{selectedLmsCourse.title}</span></h3>
-          <button onClick={() => setLmsManageModalActive(false)} style={{ background: "none", border: "none", cursor: "pointer", color: "var(--text-muted)" }}>
-            <X size={20} />
-          </button>
+          <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+            <button
+              type="button"
+              onClick={() => setIsMaximized(m => !m)}
+              title={isMaximized ? "Perkecil Modal" : "Layar Penuh (Full-screen Silabus)"}
+              style={{
+                background: "none", border: "1px solid var(--border-color)", borderRadius: 6,
+                cursor: "pointer", color: "var(--text-secondary)", padding: "5px 10px",
+                display: "inline-flex", alignItems: "center", gap: 5, fontSize: "0.75rem"
+              }}
+            >
+              {isMaximized ? <Minimize2 size={14} /> : <Maximize2 size={14} />}
+              <span>{isMaximized ? "Perkecil" : "Layar Penuh"}</span>
+            </button>
+            <button onClick={() => setLmsManageModalActive(false)} style={{ background: "none", border: "none", cursor: "pointer", color: "var(--text-muted)", padding: 4 }}>
+              <X size={20} />
+            </button>
+          </div>
         </div>
 
         {/* Tab Navigation */}
@@ -921,6 +1157,17 @@ export default function LmsManageModal() {
                                 <option value="video">🎬 Video (YouTube/MP4)</option>
                                 <option value="pptx">📄 Presentasi / PDF Dokumen</option>
                               </select>
+
+                              {/* Free Preview Toggle */}
+                              <label style={{ display: "inline-flex", alignItems: "center", gap: 5, fontSize: "0.76rem", cursor: "pointer", color: lessonObj.isFreePreview ? "#10b981" : "var(--text-muted)", fontWeight: 600, background: lessonObj.isFreePreview ? "rgba(16,185,129,0.12)" : "rgba(255,255,255,0.04)", padding: "0 10px", height: 34, borderRadius: 6, border: `1px solid ${lessonObj.isFreePreview ? "rgba(16,185,129,0.3)" : "var(--border-color)"}` }}>
+                                <input
+                                  type="checkbox"
+                                  checked={Boolean(lessonObj.isFreePreview)}
+                                  onChange={(e) => handleLmsLessonChange(modIdx, lessonIdx, "isFreePreview", e.target.checked)}
+                                  style={{ accentColor: "#10b981", cursor: "pointer" }}
+                                />
+                                <span>🎁 Free Preview (Sampel Calon Siswa)</span>
+                              </label>
                               {lessonObj.type !== "text" ? (
                                 <>
                                   <input

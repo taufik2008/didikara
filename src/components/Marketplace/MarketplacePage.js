@@ -825,15 +825,34 @@ export default function MarketplacePage() {
                               {isLocked ? <><Lock size={12} style={{ marginRight: 4 }} />Terkunci</> : "Buka Kelas"}
                             </button>
                           ) : (
-                            <button
-                              type="button"
-                              className="btn btn-primary"
-                              onClick={() => isLocked ? null : handleEnrollCourse(course)}
-                              style={{ width: "auto", padding: "6px 12px", fontSize: "0.78rem", height: "auto", minHeight: "unset", lineHeight: 1.25, whiteSpace: "nowrap", opacity: isLocked ? 0.5 : 1, cursor: isLocked ? "not-allowed" : "pointer" }}
-                              disabled={isLocked}
-                            >
-                              {isLocked ? <><Lock size={12} style={{ marginRight: 4 }} />Terkunci</> : "Beli Kelas"}
-                            </button>
+                            <div style={{ display: "flex", gap: 6, alignItems: "center" }}>
+                              <button
+                                type="button"
+                                className="btn btn-secondary"
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  handleOpenClass(course.id);
+                                }}
+                                style={{
+                                  width: "auto", padding: "6px 10px", fontSize: "0.78rem", height: "auto",
+                                  minHeight: "unset", lineHeight: 1.25, whiteSpace: "nowrap",
+                                  borderColor: "rgba(16, 185, 129, 0.4)", color: "#34d399",
+                                  display: "inline-flex", alignItems: "center", gap: 4
+                                }}
+                                title="Pratinjau Materi Sampel Gratis (Free Preview)"
+                              >
+                                <Eye size={12} /> Coba Gratis
+                              </button>
+                              <button
+                                type="button"
+                                className="btn btn-primary"
+                                onClick={() => isLocked ? null : handleEnrollCourse(course)}
+                                style={{ width: "auto", padding: "6px 12px", fontSize: "0.78rem", height: "auto", minHeight: "unset", lineHeight: 1.25, whiteSpace: "nowrap", opacity: isLocked ? 0.5 : 1, cursor: isLocked ? "not-allowed" : "pointer" }}
+                                disabled={isLocked}
+                              >
+                                {isLocked ? <><Lock size={12} style={{ marginRight: 4 }} />Terkunci</> : "Beli Kelas"}
+                              </button>
+                            </div>
                           )
                         )}
                       </div>

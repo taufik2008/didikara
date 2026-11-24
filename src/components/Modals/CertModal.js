@@ -137,16 +137,37 @@ export default function CertModal() {
           )}
 
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: 10, marginTop: 20 }}>
-            {/* Social Share Buttons */}
-            <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
-              <span style={{ fontSize: "0.75rem", color: "var(--text-muted)" }}>Bagikan:</span>
+            {/* Social Share & LinkedIn Add to Profile Buttons */}
+            <div style={{ display: "flex", gap: 8, alignItems: "center", flexWrap: "wrap" }}>
+              <span style={{ fontSize: "0.75rem", color: "var(--text-muted)" }}>Sertifikat:</span>
+              {/* LinkedIn Official Add-to-Profile Deep Link */}
+              <a
+                href={(() => {
+                  const issueDate = activeCert.date ? new Date(activeCert.date) : new Date();
+                  const issueYear = !isNaN(issueDate.getFullYear()) ? issueDate.getFullYear() : new Date().getFullYear();
+                  const issueMonth = !isNaN(issueDate.getMonth()) ? issueDate.getMonth() + 1 : new Date().getMonth() + 1;
+                  return `https://www.linkedin.com/profile/add?startTask=CERTIFICATION_NAME&name=${encodeURIComponent(activeCert.title)}&organizationName=${encodeURIComponent(brandName)}&issueYear=${issueYear}&issueMonth=${issueMonth}&certUrl=${encodeURIComponent(verifyUrl)}&certId=${encodeURIComponent(activeCert.idCode)}`;
+                })()}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="btn btn-primary"
+                style={{
+                  width: "auto", padding: "6px 14px", fontSize: "0.78rem", textDecoration: "none",
+                  display: "inline-flex", alignItems: "center", gap: 6,
+                  background: "#0a66c2", borderColor: "#0a66c2", color: "#ffffff", fontWeight: 700
+                }}
+                title="Tambahkan sertifikat ini langsung ke profil LinkedIn Anda pada bagian Lisensi & Sertifikasi"
+              >
+                💼 + Tambah ke Profil LinkedIn
+              </a>
+
               <a
                 href={`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(verifyUrl)}`}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="btn btn-secondary"
                 style={{ width: "auto", padding: "6px 12px", fontSize: "0.75rem", textDecoration: "none", display: "inline-flex", alignItems: "center", gap: 6, borderColor: "#0077b5", color: "#60a5fa" }}>
-                💼 LinkedIn
+                Bagikan ke Feed
               </a>
               <a
                 href={`https://api.whatsapp.com/send?text=${encodeURIComponent(`Halo! Saya telah berhasil menyelesaikan pelatihan dan meraih sertifikasi resmi: ${activeCert.title}. Cek sertifikat saya di sini: ${verifyUrl}`)}`}

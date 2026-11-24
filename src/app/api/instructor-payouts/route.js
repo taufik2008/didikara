@@ -20,6 +20,7 @@ import { NextResponse } from "next/server";
 import { authenticateRequest } from "@/lib/auth";
 import { query } from "@/lib/db";
 import { catatAudit } from "@/lib/audit";
+import { calculateInstructorTax } from "@/lib/taxService";
 
 export async function GET(request) {
   const user = await authenticateRequest(request);
@@ -46,14 +47,30 @@ export async function GET(request) {
        ORDER BY p.period_start DESC, u.fullname
     `, params);
 
+    const payoutsWithTax = rows.map(r => {
+      const tax = calculateInstructorTax({ grossAmount: Number(r.payout_amount || 0), hasNpwp: true });
+      return {
+        ...r,
+        tax_rate: tax.taxRatePercentage,
+        tax_amount: tax.taxAmount,
+        net_payout: tax.netAmount,
+        bukti_potong_no: tax.buktiPotongNo,
+      };
+    });
+
     const ringkas = {
+      total_gross: rows.reduce((a, r) => a + Number(r.gross_amount || 0), 0),
       total_payout: rows.reduce((a, r) => a + Number(r.payout_amount || 0), 0),
-      belum_dibayar: rows.filter(r => r.status === "unpaid")
+      belum_dibayar: rows.filter(r => r.status === "unpaid" || r.status === "requested")
                          .reduce((a, r) => a + Number(r.payout_amount || 0), 0),
+      sudah_dibayar: rows.filter(r => r.status === "paid")
+                         .reduce((a, r) => a + Number(r.payout_amount || 0), 0),
+      total_pajak_pph21: rows.reduce((a, r) => a + calculateInstructorTax({ grossAmount: Number(r.payout_amount || 0) }).taxAmount, 0),
+      total_net_payout: rows.reduce((a, r) => a + calculateInstructorTax({ grossAmount: Number(r.payout_amount || 0) }).netAmount, 0),
       jumlah_baris: rows.length,
     };
 
-    return NextResponse.json({ success: true, payouts: rows, ringkas });
+    return NextResponse.json({ success: true, payouts: payoutsWithTax, ringkas });
   } catch (err) {
     return NextResponse.json({ error: err.message }, { status: 500 });
   }
@@ -61,12 +78,60 @@ export async function GET(request) {
 
 export async function POST(request) {
   const user = await authenticateRequest(request);
-  if (!user || user.role !== "admin") {
-    return NextResponse.json({ error: "Admin only" }, { status: 403 });
-  }
+  if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
   const body = await request.json();
   const { action } = body;
+
+  // ── Instruktur mengajukan penarikan dana (Withdrawal Request) ───────────────
+  if (action === "request_withdrawal") {
+    const { amount, bankName, accountNumber, accountHolder, notes } = body;
+    const withdrawAmount = Number(amount) || 0;
+    if (withdrawAmount <= 0) {
+      return NextResponse.json({ error: "Nominal penarikan tidak valid" }, { status: 400 });
+    }
+    if (!bankName || !accountNumber || !accountHolder) {
+      return NextResponse.json({ error: "Data rekening tujuan (Nama Bank, Nomor Rekening, Atas Nama) wajib diisi lengkap" }, { status: 400 });
+    }
+
+    try {
+      const withdrawalNotes = `[PENGAJUAN PENARIKAN] Rp ${withdrawAmount.toLocaleString("id-ID")} ke ${bankName} (${accountNumber}) a.n ${accountHolder}. Catatan: ${notes || '-'}`;
+
+      await query(`
+        UPDATE instructor_payouts
+           SET status = 'requested',
+               notes = TRIM(COALESCE(notes, '') || ' | ' || $2)
+         WHERE user_email = $1 AND status = 'unpaid'
+      `, [user.email, withdrawalNotes]);
+
+      await query(`
+        INSERT INTO notifications (user_email, type, title, message, link)
+        SELECT email, 'warning', 'Pengajuan Penarikan Bagi Hasil Instruktur', $1, '/admin'
+        FROM users WHERE role = 'admin'
+      `, [`Instruktur ${user.fullname || user.email} mengajukan penarikan bagi hasil Rp ${withdrawAmount.toLocaleString("id-ID")} ke rekening ${bankName} No. ${accountNumber} a.n ${accountHolder}.`]).catch(() => {});
+
+      await query(`
+        INSERT INTO notifications (user_email, type, title, message, link)
+        VALUES ($1, 'info', 'Pengajuan Penarikan Dana Berhasil', $2, '/instructor')
+      `, [user.email, `Permintaan penarikan dana sebesar Rp ${withdrawAmount.toLocaleString("id-ID")} ke rekening ${bankName} No. ${accountNumber} a.n ${accountHolder} berhasil diajukan dan sedang diproses verifikasi oleh Tim Keuangan.`]).catch(() => {});
+
+      await catatAudit(user.email, "request_instructor_withdrawal", "instructor_payout", user.email, {
+        amount: withdrawAmount, bank: bankName, account: accountNumber, holder: accountHolder,
+      });
+
+      return NextResponse.json({
+        success: true,
+        message: "Pengajuan penarikan dana berhasil diajukan dan sedang diverifikasi oleh Tim Keuangan.",
+      });
+    } catch (err) {
+      return NextResponse.json({ error: err.message }, { status: 500 });
+    }
+  }
+
+  // ── Admin-only actions below ───────────────────────────────────────────────
+  if (user.role !== "admin") {
+    return NextResponse.json({ error: "Admin only" }, { status: 403 });
+  }
 
   // ── Hitung rekap satu periode ─────────────────────────────────────────────
   if (action === "generate") {

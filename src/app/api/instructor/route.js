@@ -21,11 +21,15 @@ import { catatAudit } from "@/lib/audit";
 import { canManageCourse } from "@/lib/courseAccess";
 
 const gradeSchema = z.object({
+  action:      z.string().optional(),
   courseId:    z.string().min(1),
   userEmail:   z.string().email(),
   lessonIndex: z.number().int().min(0).optional().default(0),
-  grade:       z.number().int().min(0).max(100),
+  grade:       z.number().int().min(0).max(100).optional().default(0),
   feedback:    z.string().optional().default(""),
+  status:      z.enum(["graded", "revision_needed", "passed"]).optional().default("graded"),
+  customMessage: z.string().optional(),
+  rubric:      z.record(z.any()).optional(),
 });
 
 export async function GET(request) {
@@ -92,12 +96,45 @@ export async function POST(request) {
   if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
   const body = await request.json();
+
+  // ── Aksi Nudge: Pengingat Belajar dari Instruktur ──────────────────────────
+  if (body.action === "nudge") {
+    const { courseId, userEmail, customMessage } = body;
+    if (!courseId || !userEmail) {
+      return NextResponse.json({ error: "courseId dan userEmail wajib" }, { status: 400 });
+    }
+    if (!(await canManageCourse(user, courseId))) {
+      return NextResponse.json({ error: "Anda bukan pengajar kursus ini" }, { status: 403 });
+    }
+
+    try {
+      const { rows: courseRows } = await query(`SELECT title FROM courses WHERE id = $1`, [courseId]);
+      const courseTitle = courseRows[0]?.title || "Pelatihan";
+      const msg = customMessage || `Halo! Instruktur Anda mengingatkan untuk melanjutkan proses belajar pada kursus "${courseTitle}". Tetap semangat dan tuntaskan modul serta ujian sertifikasi Anda!`;
+
+      await query(
+        `INSERT INTO notifications (user_email, type, title, message, link)
+         VALUES ($1, 'info', 'Pengingat Belajar dari Instruktur', $2, '/lms')`,
+        [userEmail, msg]
+      );
+
+      await catatAudit(user.email, "nudge_student", "notification", `${courseId}:${userEmail}`, {
+        course_id: courseId, user_email: userEmail
+      });
+
+      return NextResponse.json({ success: true, message: `Pengingat berhasil dikirim ke ${userEmail}` });
+    } catch (err) {
+      return NextResponse.json({ error: err.message }, { status: 500 });
+    }
+  }
+
+  // ── Penilaian Tugas & Rubrik ───────────────────────────────────────────────
   const parsed = gradeSchema.safeParse(body);
   if (!parsed.success) {
     return NextResponse.json({ error: parsed.error.issues[0].message }, { status: 400 });
   }
 
-  const { courseId, userEmail, lessonIndex, grade, feedback } = parsed.data;
+  const { courseId, userEmail, lessonIndex, grade, feedback, status } = parsed.data;
 
   if (!(await canManageCourse(user, courseId))) {
     return NextResponse.json({ error: "Anda bukan pengajar kursus ini" }, { status: 403 });
@@ -113,28 +150,36 @@ export async function POST(request) {
       RETURNING *
     `, [courseId, userEmail, lessonIndex, grade, feedback, user.email]);
 
+    const isRevision = status === "revision_needed" || grade < 70;
+    const submissionStatus = isRevision ? "revision_needed" : "graded";
+
     // Notif ke peserta
     try {
+      const notifTitle = isRevision ? "Tugas Perlu Revisi" : "Tugas Dinilai: Lulus";
+      const notifType = isRevision ? "warning" : "success";
+      const notifMsg = isRevision
+        ? `Tugas Anda dinilai ${grade}/100 dan memerlukan perbaikan. Catatan: ${feedback || "Silakan cek umpan balik dari instruktur."}`
+        : `Selamat! Tugas Anda dinilai ${grade}/100 dan memenuhi syarat kelulusan. ${feedback ? `Catatan: ${feedback.substring(0,80)}` : ""}`;
+
       await query(
         `INSERT INTO notifications (user_email, type, title, message, link)
-         VALUES ($1, 'success', 'Tugas Dinilai', $2, '/lms')`,
-        [userEmail, `Tugas Anda telah dinilai dengan nilai ${grade}. ${feedback ? `Feedback: ${feedback.substring(0,80)}` : ""}`]
+         VALUES ($1, $2, $3, $4, '/lms')`,
+        [userEmail, notifType, notifTitle, notifMsg]
       );
     } catch { /* opsional */ }
 
-    // Status pengumpulan mengikuti penilaian, sehingga peserta melihat keadaan
-    // yang sama dengan yang dilihat instruktur.
+    // Status pengumpulan mengikuti penilaian
     await query(
-      `UPDATE assignment_submissions SET status = 'graded', updated_at = NOW()
+      `UPDATE assignment_submissions SET status = $4, updated_at = NOW()
         WHERE course_id = $1 AND user_email = $2 AND lesson_index = $3`,
-      [courseId, userEmail, lessonIndex]
+      [courseId, userEmail, lessonIndex, submissionStatus]
     ).catch(() => {});
 
     await catatAudit(user.email, "grade_assignment", "assignment_grade", `${courseId}:${userEmail}`, {
-      course_id: courseId, user_email: userEmail, lesson_index: lessonIndex, grade,
+      course_id: courseId, user_email: userEmail, lesson_index: lessonIndex, grade, status: submissionStatus,
     });
 
-    return NextResponse.json({ success: true, gradeRecord: r.rows[0] });
+    return NextResponse.json({ success: true, gradeRecord: r.rows[0], submissionStatus });
   } catch (err) {
     return NextResponse.json({ error: err.message }, { status: 500 });
   }
