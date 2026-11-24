@@ -87,6 +87,11 @@ export function CourseProvider({ children }) {
             setEnrolledCourses(enrollments);
             setEnrollmentsLoaded(true);
           }
+        } else {
+          if (isMounted) {
+            setEnrolledCourses([]);
+            setEnrollmentsLoaded(true);
+          }
         }
       } catch {
         if (isMounted) setDbMode("postgresql");
@@ -257,14 +262,21 @@ export function CourseProvider({ children }) {
           if (matched) {
             handleOpenClass(urlCourseId);
             return;
+          } else if (!activeCourse) {
+            handleOpenClass(courses[0].id);
+            return;
           }
         }
       }
     }
 
-    if (!activeCourse && enrolledCourses.length > 0 && courses.length > 0) {
-      const c = courses.find(item => item.id === enrolledCourses[0]);
-      if (c) setActiveCourse(c);
+    if (!activeCourse && courses.length > 0) {
+      if (enrolledCourses.length > 0) {
+        const c = courses.find(item => item.id === enrolledCourses[0]) || courses[0];
+        if (c) setActiveCourse(c);
+      } else {
+        setActiveCourse(courses[0]);
+      }
     }
   }, [courses, enrolledCourses, activeCourse, handleOpenClass]);
 

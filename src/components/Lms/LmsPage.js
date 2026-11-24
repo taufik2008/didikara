@@ -1042,7 +1042,7 @@ Didikara - Platform Pelatihan & Sertifikasi Profesional
 
   // Selama pendaftaran belum selesai dimuat, jangan menyatakan "tidak ada
   // kelas" — itu keliru dan membuat pengguna mengira aksesnya hilang.
-  if (!enrollmentsLoaded) {
+  if (!enrollmentsLoaded && currentUser) {
     return (
       <main className="page-view active">
         <div style={{ display: "flex", alignItems: "center", justifyContent: "center", height: "100%", color: "var(--text-muted)" }}>

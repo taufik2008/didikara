@@ -35,7 +35,8 @@ export default function AppLayout({ children }) {
 
   // Izinkan calon peserta mencoba Pratinjau Gratis (Free Preview) di /kelas
   // atau menjelajahi katalog di /marketplace tanpa harus login terlebih dahulu
-  const isGuestAllowedPage = pathname === "/kelas" || pathname === "/marketplace";
+  const cleanPath = (pathname || "").replace(/\/$/, "");
+  const isGuestAllowedPage = cleanPath === "/kelas" || cleanPath === "/marketplace" || cleanPath.startsWith("/kelas") || cleanPath.startsWith("/marketplace");
 
   if (!currentUser && !isGuestAllowedPage) return <LoginPage />;
 
