@@ -38,6 +38,7 @@ import {
   CreditCard,
   UserCheck,
   Gift,
+  Eye,
   Tv
 } from "lucide-react";
 
@@ -1401,8 +1402,9 @@ export default function LandingPage({ initialCourses, initialCategories, initial
                           </div>
                         </div>
 
-                        <div style={{ display: "flex", gap: 8 }}>
+                        <div style={{ display: "flex", gap: 6, alignItems: "center", flexWrap: "wrap", justifyContent: "flex-end" }}>
                           <button
+                            type="button"
                             onClick={() => {
                               setSelectedCourseModal(course);
                               setActiveModalTab("silabus");
@@ -1424,6 +1426,31 @@ export default function LandingPage({ initialCourses, initialCategories, initial
                           >
                             <FileText size={14} />
                             <span>Silabus</span>
+                          </button>
+
+                          {/* Free Preview Button */}
+                          <button
+                            type="button"
+                            onClick={() => {
+                              router.push(`/kelas?courseId=${course.id}`);
+                            }}
+                            style={{
+                              padding: "6px 10px",
+                              borderRadius: 8,
+                              border: "1px solid rgba(16, 185, 129, 0.4)",
+                              background: "rgba(16, 185, 129, 0.12)",
+                              color: "#34d399",
+                              fontSize: "0.76rem",
+                              fontWeight: 700,
+                              cursor: "pointer",
+                              display: "flex",
+                              alignItems: "center",
+                              gap: 4
+                            }}
+                            title="Coba Pratinjau Materi Sampel Gratis (Free Preview)"
+                          >
+                            <Eye size={13} />
+                            <span>Coba Gratis</span>
                           </button>
                           {(course.learningType === "online" || course.learningType === "offline") ? (
                             <button
@@ -2247,32 +2274,45 @@ export default function LandingPage({ initialCourses, initialCategories, initial
                         </div>
 
                         <div style={{ display: "flex", flexDirection: "column", gap: 8, paddingLeft: 32 }}>
-                          {(module.lessons || []).map((lesson, lIdx) => (
-                            <div
-                              key={lIdx}
-                              style={{
-                                display: "flex",
-                                alignItems: "center",
-                                justifyContent: "space-between",
-                                padding: "8px 12px",
-                                borderRadius: 8,
-                                background: "var(--bg-tertiary)",
-                                fontSize: "0.82rem"
-                              }}
-                            >
-                              <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                                {lesson.type === "video" ? (
-                                  <Video size={14} color="var(--primary)" />
-                                ) : (
-                                  <FileText size={14} color="var(--info)" />
-                                )}
-                                <span style={{ color: "var(--text-primary)", fontWeight: 500 }}>{lesson.title}</span>
+                          {(module.lessons || []).map((lesson, lIdx) => {
+                            const isFreeLesson = (mIdx === 0 && lIdx === 0) || Boolean(lesson?.isFreePreview);
+                            return (
+                              <div
+                                key={lIdx}
+                                style={{
+                                  display: "flex",
+                                  alignItems: "center",
+                                  justifyContent: "space-between",
+                                  padding: "8px 12px",
+                                  borderRadius: 8,
+                                  background: "var(--bg-tertiary)",
+                                  fontSize: "0.82rem"
+                                }}
+                              >
+                                <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                                  {lesson.type === "video" ? (
+                                    <Video size={14} color="var(--primary)" />
+                                  ) : (
+                                    <FileText size={14} color="var(--info)" />
+                                  )}
+                                  <span style={{ color: "var(--text-primary)", fontWeight: 500 }}>{lesson.title}</span>
+                                </div>
+                                <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                                  {isFreeLesson && (
+                                    <span style={{
+                                      fontSize: "0.68rem", padding: "2px 8px", borderRadius: 4,
+                                      background: "rgba(16, 185, 129, 0.2)", color: "#10b981", fontWeight: 700
+                                    }}>
+                                      🎁 Pratinjau Gratis
+                                    </span>
+                                  )}
+                                  <span style={{ fontSize: "0.72rem", color: "var(--text-muted)", textTransform: "uppercase" }}>
+                                    {lesson.type}
+                                  </span>
+                                </div>
                               </div>
-                              <span style={{ fontSize: "0.72rem", color: "var(--text-muted)", textTransform: "uppercase" }}>
-                                {lesson.type}
-                              </span>
-                            </div>
-                          ))}
+                            );
+                          })}
                         </div>
                       </div>
                     ))}
@@ -2505,8 +2545,9 @@ export default function LandingPage({ initialCourses, initialCategories, initial
                 </div>
               </div>
 
-              <div style={{ display: "flex", gap: 10 }}>
+              <div style={{ display: "flex", gap: 10, alignItems: "center", flexWrap: "wrap", justifyContent: "flex-end" }}>
                 <button
+                  type="button"
                   onClick={() => setSelectedCourseModal(null)}
                   style={{
                     padding: "10px 18px",
@@ -2521,6 +2562,34 @@ export default function LandingPage({ initialCourses, initialCategories, initial
                 >
                   Tutup
                 </button>
+
+                {/* Free Preview Quick Access */}
+                <button
+                  type="button"
+                  onClick={() => {
+                    const targetId = selectedCourseModal?.id;
+                    setSelectedCourseModal(null);
+                    router.push(targetId ? `/kelas?courseId=${targetId}` : "/kelas");
+                  }}
+                  style={{
+                    padding: "10px 18px",
+                    borderRadius: 10,
+                    background: "rgba(16, 185, 129, 0.15)",
+                    border: "1.5px solid rgba(16, 185, 129, 0.4)",
+                    color: "#34d399",
+                    fontWeight: 700,
+                    fontSize: "0.85rem",
+                    cursor: "pointer",
+                    display: "inline-flex",
+                    alignItems: "center",
+                    gap: 6
+                  }}
+                  title="Coba sampel materi pelajaran ini secara gratis sekarang"
+                >
+                  <Eye size={15} />
+                  <span>Coba Gratis (Preview)</span>
+                </button>
+
                 <button
                   onClick={() => {
                     if (selectedModalTier === "offline" || selectedModalTier === "online") {

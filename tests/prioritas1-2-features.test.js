@@ -19,6 +19,11 @@ test("Prioritas 1.1: Free Preview (Materi Sampel Gratis) di LmsPage, Marketplace
   const marketCode = fs.readFileSync(marketPath, "utf8");
   assert.ok(marketCode.includes("Coba Gratis"), "MarketplacePage harus menampilkan tombol 'Coba Gratis'");
 
+  const landingPath = path.resolve(process.cwd(), "src/components/Landing/LandingPage.js");
+  const landingCode = fs.readFileSync(landingPath, "utf8");
+  assert.ok(landingCode.includes("Coba Gratis"), "LandingPage harus menampilkan tombol 'Coba Gratis' pada kartu kursus");
+  assert.ok(landingCode.includes("Pratinjau Gratis"), "LandingPage harus memiliki badge 'Pratinjau Gratis' pada silabus modal");
+
   const modalPath = path.resolve(process.cwd(), "src/components/Modals/LmsManageModal.js");
   const modalCode = fs.readFileSync(modalPath, "utf8");
   assert.ok(modalCode.includes("isFreePreview"), "LmsManageModal harus mengizinkan instruktur menandai materi Free Preview");
