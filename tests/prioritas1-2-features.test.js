@@ -104,3 +104,19 @@ test("Prioritas 2.3: Sistem Pengingat Belajar (Nudge System) Instruktur", () => 
   assert.ok(modalCode.includes("handleNudge"), "LmsManageModal harus memiliki fungsi pengiriman nudge individual");
   assert.ok(modalCode.includes("handleBatchNudge"), "LmsManageModal harus memiliki fungsi pengiriman nudge massal (batch)");
 });
+
+test("Prioritas 1.4: Coba Gratis Tanpa Login & Login Robustness (Case-Insensitive & Alias)", () => {
+  const layoutPath = path.resolve(process.cwd(), "src/app/(app)/layout.js");
+  const layoutCode = fs.readFileSync(layoutPath, "utf8");
+  assert.ok(layoutCode.includes("isGuestAllowedPage"), "AppLayout harus mengizinkan tamu mengakses halaman pratinjau gratis /kelas");
+
+  const loginRoutePath = path.resolve(process.cwd(), "src/app/api/auth/login/route.js");
+  const loginRouteCode = fs.readFileSync(loginRoutePath, "utf8");
+  assert.ok(loginRouteCode.includes("LOWER(email) = LOWER($1)"), "Login API harus case-insensitive");
+  assert.ok(loginRouteCode.includes("admin@digidaya.tech"), "Login API harus mendukung alias email admin demo");
+
+  const courseCtxPath = path.resolve(process.cwd(), "src/context/CourseContext.js");
+  const courseCtxCode = fs.readFileSync(courseCtxPath, "utf8");
+  assert.ok(courseCtxCode.includes("handleOpenClass"), "CourseContext harus mendukung pembukaan kelas");
+  assert.ok(courseCtxCode.includes("options?.requireSubscription"), "CourseContext tidak boleh memblokir pembukaan kelas pratinjau gratis");
+});

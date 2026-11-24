@@ -44,10 +44,18 @@ export async function POST(request) {
 
   const { email, password } = parsed.data;
 
-  // 3. Cari user di DB
+  // 3. Cari user di DB (Case-insensitive & dukung alias domain demo)
   let user;
   try {
-    const result = await query("SELECT * FROM users WHERE email = $1", [email]);
+    const rawEmail = email.trim();
+    const normalizedEmail = rawEmail.toLowerCase();
+    const searchEmail = (normalizedEmail === "admin@ailms.id" || normalizedEmail === "admin@didikara.id")
+      ? "admin@digidaya.tech"
+      : (normalizedEmail === "peserta@digidaya.tech")
+      ? "peserta@ailms.id"
+      : normalizedEmail;
+
+    const result = await query("SELECT * FROM users WHERE LOWER(email) = LOWER($1)", [searchEmail]);
     if (result.rows.length === 0) {
       return NextResponse.json(
         { success: false, error: "Email atau kata sandi salah" },

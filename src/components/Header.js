@@ -86,17 +86,36 @@ export default function Header() {
         >
           <Award size={14} style={{ marginRight: 6, color: theme === "light" ? "#182548" : "#ffffff" }} /> {brandName}
         </div>
-        <div className="user-profile-badge" style={{ display: "flex", alignItems: "center", gap: 8 }}>
-          {/* Notification Center — bell dengan badge count */}
-          <NotificationCenter />
-          <div style={{ width: 1, height: 16, backgroundColor: "var(--border-color)" }} />
-          <span style={{ fontSize: "0.85rem", fontWeight: 500 }}>{currentUser?.fullname}</span>
-          {currentUser?.role && (
-            <span className={`badge-role badge-role-${currentUser.role}`} style={{ fontSize: "0.68rem", padding: "2px 7px", borderRadius: 5, fontWeight: 700 }}>
-              {currentUser.role === "student" ? "Peserta" : (currentUser.roleLabel || (currentUser.role === "admin" ? "Platform Admin" : currentUser.role === "instructor" ? "Instruktur" : currentUser.role === "corporate" ? "HR Manager" : currentUser.role === "government" ? "Kepala Biro SDM" : "Peserta"))}
-            </span>
-          )}
-        </div>
+        {currentUser ? (
+          <div className="user-profile-badge" style={{ display: "flex", alignItems: "center", gap: 8 }}>
+            {/* Notification Center — bell dengan badge count */}
+            <NotificationCenter />
+            <div style={{ width: 1, height: 16, backgroundColor: "var(--border-color)" }} />
+            <span style={{ fontSize: "0.85rem", fontWeight: 500 }}>{currentUser.fullname}</span>
+            {currentUser.role && (
+              <span className={`badge-role badge-role-${currentUser.role}`} style={{ fontSize: "0.68rem", padding: "2px 7px", borderRadius: 5, fontWeight: 700 }}>
+                {currentUser.role === "student" ? "Peserta" : (currentUser.roleLabel || (currentUser.role === "admin" ? "Platform Admin" : currentUser.role === "instructor" ? "Instruktur" : currentUser.role === "corporate" ? "HR Manager" : currentUser.role === "government" ? "Kepala Biro SDM" : "Peserta"))}
+              </span>
+            )}
+          </div>
+        ) : (
+          <a
+            href="/login"
+            className="btn btn-primary"
+            style={{
+              padding: "7px 16px",
+              fontSize: "0.82rem",
+              fontWeight: 700,
+              textDecoration: "none",
+              borderRadius: 8,
+              display: "inline-flex",
+              alignItems: "center",
+              gap: 6
+            }}
+          >
+            <span>Masuk / Daftar</span>
+          </a>
+        )}
       </div>
 
       <OnboardingTourModal isOpen={showTour} onClose={() => setShowTour(false)} />

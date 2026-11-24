@@ -10,7 +10,7 @@ export async function GET(request) {
       return NextResponse.json({ success: false, error: "Unauthorized" }, { status: 401 });
     }
 
-    const result = await query("SELECT * FROM users WHERE email = $1", [payload.email]);
+    const result = await query("SELECT * FROM users WHERE LOWER(email) = LOWER($1)", [payload.email]);
     if (result.rows.length === 0) {
       return NextResponse.json({ success: false, error: "User not found" }, { status: 404 });
     }

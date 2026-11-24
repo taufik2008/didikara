@@ -154,14 +154,17 @@ export function CourseProvider({ children }) {
     } catch {}
   }, []);
 
-  const handleOpenClass = useCallback(async (courseId) => {
+  const handleOpenClass = useCallback(async (courseId, options = {}) => {
     const c = courses.find(item => item.id === courseId);
     if (!c) return;
 
     const isAdmin = currentUser?.role === "admin" || currentUser?.role === "superadmin";
 
-    // Semua kursus (video, online, offline) wajib melalui akses member terlebih dahulu
-    if (!isSubscribed && !isAdmin) {
+    // Semua kursus (video, online, offline) wajib melalui akses member untuk akses penuh,
+    // tetapi Pratinjau Gratis (Free Preview) dapat dibuka langsung tanpa langganan/login.
+    // Jika options.requireSubscription = true (misalnya user klik 'Akses Member' atau 'Mulai Ujian'),
+    // barulah kita tampilkan modal langganan.
+    if (!isSubscribed && !isAdmin && options?.requireSubscription) {
       setShowSubscriptionModal(true);
       return;
     }
@@ -180,8 +183,8 @@ export function CourseProvider({ children }) {
       return;
     }
 
-    // Kursus Video Berbayar (price > 0): harus sudah mendaftar/membeli kelas ini
-    if (c.price > 0) {
+    // Kursus Video Berbayar (price > 0): jika meminta akses penuh dan belum mendaftar/membeli kelas ini
+    if (c.price > 0 && options?.requirePurchase) {
       const isPaidEnrolled = enrolledCourses.includes(courseId) || isAdmin;
       if (!isPaidEnrolled) {
         setSelectedPayCourse(c);
@@ -191,7 +194,7 @@ export function CourseProvider({ children }) {
     }
 
     const prereqCheck = checkPrerequisite(courseId);
-    if (prereqCheck.locked) {
+    if (prereqCheck.locked && (isSubscribed || isAdmin)) {
       alert(`Kursus ini dikunci. Selesaikan dan lulus terlebih dahulu:\n"${prereqCheck.prerequisiteTitle}"`);
       return;
     }
@@ -206,7 +209,9 @@ export function CourseProvider({ children }) {
     setExamHistory([]);
     setUploadStatus("");
     setDbLessonProgress({});
-    muatKehadiran(courseId);
+    if (currentUser) {
+      muatKehadiran(courseId);
+    }
     if (typeof window !== "undefined") {
       const currentUrl = window.location.pathname + window.location.search;
       const targetUrl = `/kelas?courseId=${courseId}`;
@@ -217,22 +222,26 @@ export function CourseProvider({ children }) {
       setActivePage("lms-page");
     }
 
-    try {
-      const progJson = await loadProgress(courseId);
-      if (progJson.success && progJson.progress) {
-        setDbLessonProgress(progJson.progress);
-        const completedIdxs = Object.entries(progJson.progress)
-          .filter(([, v]) => v.completed)
-          .map(([k]) => parseInt(k, 10));
-        if (completedIdxs.length > 0) {
-          setCompletedLessons(prev => ({ ...prev, [courseId]: completedIdxs }));
+    if (currentUser && (isSubscribed || isAdmin)) {
+      try {
+        const progJson = await loadProgress(courseId);
+        if (progJson.success && progJson.progress) {
+          setDbLessonProgress(progJson.progress);
+          const completedIdxs = Object.entries(progJson.progress)
+            .filter(([, v]) => v.completed)
+            .map(([k]) => parseInt(k, 10));
+          if (completedIdxs.length > 0) {
+            setCompletedLessons(prev => ({ ...prev, [courseId]: completedIdxs }));
+          }
+          const lastLesson = progJson.lastLesson ?? 0;
+          setActiveLessonIndex(lastLesson);
+        } else {
+          setActiveLessonIndex(0);
         }
-        const lastLesson = progJson.lastLesson ?? 0;
-        setActiveLessonIndex(lastLesson);
-      } else {
+      } catch {
         setActiveLessonIndex(0);
       }
-    } catch {
+    } else {
       setActiveLessonIndex(0);
     }
   }, [courses, checkPrerequisite, muatKehadiran, setActivePage, router, isSubscribed, enrolledCourses, currentUser]);

@@ -1055,8 +1055,9 @@ Didikara - Platform Pelatihan & Sertifikasi Profesional
   const isAdminUser = currentUser?.role === "admin" || currentUser?.role === "superadmin";
 
   // Pemeriksaan akses kursus:
-  // 1. Semua kursus (video, online, offline) wajib melalui akses member terlebih dahulu
-  if (!isSubscribed && !isAdminUser) {
+  // Materi sampel gratis (Free Preview: materi 1 / isFreePreview) dapat diakses & ditonton gratis tanpa langganan/login.
+  // Ujian sertifikasi (tab-exam) wajib memerlukan status member aktif.
+  if (!isSubscribed && !isAdminUser && activeLmsTab === "tab-exam") {
     return (
       <main className="page-view active">
         <div style={{
@@ -1077,7 +1078,7 @@ Didikara - Platform Pelatihan & Sertifikasi Profesional
             color: "var(--text-secondary)", maxWidth: 540, lineHeight: 1.6,
             marginBottom: 24, fontSize: "0.92rem"
           }}>
-            Untuk dapat mengakses materi kurikulum, menonton video interaktif, atau mendaftar kursus, Anda harus mengaktifkan Akses Member terlebih dahulu.
+            Untuk dapat mengakses ujian evaluasi akhir &amp; sertifikasi resmi, Anda harus mengaktifkan Akses Member terlebih dahulu.
           </p>
           <div style={{ display: "flex", gap: 12, flexWrap: "wrap", justifyContent: "center" }}>
             <button
@@ -1092,10 +1093,10 @@ Didikara - Platform Pelatihan & Sertifikasi Profesional
             <button
               type="button"
               className="btn btn-secondary"
-              onClick={() => setActivePage("marketplace-page")}
+              onClick={() => setActiveLmsTab("tab-overview")}
               style={{ width: "auto", padding: "12px 24px" }}
             >
-              Katalog Kursus
+              Kembali ke Pratinjau Materi
             </button>
           </div>
         </div>
@@ -1167,7 +1168,11 @@ Didikara - Platform Pelatihan & Sertifikasi Profesional
   }
 
   // Cek hak akses kursus berbayar & pratinjau materi gratis (Free Preview)
-  const isEnrolledInPaid = (enrolledCourses || []).includes(activeCourse.id) || isAdminUser || isInstructor || (activeCourse.price === 0);
+  const isEnrolledInPaid = (
+    isAdminUser ||
+    isInstructor ||
+    (isSubscribed && (activeCourse.price === 0 || (enrolledCourses || []).includes(activeCourse.id)))
+  );
   const isCurrentLessonFree = activeLessonIndex === 0 || Boolean(activeLesson?.isFreePreview);
   const isCurrentLessonLocked = !isEnrolledInPaid && !isCurrentLessonFree;
 
@@ -1291,14 +1296,34 @@ Didikara - Platform Pelatihan & Sertifikasi Profesional
                   Materi <strong>&quot;{activeLesson?.title || 'ini'}&quot;</strong> hanya dapat diakses oleh peserta terdaftar. Silakan selesaikan pendaftaran untuk membuka seluruh video materi, forum kelas, dan ujian sertifikasi.
                 </p>
                 <div style={{ display: "flex", gap: 12, flexWrap: "wrap", justifyContent: "center" }}>
-                  <button
-                    type="button"
-                    className="btn btn-primary"
-                    onClick={() => handleEnrollCourse(activeCourse)}
-                    style={{ width: "auto", padding: "10px 22px", fontWeight: 700, fontSize: "0.85rem" }}
-                  >
-                    Beli Kelas Sekarang ({activeCourse.priceLabel})
-                  </button>
+                  {!currentUser ? (
+                    <a
+                      href={`/login?redirect=${encodeURIComponent(`/kelas?courseId=${activeCourse.id}`)}`}
+                      className="btn btn-primary"
+                      style={{ width: "auto", padding: "10px 22px", fontWeight: 700, fontSize: "0.85rem", textDecoration: "none", display: "inline-flex", alignItems: "center", gap: 6 }}
+                    >
+                      Masuk / Daftar Akun
+                    </a>
+                  ) : activeCourse.price === 0 ? (
+                    <button
+                      type="button"
+                      className="btn btn-primary"
+                      onClick={() => setShowSubscriptionModal(true)}
+                      style={{ width: "auto", padding: "10px 22px", fontWeight: 700, fontSize: "0.85rem", display: "inline-flex", alignItems: "center", gap: 6 }}
+                    >
+                      <Zap size={14} />
+                      Aktifkan Akses Member Sekarang
+                    </button>
+                  ) : (
+                    <button
+                      type="button"
+                      className="btn btn-primary"
+                      onClick={() => handleEnrollCourse(activeCourse)}
+                      style={{ width: "auto", padding: "10px 22px", fontWeight: 700, fontSize: "0.85rem" }}
+                    >
+                      Beli Kelas Sekarang ({activeCourse.priceLabel})
+                    </button>
+                  )}
                   <button
                     type="button"
                     className="btn btn-secondary"

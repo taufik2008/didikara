@@ -1,5 +1,5 @@
 "use client";
-import { Cpu, LayoutDashboard, BookOpen, PlayCircle, Award, Receipt, Compass, Settings, LogOut, ChevronLeft, ChevronRight, GraduationCap } from "lucide-react";
+import { Cpu, LayoutDashboard, BookOpen, PlayCircle, Award, Receipt, Compass, Settings, LogOut, LogIn, ChevronLeft, ChevronRight, GraduationCap } from "lucide-react";
 import { useApp } from "@/context/AppContext";
 import { canAccessPage } from "@/lib/permissions";
 
@@ -13,7 +13,10 @@ export default function Sidebar() {
 
   const isInstructorRole = currentUser?.role === "instructor";
 
-  const menuItems = (isInstructorRole ? [
+  const menuItems = (!currentUser ? [
+    { page: "marketplace-page",  icon: BookOpen,        label: "Katalog Pelatihan" },
+    { page: "lms-page",          icon: PlayCircle,      label: "Ruang Belajar (Preview)" },
+  ] : isInstructorRole ? [
     { page: "dashboard-page",   icon: LayoutDashboard, label: "Dashboard Instruktur" },
     { page: "instructor-page",  icon: BookOpen,        label: "Manajemen Kursus" },
     { page: "ai-planner-page",  icon: Compass,         label: "AI Portal Perencanaan" },
@@ -25,7 +28,7 @@ export default function Sidebar() {
     { page: "transactions-page", icon: Receipt,         label: "Riwayat Transaksi" },
     { page: "ai-planner-page",   icon: Compass,         label: "AI Portal Perencanaan" },
     { page: "admin-page",        icon: Settings,        label: "Modul Admin" },
-  ]).filter(item => canAccessPage(currentUser, item.page));
+  ]).filter(item => !currentUser || canAccessPage(currentUser, item.page));
 
   return (
     <aside className={`sidebar glass-panel ${sidebarCollapsed ? "collapsed" : ""}`}>
@@ -92,60 +95,85 @@ export default function Sidebar() {
       </div>
 
       <div>
-        <div className="user-profile-badge" style={{
-          marginBottom: 12, backgroundColor: "transparent", border: "none", padding: 0,
-          justifyContent: sidebarCollapsed ? "center" : "flex-start",
-          display: "flex", alignItems: "center", gap: 10
-        }}>
-          <div
-            className="avatar"
+        {!currentUser ? (
+          <a
+            href="/login"
+            className={`menu-item ${sidebarCollapsed ? 'item-collapsed' : ''}`}
             style={{
               color: "#ffffff",
+              background: "var(--primary)",
+              borderRadius: 8,
               fontWeight: 700,
-              background: "linear-gradient(135deg, #2b5c8d 0%, #4f80b5 100%)",
-              border: "1.5px solid rgba(255, 255, 255, 0.25)",
-              boxShadow: "0 2px 6px rgba(0, 0, 0, 0.25)",
-              overflow: "hidden",
-              width: 36,
-              height: 36,
-              borderRadius: "50%",
-              flexShrink: 0,
+              textDecoration: "none",
+              justifyContent: sidebarCollapsed ? "center" : "flex-start",
               display: "flex",
               alignItems: "center",
-              justifyContent: "center",
-              fontSize: "0.85rem"
+              gap: 8,
+              padding: "10px 14px",
             }}
-            title={currentUser?.fullname}
+            title={sidebarCollapsed ? "Masuk / Daftar" : undefined}
           >
-            {currentUser?.avatar && (currentUser.avatar.startsWith("http") || currentUser.avatar.startsWith("/")) ? (
-              <img
-                src={currentUser.avatar}
-                alt={currentUser?.fullname || "Avatar"}
-                style={{ width: "100%", height: "100%", objectFit: "cover" }}
-              />
-            ) : (
-              currentUser?.avatar && currentUser.avatar.length <= 4
-                ? currentUser.avatar
-                : (currentUser?.fullname ? currentUser.fullname.split(" ").filter(Boolean).map(w => w[0]).join("").slice(0, 2).toUpperCase() : "SA")
-            )}
-          </div>
-          {!sidebarCollapsed && (
-            <div style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
-              <div style={{ fontSize: "0.85rem", fontWeight: 700, color: "#ffffff", lineHeight: 1.2 }}>{currentUser?.fullname}</div>
-              <div style={{ fontSize: "0.72rem", color: "#cbd5e1", lineHeight: 1.3, marginTop: 2 }}>{currentUser?.role === "student" ? "Peserta" : (currentUser?.roleLabel || "Peserta")}</div>
+            <LogIn size={18} style={{ flexShrink: 0 }} />
+            {!sidebarCollapsed && <span>Masuk / Daftar</span>}
+          </a>
+        ) : (
+          <>
+            <div className="user-profile-badge" style={{
+              marginBottom: 12, backgroundColor: "transparent", border: "none", padding: 0,
+              justifyContent: sidebarCollapsed ? "center" : "flex-start",
+              display: "flex", alignItems: "center", gap: 10
+            }}>
+              <div
+                className="avatar"
+                style={{
+                  color: "#ffffff",
+                  fontWeight: 700,
+                  background: "linear-gradient(135deg, #2b5c8d 0%, #4f80b5 100%)",
+                  border: "1.5px solid rgba(255, 255, 255, 0.25)",
+                  boxShadow: "0 2px 6px rgba(0, 0, 0, 0.25)",
+                  overflow: "hidden",
+                  width: 36,
+                  height: 36,
+                  borderRadius: "50%",
+                  flexShrink: 0,
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  fontSize: "0.85rem"
+                }}
+                title={currentUser?.fullname}
+              >
+                {currentUser?.avatar && (currentUser.avatar.startsWith("http") || currentUser.avatar.startsWith("/")) ? (
+                  <img
+                    src={currentUser.avatar}
+                    alt={currentUser?.fullname || "Avatar"}
+                    style={{ width: "100%", height: "100%", objectFit: "cover" }}
+                  />
+                ) : (
+                  currentUser?.avatar && currentUser.avatar.length <= 4
+                    ? currentUser.avatar
+                    : (currentUser?.fullname ? currentUser.fullname.split(" ").filter(Boolean).map(w => w[0]).join("").slice(0, 2).toUpperCase() : "SA")
+                )}
+              </div>
+              {!sidebarCollapsed && (
+                <div style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                  <div style={{ fontSize: "0.85rem", fontWeight: 700, color: "#ffffff", lineHeight: 1.2 }}>{currentUser?.fullname}</div>
+                  <div style={{ fontSize: "0.72rem", color: "#cbd5e1", lineHeight: 1.3, marginTop: 2 }}>{currentUser?.role === "student" ? "Peserta" : (currentUser?.roleLabel || "Peserta")}</div>
+                </div>
+              )}
             </div>
-          )}
-        </div>
-        <button
-          type="button"
-          className={`menu-item ${sidebarCollapsed ? 'item-collapsed' : ''}`}
-          style={{ color: "var(--danger)", justifyContent: sidebarCollapsed ? "center" : "flex-start" }}
-          title={sidebarCollapsed ? "Keluar" : undefined}
-          onClick={() => handleLogout()}
-        >
-          <LogOut size={18} style={{ flexShrink: 0 }} />
-          {!sidebarCollapsed && <span>Keluar</span>}
-        </button>
+            <button
+              type="button"
+              className={`menu-item ${sidebarCollapsed ? 'item-collapsed' : ''}`}
+              style={{ color: "var(--danger)", justifyContent: sidebarCollapsed ? "center" : "flex-start" }}
+              title={sidebarCollapsed ? "Keluar" : undefined}
+              onClick={() => handleLogout()}
+            >
+              <LogOut size={18} style={{ flexShrink: 0 }} />
+              {!sidebarCollapsed && <span>Keluar</span>}
+            </button>
+          </>
+        )}
       </div>
     </aside>
   );

@@ -6,6 +6,7 @@
  * saklar `activePage`. Sekarang keenam halaman menjadi rute sungguhan dan
  * berbagi kerangka ini, sehingga URL, tombol Back, dan refresh bekerja normal.
  */
+import { usePathname } from "next/navigation";
 import { useApp } from "@/context/AppContext";
 import { canAccessPage } from "@/lib/permissions";
 import LoginPage from "@/components/Login/LoginPage";
@@ -19,6 +20,7 @@ import LmsManageModal from "@/components/Modals/LmsManageModal";
 import MobileBottomNav from "@/components/Common/MobileBottomNav";
 
 export default function AppLayout({ children }) {
+  const pathname = usePathname();
   const { currentUser, sessionChecked, activePage } = useApp();
 
   // Jangan tampilkan halaman login sebelum sesi selesai diperiksa — kalau tidak,
@@ -31,11 +33,15 @@ export default function AppLayout({ children }) {
     );
   }
 
-  if (!currentUser) return <LoginPage />;
+  // Izinkan calon peserta mencoba Pratinjau Gratis (Free Preview) di /kelas
+  // atau menjelajahi katalog di /marketplace tanpa harus login terlebih dahulu
+  const isGuestAllowedPage = pathname === "/kelas" || pathname === "/marketplace";
+
+  if (!currentUser && !isGuestAllowedPage) return <LoginPage />;
 
   // Menyembunyikan menu saja tidak cukup: URL bisa diketik langsung. Gerbang ini
   // hanya untuk pengalaman pengguna — penegakan sungguhan tetap di API route.
-  const diizinkan = canAccessPage(currentUser, activePage);
+  const diizinkan = (!currentUser && isGuestAllowedPage) ? true : canAccessPage(currentUser, activePage);
 
   return (
     <div id="app">
