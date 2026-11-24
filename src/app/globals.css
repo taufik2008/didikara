@@ -211,9 +211,12 @@
 }
 
 [data-theme="light"] .sidebar {
-    background: #19233d !important;
-    border-right: 1px solid rgba(255, 255, 255, 0.08) !important;
+    background: rgba(22, 33, 58, 0.88) !important;
+    backdrop-filter: blur(20px) saturate(180%);
+    -webkit-backdrop-filter: blur(20px) saturate(180%);
+    border-right: 1px solid rgba(255, 255, 255, 0.1) !important;
     color: #f8fafc !important;
+    box-shadow: 4px 0 20px rgba(15, 23, 42, 0.15);
 }
 
 [data-theme="light"] .sidebar .avatar {
@@ -251,8 +254,14 @@
     background: #e4b943 !important;
     color: #0f172a !important;
     font-weight: 700 !important;
-    border-radius: 8px !important;
-    border-left: none !important;
+    border-radius: 10px !important;
+    border: 1px solid #d4a72c !important;
+    border-left: 3.5px solid #b88a1b !important;
+    box-shadow: 0 4px 14px rgba(228, 185, 67, 0.25);
+}
+
+[data-theme="light"] .menu-item.active svg {
+    color: #0f172a !important;
 }
 
 [data-theme="light"] .filter-pill {
@@ -688,6 +697,9 @@ h1, h2, h3, h4, h5, h6 {
     width: 100vw;
     height: 100vh;
     overflow: hidden;
+    background: radial-gradient(circle at 10% 20%, rgba(43, 92, 141, 0.22) 0%, transparent 40%),
+                radial-gradient(circle at 90% 80%, rgba(37, 99, 235, 0.14) 0%, transparent 40%),
+                var(--bg-primary);
 }
 
 /* Login Screen Layout */
@@ -1144,7 +1156,13 @@ select option {
     width: 260px;
     height: 100%;
     border-right: 1px solid rgba(255, 255, 255, 0.08);
-    background: #19233d;
+    background: rgba(18, 28, 52, 0.72) !important;
+    backdrop-filter: blur(20px) saturate(180%);
+    -webkit-backdrop-filter: blur(20px) saturate(180%);
+    border-radius: 0 !important;
+    border-top: none !important;
+    border-bottom: none !important;
+    border-left: none !important;
     color: #f8fafc;
     padding: 24px 16px;
     display: flex;
@@ -1153,6 +1171,7 @@ select option {
     flex-shrink: 0;
     z-index: 10;
     transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1), padding 0.3s ease;
+    box-shadow: 4px 0 24px rgba(0, 0, 0, 0.25);
 }
 
 .sidebar.collapsed {
@@ -1161,10 +1180,10 @@ select option {
 }
 
 .sidebar-collapse-btn {
-    background: var(--bg-tertiary);
-    border: 1px solid var(--border-color);
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.12);
     border-radius: 6px;
-    color: var(--text-secondary);
+    color: #cbd5e1;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -1175,8 +1194,9 @@ select option {
 }
 
 .sidebar-collapse-btn:hover {
-    color: var(--text-primary);
-    border-color: var(--primary);
+    color: #ffffff;
+    background: rgba(255, 255, 255, 0.12);
+    border-color: rgba(96, 165, 250, 0.4);
 }
 
 .header-icon-btn {
@@ -1210,13 +1230,14 @@ select option {
     align-items: center;
     gap: 12px;
     padding: 12px 14px;
-    border-radius: 8px;
-    color: var(--text-secondary);
+    border-radius: 10px;
+    color: #94a3b8;
     text-decoration: none;
     font-size: 0.9rem;
     font-weight: 500;
     cursor: pointer;
-    transition: all 0.2s;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    border: 1px solid transparent;
 }
 
 .menu-item.item-collapsed {
@@ -1226,15 +1247,22 @@ select option {
 }
 
 .menu-item:hover {
-    color: var(--text-primary);
-    background: var(--bg-tertiary);
+    color: #ffffff;
+    background: rgba(255, 255, 255, 0.08);
+    border-color: rgba(255, 255, 255, 0.06);
 }
 
 .menu-item.active {
-    background: rgba(37, 99, 235, 0.15);
-    color: var(--primary);
-    font-weight: 700;
-    border-left: 3px solid var(--primary);
+    background: linear-gradient(135deg, rgba(37, 99, 235, 0.28) 0%, rgba(59, 130, 246, 0.16) 100%) !important;
+    color: #ffffff !important;
+    font-weight: 700 !important;
+    border: 1px solid rgba(96, 165, 250, 0.35) !important;
+    border-left: 3.5px solid #60a5fa !important;
+    box-shadow: 0 4px 16px rgba(37, 99, 235, 0.25);
+}
+
+.menu-item.active svg {
+    color: #60a5fa !important;
 }
 
 .main-content {

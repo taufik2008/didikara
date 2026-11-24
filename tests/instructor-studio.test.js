@@ -77,3 +77,16 @@ test("Sidebar and AuthContext handle image URL avatar and safe logout", () => {
   const authContent = fs.readFileSync(authContextPath, "utf8");
   assert.ok(authContent.includes('typeof onLogout === "function"'), "AuthContext must verify onLogout is function");
 });
+
+test("Sidebar glassmorphism and high contrast active menu items in dark mode", () => {
+  const cssPath = path.resolve("./src/app/globals.css");
+  const cssContent = fs.readFileSync(cssPath, "utf8");
+
+  // 1. Sidebar uses glass transparency and backdrop blur
+  assert.match(cssContent, /\.sidebar\s*\{[^}]*backdrop-filter:\s*blur/s, "Sidebar must have backdrop-filter blur for glassmorphism");
+  assert.match(cssContent, /\.sidebar\s*\{[^}]*background:\s*rgba/s, "Sidebar must have translucent rgba background");
+
+  // 2. Active menu item in dark mode does NOT use dark navy var(--primary)
+  assert.doesNotMatch(cssContent, /\.menu-item\.active\s*\{[^}]*color:\s*var\(--primary\)/s, "Active menu item must not use dark navy var(--primary)");
+  assert.match(cssContent, /\.menu-item\.active\s*\{[^}]*color:\s*#ffffff/s, "Active menu item must have high contrast white text in dark mode");
+});
